@@ -7,6 +7,7 @@ import com.astutebody.app.domain.generator.WorkoutGenerator
 import com.astutebody.app.domain.model.MuscleGroup
 import com.astutebody.app.domain.model.PlannedExercise
 import com.astutebody.app.domain.model.WorkoutPlan
+import com.astutebody.app.ui.workout.ActiveWorkoutState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,8 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val generator: WorkoutGenerator,
-    private val repository: IWorkoutRepository
+    private val repository: IWorkoutRepository,
+    private val activeWorkoutState: ActiveWorkoutState
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -71,6 +73,10 @@ class HomeViewModel @Inject constructor(
             val newPlan = generator.regenerateAll(currentPlan)
             _uiState.value = _uiState.value.copy(workoutPlan = newPlan, isLoading = false)
         }
+    }
+
+    fun startWorkout() {
+        activeWorkoutState.workoutPlan = _uiState.value.workoutPlan
     }
 
     fun onSetupComplete() {

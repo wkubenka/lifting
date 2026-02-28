@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.astutebody.app.ui.home.HomeScreen
+import com.astutebody.app.ui.workout.ActiveWorkoutScreen
 import kotlinx.serialization.Serializable
 
 @Serializable data object HomeRoute
@@ -93,7 +94,15 @@ fun AppNavigation() {
                 )
             }
             composable<WorkoutRoute> {
-                PlaceholderScreen("Workout")
+                ActiveWorkoutScreen(
+                    onWorkoutComplete = {
+                        navController.navigate(HomeRoute) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
             }
             composable<HistoryRoute> {
                 PlaceholderScreen("History")

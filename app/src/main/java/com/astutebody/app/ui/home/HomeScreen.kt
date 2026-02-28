@@ -60,7 +60,10 @@ fun HomeScreen(
                 onSwapExercise = { viewModel.swapExercise(it) },
                 onRegenerateGroup = { viewModel.regenerateGroup(it.muscleGroup) },
                 onRegenerateAll = { viewModel.regenerateAll() },
-                onStartWorkout = onStartWorkout
+                onStartWorkout = {
+                    viewModel.startWorkout()
+                    onStartWorkout()
+                }
             )
         }
     }

@@ -6,6 +6,7 @@ import com.astutebody.app.domain.generator.FakeWorkoutRepository.Companion.makeE
 import com.astutebody.app.domain.generator.WorkoutGenerator
 import com.astutebody.app.domain.model.MuscleGroup
 import com.astutebody.app.domain.scoring.MuscleGroupScorer
+import com.astutebody.app.ui.workout.ActiveWorkoutState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -57,7 +58,7 @@ class HomeViewModelTest {
 
     @Test
     fun `init generates workout plan`() = runTest {
-        viewModel = HomeViewModel(generator, repository)
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -69,7 +70,7 @@ class HomeViewModelTest {
     @Test
     fun `needsSetup when no equipment configured`() = runTest {
         repository.preferences = UserPreferencesEntity(availableEquipment = emptyList())
-        viewModel = HomeViewModel(generator, repository)
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -79,7 +80,7 @@ class HomeViewModelTest {
 
     @Test
     fun `swapExercise updates plan with different exercise`() = runTest {
-        viewModel = HomeViewModel(generator, repository)
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
         advanceUntilIdle()
 
         val plan = viewModel.uiState.value.workoutPlan!!
@@ -96,7 +97,7 @@ class HomeViewModelTest {
 
     @Test
     fun `regenerateAll produces a new plan`() = runTest {
-        viewModel = HomeViewModel(generator, repository)
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
         advanceUntilIdle()
 
         val originalPlan = viewModel.uiState.value.workoutPlan!!
@@ -112,7 +113,7 @@ class HomeViewModelTest {
     @Test
     fun `onSetupComplete clears needsSetup and generates workout`() = runTest {
         repository.preferences = UserPreferencesEntity(availableEquipment = emptyList())
-        viewModel = HomeViewModel(generator, repository)
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.needsSetup)
