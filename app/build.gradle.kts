@@ -15,10 +15,22 @@ android {
         applicationId = "com.astute.body"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = (findProperty("VERSION_CODE") as? String)?.toIntOrNull() ?: 1
+        versionName = (findProperty("VERSION_NAME") as? String) ?: "1.0"
 
         testInstrumentationRunner = "com.astute.body.HiltTestRunner"
+    }
+
+    signingConfigs {
+        create("release") {
+            val ksFile = System.getenv("KEYSTORE_FILE")
+            if (ksFile != null) {
+                storeFile = file(ksFile)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -28,6 +40,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            val ksFile = System.getenv("KEYSTORE_FILE")
+            if (ksFile != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
