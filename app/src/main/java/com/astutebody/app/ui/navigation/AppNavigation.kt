@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.astutebody.app.ui.home.HomeScreen
 import kotlinx.serialization.Serializable
 
 @Serializable data object HomeRoute
@@ -82,7 +83,14 @@ fun AppNavigation() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable<HomeRoute> {
-                PlaceholderScreen("Home")
+                HomeScreen(
+                    onStartWorkout = {
+                        navController.navigate(WorkoutRoute)
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate(SettingsRoute)
+                    }
+                )
             }
             composable<WorkoutRoute> {
                 PlaceholderScreen("Workout")
