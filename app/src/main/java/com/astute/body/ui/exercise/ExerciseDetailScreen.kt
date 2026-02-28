@@ -21,7 +21,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.FitnessCenter
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,6 +71,22 @@ fun ExerciseDetailScreen(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { viewModel.toggleFavorite() }) {
+                        Icon(
+                            if (uiState.isFavorited) Icons.Filled.Star else Icons.Outlined.StarBorder,
+                            contentDescription = if (uiState.isFavorited) "Remove from favorites" else "Add to favorites",
+                            tint = if (uiState.isFavorited) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(onClick = { viewModel.toggleExclude() }) {
+                        Icon(
+                            if (uiState.isExcluded) Icons.Filled.Block else Icons.Outlined.Block,
+                            contentDescription = if (uiState.isExcluded) "Remove from excluded" else "Exclude exercise",
+                            tint = if (uiState.isExcluded) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.UserPreferencesDao
 import com.astute.body.data.local.entity.UserPreferencesEntity
+import com.astute.body.data.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,13 +16,16 @@ import javax.inject.Inject
 data class SettingsUiState(
     val preferences: UserPreferencesEntity = UserPreferencesEntity(),
     val allEquipment: List<String> = emptyList(),
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val favoriteCount: Int = 0,
+    val excludedCount: Int = 0
 )
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userPreferencesDao: UserPreferencesDao,
-    private val exerciseDao: ExerciseDao
+    private val exerciseDao: ExerciseDao,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -29,6 +33,14 @@ class SettingsViewModel @Inject constructor(
 
     init {
         loadSettings()
+        viewModelScope.launch {
+            userPreferencesRepository.preferences.collect { prefs ->
+                _uiState.value = _uiState.value.copy(
+                    favoriteCount = prefs.favoritedExercises.size,
+                    excludedCount = prefs.excludedExercises.size
+                )
+            }
+        }
     }
 
     private fun loadSettings() {

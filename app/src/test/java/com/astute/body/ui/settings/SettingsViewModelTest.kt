@@ -4,6 +4,7 @@ import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.UserPreferencesDao
 import com.astute.body.data.local.entity.ExerciseEntity
 import com.astute.body.data.local.entity.UserPreferencesEntity
+import com.astute.body.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +27,7 @@ class SettingsViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var prefsDao: FakeUserPreferencesDao
     private lateinit var exerciseDao: FakeExerciseDao
+    private lateinit var prefsRepo: UserPreferencesRepository
     private lateinit var viewModel: SettingsViewModel
 
     @Before
@@ -34,6 +36,7 @@ class SettingsViewModelTest {
         prefsDao = FakeUserPreferencesDao()
         exerciseDao = FakeExerciseDao()
         exerciseDao.equipment = listOf("barbell", "dumbbell", "cable", "body only", "machine")
+        prefsRepo = UserPreferencesRepository(prefsDao)
     }
 
     @After
@@ -49,7 +52,7 @@ class SettingsViewModelTest {
             targetWorkoutSize = 10
         )
 
-        viewModel = SettingsViewModel(prefsDao, exerciseDao)
+        viewModel = SettingsViewModel(prefsDao, exerciseDao, prefsRepo)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -62,7 +65,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `setExperienceLevel updates and persists`() = runTest {
-        viewModel = SettingsViewModel(prefsDao, exerciseDao)
+        viewModel = SettingsViewModel(prefsDao, exerciseDao, prefsRepo)
         advanceUntilIdle()
 
         viewModel.setExperienceLevel("expert")
@@ -74,7 +77,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `setWeightUnit updates and persists`() = runTest {
-        viewModel = SettingsViewModel(prefsDao, exerciseDao)
+        viewModel = SettingsViewModel(prefsDao, exerciseDao, prefsRepo)
         advanceUntilIdle()
 
         viewModel.setWeightUnit("kg")
@@ -86,7 +89,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `setTargetWorkoutSize updates and persists`() = runTest {
-        viewModel = SettingsViewModel(prefsDao, exerciseDao)
+        viewModel = SettingsViewModel(prefsDao, exerciseDao, prefsRepo)
         advanceUntilIdle()
 
         viewModel.setTargetWorkoutSize(10)
@@ -98,7 +101,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `toggleEquipment adds and removes equipment`() = runTest {
-        viewModel = SettingsViewModel(prefsDao, exerciseDao)
+        viewModel = SettingsViewModel(prefsDao, exerciseDao, prefsRepo)
         advanceUntilIdle()
 
         viewModel.toggleEquipment("barbell")
@@ -116,7 +119,7 @@ class SettingsViewModelTest {
 
     @Test
     fun `rest timer durations are clamped to minimum of 10`() = runTest {
-        viewModel = SettingsViewModel(prefsDao, exerciseDao)
+        viewModel = SettingsViewModel(prefsDao, exerciseDao, prefsRepo)
         advanceUntilIdle()
 
         viewModel.setRestCompound(5)
@@ -151,6 +154,8 @@ private class FakeExerciseDao : ExerciseDao {
     override fun getAll(): Flow<List<ExerciseEntity>> = MutableStateFlow(emptyList())
 
     override suspend fun getById(id: String): ExerciseEntity? = null
+
+    override suspend fun getByIds(ids: List<String>): List<ExerciseEntity> = emptyList()
 
     override suspend fun getByMuscle(muscle: String): List<ExerciseEntity> = emptyList()
 

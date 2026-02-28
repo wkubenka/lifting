@@ -14,7 +14,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -66,6 +68,8 @@ fun HomeScreen(
         uiState.workoutPlan != null -> {
             WorkoutPlanContent(
                 allocations = uiState.workoutPlan!!.muscleGroupAllocations,
+                favoritedIds = uiState.favoritedIds,
+                hasExcludedInPlan = uiState.hasExcludedInPlan,
                 onSwapExercise = { viewModel.swapExercise(it) },
                 onRegenerateGroup = { viewModel.regenerateGroup(it.muscleGroup) },
                 onRegenerateAll = { viewModel.regenerateAll() },
@@ -104,6 +108,8 @@ private fun SetupPrompt(onNavigateToSettings: () -> Unit) {
 @Composable
 private fun WorkoutPlanContent(
     allocations: List<MuscleGroupAllocation>,
+    favoritedIds: Set<String>,
+    hasExcludedInPlan: Boolean,
     onSwapExercise: (PlannedExercise) -> Unit,
     onRegenerateGroup: (MuscleGroupAllocation) -> Unit,
     onRegenerateAll: () -> Unit,
@@ -141,6 +147,36 @@ private fun WorkoutPlanContent(
                 }
             }
 
+            if (hasExcludedInPlan) {
+                item {
+                    Card(
+                        onClick = onRegenerateAll,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        )
+                    ) {
+                        Row(
+                            Modifier.padding(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = "Workout contains excluded exercises. Tap to regenerate.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+            }
+
             allocations.forEach { allocation ->
                 item {
                     MuscleGroupHeader(
@@ -151,6 +187,7 @@ private fun WorkoutPlanContent(
                 items(allocation.exercises, key = { it.exercise.id }) { exercise ->
                     ExerciseCard(
                         exercise = exercise,
+                        isFavorited = exercise.exercise.id in favoritedIds,
                         onSwap = { onSwapExercise(exercise) },
                         onTap = { onExerciseTap(exercise.exercise.id) }
                     )
@@ -210,6 +247,7 @@ private fun MuscleGroupHeader(
 @Composable
 private fun ExerciseCard(
     exercise: PlannedExercise,
+    isFavorited: Boolean,
     onSwap: () -> Unit,
     onTap: () -> Unit
 ) {
@@ -228,11 +266,24 @@ private fun ExerciseCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(Modifier.weight(1f)) {
-                Text(
-                    text = exercise.exercise.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = exercise.exercise.name,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    if (isFavorited) {
+                        Icon(
+                            Icons.Filled.Star,
+                            contentDescription = "Favorited",
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     exercise.exercise.equipment?.let { equip ->
                         SuggestionChip(

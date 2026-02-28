@@ -56,6 +56,11 @@ class FakeWorkoutRepository : IWorkoutRepository {
         return preferences
     }
 
+    override suspend fun getExercisesByIds(ids: List<String>): List<ExerciseEntity> {
+        val allExercises = exercises.values.flatten()
+        return allExercises.filter { it.id in ids }
+    }
+
     companion object {
         fun defaultRecoveryConfigs() = listOf(
             RecoveryConfigEntity("Chest", 48),

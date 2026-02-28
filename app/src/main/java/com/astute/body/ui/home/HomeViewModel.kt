@@ -3,6 +3,7 @@ package com.astute.body.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.astute.body.data.repository.IWorkoutRepository
+import com.astute.body.data.repository.UserPreferencesRepository
 import com.astute.body.domain.generator.WorkoutGenerator
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.model.PlannedExercise
@@ -18,14 +19,17 @@ import javax.inject.Inject
 data class HomeUiState(
     val workoutPlan: WorkoutPlan? = null,
     val isLoading: Boolean = true,
-    val needsSetup: Boolean = false
+    val needsSetup: Boolean = false,
+    val favoritedIds: Set<String> = emptySet(),
+    val hasExcludedInPlan: Boolean = false
 )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val generator: WorkoutGenerator,
     private val repository: IWorkoutRepository,
-    private val activeWorkoutState: ActiveWorkoutState
+    private val activeWorkoutState: ActiveWorkoutState,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -33,6 +37,20 @@ class HomeViewModel @Inject constructor(
 
     init {
         generateWorkout()
+        viewModelScope.launch {
+            userPreferencesRepository.preferences.collect { prefs ->
+                val favoritedIds = prefs.favoritedExercises.toSet()
+                val excludedIds = prefs.excludedExercises.toSet()
+                val plan = _uiState.value.workoutPlan
+                val hasExcluded = plan != null && plan.muscleGroupAllocations
+                    .flatMap { it.exercises }
+                    .any { it.exercise.id in excludedIds }
+                _uiState.value = _uiState.value.copy(
+                    favoritedIds = favoritedIds,
+                    hasExcludedInPlan = hasExcluded
+                )
+            }
+        }
     }
 
     fun generateWorkout() {

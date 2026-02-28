@@ -21,4 +21,5 @@ interface IWorkoutRepository {
     suspend fun getRecoveryConfig(muscleGroup: MuscleGroup): RecoveryConfigEntity?
     suspend fun getAllRecoveryConfigs(): List<RecoveryConfigEntity>
     suspend fun getUserPreferences(): UserPreferencesEntity
+    suspend fun getExercisesByIds(ids: List<String>): List<ExerciseEntity>
 }

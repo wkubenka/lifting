@@ -22,16 +22,27 @@ class WorkoutGenerator @Inject constructor(
         const val SCORE_THRESHOLD_RATIO = 0.20
         const val MAX_GROUPS = 4
         const val MIN_GROUPS = 2
+        const val FAVORITED_GROUP_BONUS = 0.05
     }
 
     suspend fun generate(): WorkoutPlan {
         val prefs = repository.getUserPreferences()
         val targetSize = prefs.targetWorkoutSize
+        val userExcludedIds = prefs.excludedExercises.toSet()
+        val favoritedIds = prefs.favoritedExercises.toSet()
 
         val trainingData = buildTrainingData()
         val scores = scorer.scoreAll(trainingData)
 
-        val selectedGroups = selectGroups(scores, targetSize)
+        // Apply favorited group bonus: groups containing favorited exercises get +5%
+        val favoritedGroups = findGroupsWithFavoritedExercises(favoritedIds)
+        val boostedScores = scores.map { scored ->
+            if (scored.muscleGroup in favoritedGroups) {
+                scored.copy(score = scored.score * (1 + FAVORITED_GROUP_BONUS))
+            } else scored
+        }
+
+        val selectedGroups = selectGroups(boostedScores, targetSize)
         val allocations = allocateExercises(selectedGroups, targetSize)
 
         val muscleGroupAllocations = allocations.map { (scored, count) ->
@@ -39,7 +50,9 @@ class WorkoutGenerator @Inject constructor(
                 scored.muscleGroup,
                 count,
                 prefs.availableEquipment,
-                prefs.experienceLevel
+                prefs.experienceLevel,
+                userExcludedIds = userExcludedIds,
+                favoritedIds = favoritedIds
             )
             val warning = when {
                 exercises.isEmpty() -> "No exercises found for ${scored.muscleGroup.displayName}"
@@ -54,6 +67,7 @@ class WorkoutGenerator @Inject constructor(
 
     suspend fun swapExercise(plan: WorkoutPlan, exerciseToReplace: PlannedExercise): WorkoutPlan {
         val prefs = repository.getUserPreferences()
+        val userExcludedIds = prefs.excludedExercises.toSet()
         val allocation = plan.muscleGroupAllocations.find {
             it.muscleGroup == exerciseToReplace.muscleGroup
         } ?: return plan
@@ -63,7 +77,7 @@ class WorkoutGenerator @Inject constructor(
             exerciseToReplace.muscleGroup,
             prefs.availableEquipment,
             prefs.experienceLevel
-        ).filter { it.id !in currentIds }
+        ).filter { it.id !in currentIds && it.id !in userExcludedIds }
 
         val replacement = candidates.firstOrNull() ?: return plan
         val newExercises = allocation.exercises.map {
@@ -82,6 +96,8 @@ class WorkoutGenerator @Inject constructor(
 
     suspend fun regenerateGroup(plan: WorkoutPlan, muscleGroup: MuscleGroup): WorkoutPlan {
         val prefs = repository.getUserPreferences()
+        val userExcludedIds = prefs.excludedExercises.toSet()
+        val favoritedIds = prefs.favoritedExercises.toSet()
         val allocation = plan.muscleGroupAllocations.find {
             it.muscleGroup == muscleGroup
         } ?: return plan
@@ -95,7 +111,9 @@ class WorkoutGenerator @Inject constructor(
             neededCount,
             prefs.availableEquipment,
             prefs.experienceLevel,
-            excludeIds
+            excludeIds,
+            userExcludedIds = userExcludedIds,
+            favoritedIds = favoritedIds
         )
 
         val combined = lockedExercises + newExercises
@@ -226,48 +244,58 @@ class WorkoutGenerator @Inject constructor(
         count: Int,
         equipment: List<String>,
         level: String,
-        excludeIds: Set<String> = emptySet()
+        excludeIds: Set<String> = emptySet(),
+        userExcludedIds: Set<String> = emptySet(),
+        favoritedIds: Set<String> = emptySet()
     ): List<PlannedExercise> {
+        val allExcluded = excludeIds + userExcludedIds
+
         var candidates = getFilteredExercises(muscleGroup, equipment, level)
-            .filter { it.id !in excludeIds }
+            .filter { it.id !in allExcluded }
 
         if (candidates.size < count) {
             candidates = repository.getExercisesForMusclesRelaxed(
                 muscleGroup.datasetMuscles, equipment
-            ).filter { it.id !in excludeIds }
+            ).filter { it.id !in allExcluded }
         }
 
         if (candidates.isEmpty()) return emptyList()
 
         val recentIds = repository.getRecentExerciseIds(muscleGroup, 20).toSet()
-        val compound = candidates.filter { it.mechanic == "compound" }
-        val nonRecent = candidates.filter { it.id !in recentIds }
+
+        // Sort candidates: favorited compound first, then favorited non-compound,
+        // then non-favorited compound, then rest. Within each tier, prefer non-recent.
+        val sorted = candidates.sortedWith(
+            compareByDescending<ExerciseEntity> { it.id in favoritedIds }
+                .thenByDescending { it.mechanic == "compound" }
+                .thenBy { it.id in recentIds }
+        )
 
         val selected = mutableListOf<ExerciseEntity>()
-        val firstPick = compound.firstOrNull { it.id !in recentIds }
-            ?: compound.firstOrNull()
-            ?: candidates.first()
-        selected.add(firstPick)
+        selected.add(sorted.first())
 
-        val remaining = (nonRecent.filter { it.id != firstPick.id } +
-                candidates.filter { it.id != firstPick.id && it.id !in nonRecent.map { nr -> nr.id } })
-            .distinctBy { it.id }
-
-        for (exercise in remaining) {
+        for (exercise in sorted.drop(1)) {
             if (selected.size >= count) break
             selected.add(exercise)
         }
 
-        if (selected.size < count) {
-            for (exercise in candidates) {
-                if (selected.size >= count) break
-                if (exercise.id !in selected.map { it.id }) {
-                    selected.add(exercise)
+        return selected.map { PlannedExercise(it, muscleGroup) }
+    }
+
+    private suspend fun findGroupsWithFavoritedExercises(
+        favoritedIds: Set<String>
+    ): Set<MuscleGroup> {
+        if (favoritedIds.isEmpty()) return emptySet()
+        val exercises = repository.getExercisesByIds(favoritedIds.toList())
+        val groups = mutableSetOf<MuscleGroup>()
+        for (exercise in exercises) {
+            for (group in MuscleGroup.entries) {
+                if (exercise.primaryMuscles.any { it in group.datasetMuscles }) {
+                    groups.add(group)
                 }
             }
         }
-
-        return selected.map { PlannedExercise(it, muscleGroup) }
+        return groups
     }
 
     private suspend fun getFilteredExercises(

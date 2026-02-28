@@ -89,6 +89,11 @@ class WorkoutRepository @Inject constructor(
         return userPreferencesDao.getOnce() ?: UserPreferencesEntity()
     }
 
+    override suspend fun getExercisesByIds(ids: List<String>): List<ExerciseEntity> {
+        if (ids.isEmpty()) return emptyList()
+        return exerciseDao.getByIds(ids)
+    }
+
     private fun isLevelCompatible(exerciseLevel: String, userLevel: String): Boolean {
         val levels = listOf("beginner", "intermediate", "expert")
         val exerciseIdx = levels.indexOf(exerciseLevel)

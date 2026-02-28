@@ -1,6 +1,8 @@
 package com.astute.body.ui.home
 
+import com.astute.body.data.local.dao.UserPreferencesDao
 import com.astute.body.data.local.entity.UserPreferencesEntity
+import com.astute.body.data.repository.UserPreferencesRepository
 import com.astute.body.domain.generator.FakeWorkoutRepository
 import com.astute.body.domain.generator.FakeWorkoutRepository.Companion.makeExercise
 import com.astute.body.domain.generator.WorkoutGenerator
@@ -9,6 +11,8 @@ import com.astute.body.domain.scoring.MuscleGroupScorer
 import com.astute.body.ui.workout.ActiveWorkoutState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -29,6 +33,8 @@ class HomeViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var repository: FakeWorkoutRepository
     private lateinit var generator: WorkoutGenerator
+    private lateinit var prefsDao: FakePrefsDao
+    private lateinit var prefsRepo: UserPreferencesRepository
     private lateinit var viewModel: HomeViewModel
 
     @Before
@@ -37,6 +43,8 @@ class HomeViewModelTest {
         repository = FakeWorkoutRepository()
         setupExercises()
         generator = WorkoutGenerator(repository, MuscleGroupScorer())
+        prefsDao = FakePrefsDao()
+        prefsRepo = UserPreferencesRepository(prefsDao)
     }
 
     @After
@@ -58,7 +66,7 @@ class HomeViewModelTest {
 
     @Test
     fun `init generates workout plan`() = runTest {
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -70,7 +78,7 @@ class HomeViewModelTest {
     @Test
     fun `needsSetup when no equipment configured`() = runTest {
         repository.preferences = UserPreferencesEntity(availableEquipment = emptyList())
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -80,7 +88,7 @@ class HomeViewModelTest {
 
     @Test
     fun `swapExercise updates plan with different exercise`() = runTest {
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
         advanceUntilIdle()
 
         val plan = viewModel.uiState.value.workoutPlan!!
@@ -97,7 +105,7 @@ class HomeViewModelTest {
 
     @Test
     fun `regenerateAll produces a new plan`() = runTest {
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
         advanceUntilIdle()
 
         val originalPlan = viewModel.uiState.value.workoutPlan!!
@@ -113,7 +121,7 @@ class HomeViewModelTest {
     @Test
     fun `onSetupComplete clears needsSetup and generates workout`() = runTest {
         repository.preferences = UserPreferencesEntity(availableEquipment = emptyList())
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState())
+        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.needsSetup)
@@ -128,5 +136,17 @@ class HomeViewModelTest {
 
         assertFalse(viewModel.uiState.value.needsSetup)
         assertNotNull(viewModel.uiState.value.workoutPlan)
+    }
+}
+
+private class FakePrefsDao : UserPreferencesDao {
+    var prefs: UserPreferencesEntity? = UserPreferencesEntity()
+
+    override fun get(): Flow<UserPreferencesEntity?> = MutableStateFlow(prefs)
+
+    override suspend fun getOnce(): UserPreferencesEntity? = prefs
+
+    override suspend fun upsert(preferences: UserPreferencesEntity) {
+        prefs = preferences
     }
 }

@@ -23,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.astute.body.ui.exercise.ExerciseDetailScreen
+import com.astute.body.ui.exercise.ManageExercisesScreen
 import com.astute.body.ui.history.HistoryScreen
 import com.astute.body.ui.home.HomeScreen
 import com.astute.body.ui.settings.SettingsScreen
@@ -34,6 +35,7 @@ import kotlinx.serialization.Serializable
 @Serializable data object HistoryRoute
 @Serializable data object SettingsRoute
 @Serializable data class ExerciseDetailRoute(val exerciseId: String)
+@Serializable data object ManageExercisesRoute
 
 data class TopLevelRoute<T : Any>(
     val name: String,
@@ -123,7 +125,16 @@ fun AppNavigation() {
                 )
             }
             composable<SettingsRoute> {
-                SettingsScreen()
+                SettingsScreen(
+                    onNavigateToManageExercises = {
+                        navController.navigate(ManageExercisesRoute)
+                    }
+                )
+            }
+            composable<ManageExercisesRoute> {
+                ManageExercisesScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
             composable<ExerciseDetailRoute> {
                 ExerciseDetailScreen(
