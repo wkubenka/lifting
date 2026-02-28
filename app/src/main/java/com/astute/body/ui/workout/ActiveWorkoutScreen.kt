@@ -17,12 +17,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -42,6 +44,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun ActiveWorkoutScreen(
@@ -97,6 +102,7 @@ private fun ExerciseLoggingScreen(
     onExtendTimer: () -> Unit
 ) {
     val current = uiState.exercises[uiState.currentIndex]
+    val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
 
     Column(
         modifier = Modifier
@@ -130,20 +136,19 @@ private fun ExerciseLoggingScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        // Previous performance
-        if (uiState.previousWeight != null && uiState.previousReps != null) {
+        // Previous performance and PR display
+        Spacer(Modifier.height(8.dp))
+        PerformanceCard(
+            performance = uiState.previousPerformance,
+            weightUnit = uiState.weightUnit,
+            dateFormat = dateFormat
+        )
+
+        // New PR indicator for current exercise
+        val currentPRs = uiState.newPRs.filter { it.exerciseId == current.exercise.id }
+        if (currentPRs.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
-                )
-            ) {
-                Text(
-                    text = "Last: ${uiState.previousReps} reps @ ${uiState.previousWeight} lbs",
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            NewPRBadge(prs = currentPRs, weightUnit = uiState.weightUnit)
         }
 
         Spacer(Modifier.height(24.dp))
@@ -187,7 +192,7 @@ private fun ExerciseLoggingScreen(
                     onValueChange = { text ->
                         onUpdateWeight(text.toDoubleOrNull() ?: 0.0)
                     },
-                    label = { Text("Weight (lbs)") },
+                    label = { Text("Weight (${uiState.weightUnit})") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -231,6 +236,91 @@ private fun ExerciseLoggingScreen(
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Finish Early")
+        }
+    }
+}
+
+@Composable
+private fun PerformanceCard(
+    performance: ExercisePerformance?,
+    weightUnit: String,
+    dateFormat: SimpleDateFormat
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            if (performance != null) {
+                if (performance.lastWeight != null && performance.lastReps != null) {
+                    Text(
+                        text = "Last: ${performance.lastReps} reps @ ${formatWeight(performance.lastWeight)} $weightUnit",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                val prParts = mutableListOf<String>()
+                if (performance.maxWeight > 0.0) {
+                    val datePart = performance.maxWeightDate?.let { " (${dateFormat.format(Date(it))})" } ?: ""
+                    prParts.add("${formatWeight(performance.maxWeight)} $weightUnit$datePart")
+                }
+                if (performance.maxReps > 0) {
+                    val datePart = performance.maxRepsDate?.let { " (${dateFormat.format(Date(it))})" } ?: ""
+                    prParts.add("${performance.maxReps} reps$datePart")
+                }
+                if (prParts.isNotEmpty()) {
+                    Text(
+                        text = "PR: ${prParts.joinToString(" \u00b7 ")}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            } else {
+                Text(
+                    text = "First time \u2014 no previous data",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NewPRBadge(prs: List<NewPR>, weightUnit: String) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                Icons.Default.EmojiEvents,
+                contentDescription = "New personal record",
+                tint = MaterialTheme.colorScheme.tertiary,
+                modifier = Modifier.size(20.dp)
+            )
+            Column {
+                prs.forEach { pr ->
+                    val label = when (pr.type) {
+                        PRType.WEIGHT -> "Weight: ${formatWeight(pr.oldValue)} \u2192 ${formatWeight(pr.newValue)} $weightUnit"
+                        PRType.REPS -> "Reps: ${pr.oldValue.toInt()} \u2192 ${pr.newValue.toInt()}"
+                    }
+                    Text(
+                        text = "NEW PR! $label",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                }
+            }
         }
     }
 }
@@ -325,13 +415,15 @@ private fun WorkoutSummary(
     val totalSets = uiState.logEntries.sumOf { it.sets }
     val totalVolume = uiState.logEntries.sumOf { it.sets * it.reps * it.weight }
     val durationMinutes = ((System.currentTimeMillis() - uiState.startTimeMillis) / 60000).toInt()
+    val volumeByGroup = uiState.logEntries
+        .groupBy { it.muscleGroup }
+        .mapValues { (_, logs) -> logs.sumOf { it.sets * it.reps * it.weight } }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
     ) {
         Text(
             text = "Workout Complete",
@@ -341,10 +433,108 @@ private fun WorkoutSummary(
 
         Spacer(Modifier.height(24.dp))
 
+        // Overview stats
         SummaryRow("Exercises", "${uiState.logEntries.size}")
         SummaryRow("Total Sets", "$totalSets")
-        SummaryRow("Total Volume", "${totalVolume.toLong()} lbs")
+        SummaryRow("Total Volume", "${totalVolume.toLong()} ${uiState.weightUnit}")
         SummaryRow("Duration", "$durationMinutes min")
+
+        // New PRs section
+        if (uiState.newPRs.isNotEmpty()) {
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.EmojiEvents,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = "New Personal Records",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+
+            uiState.newPRs.forEach { pr ->
+                val detail = when (pr.type) {
+                    PRType.WEIGHT -> "${formatWeight(pr.oldValue)} \u2192 ${formatWeight(pr.newValue)} ${uiState.weightUnit}"
+                    PRType.REPS -> "${pr.oldValue.toInt()} \u2192 ${pr.newValue.toInt()} reps"
+                }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = pr.exerciseName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = detail,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+
+        // Volume by muscle group
+        Spacer(Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(Modifier.height(16.dp))
+
+        Text(
+            text = "Volume by Muscle Group",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(Modifier.height(8.dp))
+
+        volumeByGroup.forEach { (group, volume) ->
+            SummaryRow(group, "${volume.toLong()} ${uiState.weightUnit}")
+        }
+
+        // Per-exercise detail
+        Spacer(Modifier.height(16.dp))
+        HorizontalDivider()
+        Spacer(Modifier.height(16.dp))
+
+        Text(
+            text = "Exercise Detail",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(Modifier.height(8.dp))
+
+        uiState.logEntries.forEach { entry ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = entry.exerciseName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "${entry.sets} \u00d7 ${entry.reps} @ ${formatWeight(entry.weight)} ${uiState.weightUnit}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
 
         Spacer(Modifier.height(32.dp))
 
@@ -357,7 +547,10 @@ private fun WorkoutSummary(
 
         Spacer(Modifier.height(8.dp))
 
-        TextButton(onClick = onDiscard) {
+        TextButton(
+            onClick = onDiscard,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
             Text("Discard")
         }
     }
@@ -374,4 +567,8 @@ private fun SummaryRow(label: String, value: String) {
         Text(label, style = MaterialTheme.typography.bodyLarge)
         Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
     }
+}
+
+private fun formatWeight(weight: Double): String {
+    return weight.toBigDecimal().stripTrailingZeros().toPlainString()
 }

@@ -10,6 +10,7 @@ import com.astute.body.data.local.entity.PersonalRecordEntity
 import com.astute.body.data.local.entity.UserPreferencesEntity
 import com.astute.body.data.local.entity.WorkoutSessionEntity
 import com.astute.body.data.repository.IWorkoutRepository
+import com.astute.body.data.repository.UserPreferencesRepository
 import com.astute.body.domain.model.PlannedExercise
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -22,11 +23,31 @@ import javax.inject.Inject
 
 data class ExerciseLogEntry(
     val exerciseId: String,
+    val exerciseName: String,
     val muscleGroup: String,
     val sets: Int,
     val reps: Int,
     val weight: Double
 )
+
+data class ExercisePerformance(
+    val lastWeight: Double?,
+    val lastReps: Int?,
+    val maxWeight: Double,
+    val maxReps: Int,
+    val maxWeightDate: Long?,
+    val maxRepsDate: Long?
+)
+
+data class NewPR(
+    val exerciseId: String,
+    val exerciseName: String,
+    val type: PRType,
+    val oldValue: Double,
+    val newValue: Double
+)
+
+enum class PRType { WEIGHT, REPS }
 
 data class WorkoutUiState(
     val exercises: List<PlannedExercise> = emptyList(),
@@ -42,8 +63,9 @@ data class WorkoutUiState(
     val isComplete: Boolean = false,
     val isSaved: Boolean = false,
     val startTimeMillis: Long = System.currentTimeMillis(),
-    val previousWeight: Double? = null,
-    val previousReps: Int? = null
+    val previousPerformance: ExercisePerformance? = null,
+    val newPRs: List<NewPR> = emptyList(),
+    val weightUnit: String = "lbs"
 )
 
 @HiltViewModel
@@ -52,15 +74,23 @@ class WorkoutViewModel @Inject constructor(
     private val repository: IWorkoutRepository,
     private val workoutSessionDao: WorkoutSessionDao,
     private val exerciseLogDao: ExerciseLogDao,
-    private val personalRecordDao: PersonalRecordDao
+    private val personalRecordDao: PersonalRecordDao,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WorkoutUiState())
     val uiState: StateFlow<WorkoutUiState> = _uiState.asStateFlow()
 
     private var timerJob: Job? = null
+    private var cachedPrefs: UserPreferencesEntity = UserPreferencesEntity()
 
     init {
+        viewModelScope.launch {
+            userPreferencesRepository.preferences.collect { prefs ->
+                cachedPrefs = prefs
+                _uiState.value = _uiState.value.copy(weightUnit = prefs.weightUnit)
+            }
+        }
         loadWorkout()
     }
 
@@ -83,8 +113,16 @@ class WorkoutViewModel @Inject constructor(
         viewModelScope.launch {
             val record = personalRecordDao.getByExerciseId(current.exercise.id)
             _uiState.value = _uiState.value.copy(
-                previousWeight = record?.lastWeight,
-                previousReps = record?.lastReps
+                previousPerformance = record?.let {
+                    ExercisePerformance(
+                        lastWeight = it.lastWeight,
+                        lastReps = it.lastReps,
+                        maxWeight = it.maxWeight,
+                        maxReps = it.maxReps,
+                        maxWeightDate = it.maxWeightDate,
+                        maxRepsDate = it.maxRepsDate
+                    )
+                }
             )
         }
     }
@@ -115,17 +153,62 @@ class WorkoutViewModel @Inject constructor(
         if (state.setsCompleted > 0) {
             val entry = ExerciseLogEntry(
                 exerciseId = current.exercise.id,
+                exerciseName = current.exercise.name,
                 muscleGroup = current.muscleGroup.displayName,
                 sets = state.setsCompleted,
                 reps = state.currentReps,
                 weight = state.currentWeight
             )
+
+            val detectedPRs = detectNewPRs(entry, state.previousPerformance)
+
             _uiState.value = state.copy(
-                logEntries = state.logEntries + entry
+                logEntries = state.logEntries + entry,
+                newPRs = state.newPRs + detectedPRs
             )
         }
 
         advanceToNext()
+    }
+
+    companion object {
+        fun getRestDuration(exercise: PlannedExercise, prefs: UserPreferencesEntity): Int {
+            val isAbdominal = exercise.exercise.primaryMuscles.contains("abdominals")
+            val isBodyweight = exercise.exercise.equipment == null ||
+                    exercise.exercise.equipment == "body only"
+
+            return when {
+                isAbdominal && isBodyweight -> prefs.restBodyweightAb
+                exercise.exercise.mechanic == "compound" -> prefs.restCompound
+                else -> prefs.restIsolation
+            }
+        }
+
+        fun detectNewPRs(entry: ExerciseLogEntry, performance: ExercisePerformance?): List<NewPR> {
+            val prs = mutableListOf<NewPR>()
+            val maxWeight = performance?.maxWeight ?: 0.0
+            val maxReps = performance?.maxReps ?: 0
+
+            if (entry.weight > maxWeight) {
+                prs.add(NewPR(
+                    exerciseId = entry.exerciseId,
+                    exerciseName = entry.exerciseName,
+                    type = PRType.WEIGHT,
+                    oldValue = maxWeight,
+                    newValue = entry.weight
+                ))
+            }
+            if (entry.reps > maxReps) {
+                prs.add(NewPR(
+                    exerciseId = entry.exerciseId,
+                    exerciseName = entry.exerciseName,
+                    type = PRType.REPS,
+                    oldValue = maxReps.toDouble(),
+                    newValue = entry.reps.toDouble()
+                ))
+            }
+            return prs
+        }
     }
 
     fun skipExercise() {
@@ -146,8 +229,7 @@ class WorkoutViewModel @Inject constructor(
                 currentSets = 3,
                 currentReps = 10,
                 currentWeight = 0.0,
-                previousWeight = null,
-                previousReps = null
+                previousPerformance = null
             )
             loadPreviousPerformance()
         }
@@ -159,13 +241,18 @@ class WorkoutViewModel @Inject constructor(
         if (current != null && state.setsCompleted > 0) {
             val entry = ExerciseLogEntry(
                 exerciseId = current.exercise.id,
+                exerciseName = current.exercise.name,
                 muscleGroup = current.muscleGroup.displayName,
                 sets = state.setsCompleted,
                 reps = state.currentReps,
                 weight = state.currentWeight
             )
+
+            val detectedPRs = detectNewPRs(entry, state.previousPerformance)
+
             _uiState.value = state.copy(
                 logEntries = state.logEntries + entry,
+                newPRs = state.newPRs + detectedPRs,
                 isComplete = true
             )
         } else {
@@ -221,19 +308,16 @@ class WorkoutViewModel @Inject constructor(
     }
 
     private fun startRestTimer() {
-        viewModelScope.launch {
-            val prefs = repository.getUserPreferences()
-            val state = _uiState.value
-            val current = state.exercises.getOrNull(state.currentIndex) ?: return@launch
-            val duration = getRestDuration(current, prefs)
+        val state = _uiState.value
+        val current = state.exercises.getOrNull(state.currentIndex) ?: return
+        val duration = getRestDuration(current, cachedPrefs)
 
-            _uiState.value = state.copy(
-                timerSeconds = duration,
-                timerTotal = duration,
-                timerRunning = true
-            )
-            startCountdown()
-        }
+        _uiState.value = state.copy(
+            timerSeconds = duration,
+            timerTotal = duration,
+            timerRunning = true
+        )
+        startCountdown()
     }
 
     private fun startCountdown() {
@@ -266,19 +350,5 @@ class WorkoutViewModel @Inject constructor(
     private fun stopTimer() {
         timerJob?.cancel()
         _uiState.value = _uiState.value.copy(timerRunning = false, timerSeconds = 0)
-    }
-
-    companion object {
-        fun getRestDuration(exercise: PlannedExercise, prefs: UserPreferencesEntity): Int {
-            val isAbdominal = exercise.exercise.primaryMuscles.contains("abdominals")
-            val isBodyweight = exercise.exercise.equipment == null ||
-                    exercise.exercise.equipment == "body only"
-
-            return when {
-                isAbdominal && isBodyweight -> prefs.restBodyweightAb
-                exercise.exercise.mechanic == "compound" -> prefs.restCompound
-                else -> prefs.restIsolation
-            }
-        }
     }
 }
