@@ -43,6 +43,7 @@ import java.util.Locale
 
 @Composable
 fun HistoryScreen(
+    onNavigateToExerciseDetail: (String) -> Unit = {},
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -86,7 +87,8 @@ fun HistoryScreen(
                             isExpanded = uiState.selectedSessionId == session.sessionId,
                             logs = if (uiState.selectedSessionId == session.sessionId) uiState.selectedSessionLogs else emptyList(),
                             onToggle = { viewModel.selectSession(session.sessionId) },
-                            onDelete = { viewModel.deleteSession(session.sessionId) }
+                            onDelete = { viewModel.deleteSession(session.sessionId) },
+                            onExerciseTap = onNavigateToExerciseDetail
                         )
                     }
                 }
@@ -102,7 +104,8 @@ private fun SessionCard(
     isExpanded: Boolean,
     logs: List<ExerciseLogEntity>,
     onToggle: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onExerciseTap: (String) -> Unit
 ) {
     val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
     val totalExercises = if (isExpanded) logs.size else 0
@@ -167,7 +170,10 @@ private fun SessionCard(
                     Spacer(Modifier.height(8.dp))
 
                     logs.forEach { log ->
-                        ExerciseLogRow(log)
+                        ExerciseLogRow(
+                            log = log,
+                            onTap = { onExerciseTap(log.exerciseId) }
+                        )
                     }
 
                     Spacer(Modifier.height(8.dp))
@@ -191,16 +197,18 @@ private fun SessionCard(
 }
 
 @Composable
-private fun ExerciseLogRow(log: ExerciseLogEntity) {
+private fun ExerciseLogRow(log: ExerciseLogEntity, onTap: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
+            .clickable { onTap() }
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = log.exerciseId.replace("_", " "),
             style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.weight(1f)
         )
         Text(

@@ -42,6 +42,7 @@ import com.astute.body.domain.model.PlannedExercise
 fun HomeScreen(
     onStartWorkout: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToExerciseDetail: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -71,7 +72,8 @@ fun HomeScreen(
                 onStartWorkout = {
                     viewModel.startWorkout()
                     onStartWorkout()
-                }
+                },
+                onExerciseTap = onNavigateToExerciseDetail
             )
         }
     }
@@ -105,7 +107,8 @@ private fun WorkoutPlanContent(
     onSwapExercise: (PlannedExercise) -> Unit,
     onRegenerateGroup: (MuscleGroupAllocation) -> Unit,
     onRegenerateAll: () -> Unit,
-    onStartWorkout: () -> Unit
+    onStartWorkout: () -> Unit,
+    onExerciseTap: (String) -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
         LazyColumn(
@@ -148,7 +151,8 @@ private fun WorkoutPlanContent(
                 items(allocation.exercises, key = { it.exercise.id }) { exercise ->
                     ExerciseCard(
                         exercise = exercise,
-                        onSwap = { onSwapExercise(exercise) }
+                        onSwap = { onSwapExercise(exercise) },
+                        onTap = { onExerciseTap(exercise.exercise.id) }
                     )
                 }
                 item { Spacer(Modifier.height(8.dp)) }
@@ -206,9 +210,11 @@ private fun MuscleGroupHeader(
 @Composable
 private fun ExerciseCard(
     exercise: PlannedExercise,
-    onSwap: () -> Unit
+    onSwap: () -> Unit,
+    onTap: () -> Unit
 ) {
     Card(
+        onClick = onTap,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow

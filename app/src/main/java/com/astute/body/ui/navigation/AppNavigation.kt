@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.astute.body.ui.exercise.ExerciseDetailScreen
 import com.astute.body.ui.history.HistoryScreen
 import com.astute.body.ui.home.HomeScreen
 import com.astute.body.ui.settings.SettingsScreen
@@ -32,6 +33,7 @@ import kotlinx.serialization.Serializable
 @Serializable data object WorkoutRoute
 @Serializable data object HistoryRoute
 @Serializable data object SettingsRoute
+@Serializable data class ExerciseDetailRoute(val exerciseId: String)
 
 data class TopLevelRoute<T : Any>(
     val name: String,
@@ -49,30 +51,37 @@ val topLevelRoutes = listOf(
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val showBottomBar = topLevelRoutes.any { topLevelRoute ->
+        currentDestination?.hierarchy?.any {
+            it.hasRoute(topLevelRoute.route::class)
+        } == true
+    }
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
-                topLevelRoutes.forEach { topLevelRoute ->
-                    NavigationBarItem(
-                        icon = { Icon(topLevelRoute.icon, contentDescription = topLevelRoute.name) },
-                        label = { Text(topLevelRoute.name) },
-                        selected = currentDestination?.hierarchy?.any {
-                            it.hasRoute(topLevelRoute.route::class)
-                        } == true,
-                        onClick = {
-                            navController.navigate(topLevelRoute.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+            if (showBottomBar) {
+                NavigationBar {
+                    topLevelRoutes.forEach { topLevelRoute ->
+                        NavigationBarItem(
+                            icon = { Icon(topLevelRoute.icon, contentDescription = topLevelRoute.name) },
+                            label = { Text(topLevelRoute.name) },
+                            selected = currentDestination?.hierarchy?.any {
+                                it.hasRoute(topLevelRoute.route::class)
+                            } == true,
+                            onClick = {
+                                navController.navigate(topLevelRoute.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -89,6 +98,9 @@ fun AppNavigation() {
                     },
                     onNavigateToSettings = {
                         navController.navigate(SettingsRoute)
+                    },
+                    onNavigateToExerciseDetail = { exerciseId ->
+                        navController.navigate(ExerciseDetailRoute(exerciseId))
                     }
                 )
             }
@@ -104,10 +116,19 @@ fun AppNavigation() {
                 )
             }
             composable<HistoryRoute> {
-                HistoryScreen()
+                HistoryScreen(
+                    onNavigateToExerciseDetail = { exerciseId ->
+                        navController.navigate(ExerciseDetailRoute(exerciseId))
+                    }
+                )
             }
             composable<SettingsRoute> {
                 SettingsScreen()
+            }
+            composable<ExerciseDetailRoute> {
+                ExerciseDetailScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }

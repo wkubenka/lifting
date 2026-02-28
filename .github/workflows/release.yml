@@ -22,6 +22,14 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Download exercise images
+        run: |
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/yuhonas/free-exercise-db.git /tmp/free-exercise-db
+          cd /tmp/free-exercise-db && git sparse-checkout set exercises
+          mkdir -p app/src/main/assets/exercises
+          cd /tmp/free-exercise-db/exercises && find . -type d -mindepth 1 -exec cp -r {} ${{ github.workspace }}/app/src/main/assets/exercises/ \;
+          rm -rf /tmp/free-exercise-db
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
