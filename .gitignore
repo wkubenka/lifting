@@ -13,3 +13,5 @@
 *.ap_
 *.dex
 .claude/settings.local.json
+*.jks
+*.keystore
