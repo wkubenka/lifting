@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.astutebody.app.ui.history.HistoryScreen
 import com.astutebody.app.ui.home.HomeScreen
 import com.astutebody.app.ui.workout.ActiveWorkoutScreen
 import kotlinx.serialization.Serializable
@@ -105,7 +106,7 @@ fun AppNavigation() {
                 )
             }
             composable<HistoryRoute> {
-                PlaceholderScreen("History")
+                HistoryScreen()
             }
             composable<SettingsRoute> {
                 PlaceholderScreen("Settings")
