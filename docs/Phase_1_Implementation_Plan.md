@@ -21,7 +21,7 @@ Phase 1 delivers a working app that generates smart workouts, lets you log them,
 ### Tasks
 
 1. Generate a new Android project using Android Studio's "Empty Compose Activity" template
-   - Package name: `com.astutebody.app`
+   - Package name: `com.astute.body`
    - Min SDK 26, target latest stable SDK
    - Kotlin DSL for Gradle (`build.gradle.kts`)
 
@@ -37,7 +37,7 @@ Phase 1 delivers a working app that generates smart workouts, lets you log them,
 
 4. Create the base package structure:
    ```
-   com.astutebody.app/
+   com.astute.body/
    ├── data/
    │   ├── local/          # Room database, DAOs, entities
    │   ├── repository/     # Repository implementations

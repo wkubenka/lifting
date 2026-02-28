@@ -34,7 +34,7 @@ Top-scoring groups are selected, exercises are allocated proportionally (compoun
 ## Project Structure
 
 ```
-com.astutebody.app/
+com.astute.body/
 ├── data/
 │   ├── local/          # Room database, DAOs, entities, seeder
 │   ├── repository/     # Repository interface + implementation

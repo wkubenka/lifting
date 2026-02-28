@@ -8,17 +8,17 @@ plugins {
 }
 
 android {
-    namespace = "com.astutebody.app"
+    namespace = "com.astute.body"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.astutebody.app"
+        applicationId = "com.astute.body"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "com.astutebody.app.HiltTestRunner"
+        testInstrumentationRunner = "com.astute.body.HiltTestRunner"
     }
 
     buildTypes {
