@@ -29,6 +29,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +45,13 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LifecycleResumeEffect(Unit) {
+        if (uiState.needsSetup) {
+            viewModel.onSetupComplete()
+        }
+        onPauseOrDispose {}
+    }
 
     when {
         uiState.isLoading -> {
@@ -181,6 +189,13 @@ private fun MuscleGroupHeader(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            allocation.warning?.let { warning ->
+                Text(
+                    text = warning,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         }
         IconButton(onClick = onRegenerate) {
             Icon(Icons.Default.Refresh, contentDescription = "Regenerate ${allocation.muscleGroup.displayName}")

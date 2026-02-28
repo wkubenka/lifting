@@ -41,10 +41,15 @@ class WorkoutGenerator @Inject constructor(
                 prefs.availableEquipment,
                 prefs.experienceLevel
             )
-            MuscleGroupAllocation(scored.muscleGroup, scored.score, exercises)
+            val warning = when {
+                exercises.isEmpty() -> "No exercises found for ${scored.muscleGroup.displayName}"
+                exercises.size < count -> "Limited exercises available — showing ${exercises.size} of $count requested"
+                else -> null
+            }
+            MuscleGroupAllocation(scored.muscleGroup, scored.score, exercises, warning)
         }
 
-        return WorkoutPlan(muscleGroupAllocations)
+        return WorkoutPlan(muscleGroupAllocations.filter { it.exercises.isNotEmpty() })
     }
 
     suspend fun swapExercise(plan: WorkoutPlan, exerciseToReplace: PlannedExercise): WorkoutPlan {

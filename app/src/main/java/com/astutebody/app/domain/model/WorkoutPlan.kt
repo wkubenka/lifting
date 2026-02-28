@@ -10,7 +10,8 @@ data class WorkoutPlan(
 data class MuscleGroupAllocation(
     val muscleGroup: MuscleGroup,
     val score: Double,
-    val exercises: List<PlannedExercise>
+    val exercises: List<PlannedExercise>,
+    val warning: String? = null
 )
 
 data class PlannedExercise(
