@@ -3,6 +3,8 @@ package com.astute.body.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.ExerciseLogDao
 import com.astute.body.data.local.dao.PersonalRecordDao
@@ -25,7 +27,7 @@ import com.astute.body.data.local.entity.WorkoutSessionEntity
         UserPreferencesEntity::class,
         RecoveryConfigEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -36,4 +38,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun personalRecordDao(): PersonalRecordDao
     abstract fun userPreferencesDao(): UserPreferencesDao
     abstract fun recoveryConfigDao(): RecoveryConfigDao
+
+    companion object {
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_exercise_logs_exerciseId ON exercise_logs(exerciseId)")
+            }
+        }
+    }
 }

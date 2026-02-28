@@ -3,6 +3,7 @@ package com.astute.body.di
 import android.content.Context
 import androidx.room.Room
 import com.astute.body.data.local.AppDatabase
+import com.astute.body.data.local.AppDatabase.Companion.MIGRATION_1_2
 import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.ExerciseLogDao
 import com.astute.body.data.local.dao.PersonalRecordDao
@@ -27,7 +28,9 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "astutebody.db"
-        ).build()
+        )
+            .addMigrations(MIGRATION_1_2)
+            .build()
     }
 
     @Provides

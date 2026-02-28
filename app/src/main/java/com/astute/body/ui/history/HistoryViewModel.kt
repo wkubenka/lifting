@@ -6,6 +6,7 @@ import com.astute.body.data.local.dao.ExerciseLogDao
 import com.astute.body.data.local.dao.WorkoutSessionDao
 import com.astute.body.data.local.entity.ExerciseLogEntity
 import com.astute.body.data.local.entity.WorkoutSessionEntity
+import com.astute.body.data.repository.PersonalRecordRecalculator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,8 @@ data class HistoryUiState(
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val workoutSessionDao: WorkoutSessionDao,
-    private val exerciseLogDao: ExerciseLogDao
+    private val exerciseLogDao: ExerciseLogDao,
+    private val personalRecordRecalculator: PersonalRecordRecalculator
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HistoryUiState())
@@ -64,7 +66,17 @@ class HistoryViewModel @Inject constructor(
 
     fun deleteSession(sessionId: Long) {
         viewModelScope.launch {
+            // Collect affected exercise IDs before cascade delete removes the logs
+            val logs = exerciseLogDao.getBySessionId(sessionId)
+            val affectedExerciseIds = logs.map { it.exerciseId }.distinct()
+
             workoutSessionDao.deleteById(sessionId)
+
+            // Recalculate PRs for all exercises that had logs in this session
+            for (exerciseId in affectedExerciseIds) {
+                personalRecordRecalculator.recalculateForExercise(exerciseId)
+            }
+
             if (_uiState.value.selectedSessionId == sessionId) {
                 _uiState.value = _uiState.value.copy(
                     selectedSessionId = null,

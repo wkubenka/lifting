@@ -13,4 +13,7 @@ interface PersonalRecordDao {
 
     @Upsert
     suspend fun upsert(record: PersonalRecordEntity)
+
+    @Query("DELETE FROM personal_records WHERE exerciseId = :exerciseId")
+    suspend fun deleteByExerciseId(exerciseId: String)
 }

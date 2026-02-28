@@ -19,6 +19,9 @@ interface ExerciseLogDao {
     """)
     suspend fun getRecentExerciseIds(muscleGroup: String, limit: Int): List<String>
 
+    @Query("SELECT * FROM exercise_logs WHERE exerciseId = :exerciseId ORDER BY logId DESC")
+    suspend fun getByExerciseId(exerciseId: String): List<ExerciseLogEntity>
+
     @Insert
     suspend fun insertAll(logs: List<ExerciseLogEntity>)
 }

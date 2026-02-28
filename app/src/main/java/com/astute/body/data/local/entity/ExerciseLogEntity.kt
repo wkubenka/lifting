@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
         childColumns = ["sessionId"],
         onDelete = ForeignKey.CASCADE
     )],
-    indices = [Index("sessionId")]
+    indices = [Index("sessionId"), Index("exerciseId")]
 )
 data class ExerciseLogEntity(
     @PrimaryKey(autoGenerate = true) val logId: Long = 0,

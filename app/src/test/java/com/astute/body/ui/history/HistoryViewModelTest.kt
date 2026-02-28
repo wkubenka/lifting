@@ -1,9 +1,12 @@
 package com.astute.body.ui.history
 
 import com.astute.body.data.local.dao.ExerciseLogDao
+import com.astute.body.data.local.dao.PersonalRecordDao
 import com.astute.body.data.local.dao.WorkoutSessionDao
 import com.astute.body.data.local.entity.ExerciseLogEntity
+import com.astute.body.data.local.entity.PersonalRecordEntity
 import com.astute.body.data.local.entity.WorkoutSessionEntity
+import com.astute.body.data.repository.PersonalRecordRecalculator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +29,8 @@ class HistoryViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var sessionDao: FakeWorkoutSessionDao
     private lateinit var logDao: FakeExerciseLogDao
+    private lateinit var personalRecordDao: FakePersonalRecordDao
+    private lateinit var recalculator: PersonalRecordRecalculator
     private lateinit var viewModel: HistoryViewModel
 
     @Before
@@ -33,6 +38,8 @@ class HistoryViewModelTest {
         Dispatchers.setMain(testDispatcher)
         sessionDao = FakeWorkoutSessionDao()
         logDao = FakeExerciseLogDao()
+        personalRecordDao = FakePersonalRecordDao()
+        recalculator = PersonalRecordRecalculator(logDao, personalRecordDao, sessionDao)
     }
 
     @After
@@ -47,7 +54,7 @@ class HistoryViewModelTest {
             WorkoutSessionEntity(sessionId = 2, date = 1000L, muscleGroups = listOf("Legs"), completed = true)
         )
 
-        viewModel = HistoryViewModel(sessionDao, logDao)
+        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -58,7 +65,7 @@ class HistoryViewModelTest {
 
     @Test
     fun `empty state when no sessions`() = runTest {
-        viewModel = HistoryViewModel(sessionDao, logDao)
+        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -76,7 +83,7 @@ class HistoryViewModelTest {
             ExerciseLogEntity(logId = 2, sessionId = 1, exerciseId = "Incline_Dumbbell_Press", muscleGroup = "Chest", sets = 3, reps = 12, weight = 50.0)
         )
 
-        viewModel = HistoryViewModel(sessionDao, logDao)
+        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
         advanceUntilIdle()
 
         viewModel.selectSession(1L)
@@ -97,7 +104,7 @@ class HistoryViewModelTest {
             ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 135.0)
         )
 
-        viewModel = HistoryViewModel(sessionDao, logDao)
+        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
         advanceUntilIdle()
 
         viewModel.selectSession(1L)
@@ -116,7 +123,7 @@ class HistoryViewModelTest {
             WorkoutSessionEntity(sessionId = 1, date = 1000L, muscleGroups = listOf("Chest"), completed = true)
         )
 
-        viewModel = HistoryViewModel(sessionDao, logDao)
+        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
         advanceUntilIdle()
 
         viewModel.selectSession(1L)
@@ -165,6 +172,10 @@ private class FakeExerciseLogDao : ExerciseLogDao {
         return logsBySession[sessionId] ?: emptyList()
     }
 
+    override suspend fun getByExerciseId(exerciseId: String): List<ExerciseLogEntity> {
+        return logsBySession.values.flatten().filter { it.exerciseId == exerciseId }
+    }
+
     override suspend fun getRecentExerciseIds(muscleGroup: String, limit: Int): List<String> {
         return emptyList()
     }
@@ -173,5 +184,21 @@ private class FakeExerciseLogDao : ExerciseLogDao {
         logs.groupBy { it.sessionId }.forEach { (sessionId, sessionLogs) ->
             logsBySession[sessionId] = (logsBySession[sessionId] ?: emptyList()) + sessionLogs
         }
+    }
+}
+
+private class FakePersonalRecordDao : PersonalRecordDao {
+    val records = mutableMapOf<String, PersonalRecordEntity>()
+
+    override suspend fun getByExerciseId(exerciseId: String): PersonalRecordEntity? {
+        return records[exerciseId]
+    }
+
+    override suspend fun upsert(record: PersonalRecordEntity) {
+        records[record.exerciseId] = record
+    }
+
+    override suspend fun deleteByExerciseId(exerciseId: String) {
+        records.remove(exerciseId)
     }
 }
