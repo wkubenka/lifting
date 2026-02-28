@@ -1,7 +1,5 @@
 package com.astutebody.app.ui.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FitnessCenter
@@ -15,7 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -27,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.astutebody.app.ui.history.HistoryScreen
 import com.astutebody.app.ui.home.HomeScreen
+import com.astutebody.app.ui.settings.SettingsScreen
 import com.astutebody.app.ui.workout.ActiveWorkoutScreen
 import kotlinx.serialization.Serializable
 
@@ -109,18 +107,8 @@ fun AppNavigation() {
                 HistoryScreen()
             }
             composable<SettingsRoute> {
-                PlaceholderScreen("Settings")
+                SettingsScreen()
             }
         }
-    }
-}
-
-@Composable
-fun PlaceholderScreen(title: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = title)
     }
 }
