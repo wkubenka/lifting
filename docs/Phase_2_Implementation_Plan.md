@@ -23,7 +23,7 @@ Phase 2 builds on existing infrastructure that's already in place:
 - **UserPreferencesEntity** already has `excludedExercises` and `favoritedExercises` fields (unused by generator or UI)
 - **PersonalRecordEntity** already tracks `maxWeight`, `maxReps`, `maxWeightDate`, `maxRepsDate` (only `lastWeight`/`lastReps` displayed)
 - **WorkoutSummary** already calculates total exercises, sets, volume, and duration
-- **Coil** dependency is already configured in `build.gradle.kts`
+- **Coil** dependency is already configured in `build.gradle.kts` (used for loading bundled asset images)
 - **Session delete** already works in History (cascade to exercise logs)
 - **Weight unit** is stored in `UserPreferencesEntity` but currently hardcoded to `"lbs"` in all UI displays
 
@@ -71,28 +71,22 @@ Two infrastructure changes apply across multiple steps and should be built first
 
 ### Tasks
 
-1. **Image strategy**
+1. **Image strategy — bundled assets**
 
-   The `images` field in `ExerciseEntity` contains relative paths like `"Barbell_Curl/0.jpg"`. The free-exercise-db repository hosts these images on GitHub. Load images using Coil from the GitHub raw URL base path:
-   ```
-   https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/
-   ```
-   Concatenate the base URL with the image path from the entity. Show a placeholder `Icon(Icons.Default.FitnessCenter)` on load failure (no network, missing image).
+   The `images` field in `ExerciseEntity` contains relative paths like `"Barbell_Curl/0.jpg"`. Rather than loading images from GitHub at runtime (which adds network dependency, caching complexity, and error handling), bundle all exercise images directly in the APK under `assets/exercises/`.
 
-   **Offline support:** The project overview states the app is "fully offline-capable" (§6), but exercise images require network access. To preserve the offline-first design, configure Coil with a persistent disk cache so images load once over the network and are served from cache on subsequent views. Set up a custom `ImageLoader` in the Hilt module with a disk cache sized at ~100MB:
+   **Setup:** Clone or download the image files from the [free-exercise-db](https://github.com/yuhonas/free-exercise-db) repository's `exercises/` directory into `app/src/main/assets/exercises/`. The directory structure mirrors the relative paths already stored in `ExerciseEntity` (e.g., `assets/exercises/Barbell_Curl/0.jpg`).
+
+   **Loading:** Use Coil's `AsyncImage` with an asset URI scheme:
    ```kotlin
-   @Provides @Singleton
-   fun provideImageLoader(@ApplicationContext context: Context): ImageLoader =
-       ImageLoader.Builder(context)
-           .diskCache {
-               DiskCache.Builder()
-                   .directory(context.cacheDir.resolve("exercise_images"))
-                   .maxSizeBytes(100L * 1024 * 1024)
-                   .build()
-           }
-           .build()
+   AsyncImage(
+       model = "file:///android_asset/exercises/$imagePath",
+       contentDescription = "Image showing how to perform ${exercise.name}"
+   )
    ```
-   This means the first view of an exercise's images requires network, but all subsequent views work offline. The placeholder icon covers the first-ever offline case gracefully.
+   No custom `ImageLoader`, disk cache, or network configuration needed — images load instantly from local assets. Show a placeholder `Icon(Icons.Default.FitnessCenter)` only for exercises that have an empty `images` list.
+
+   **Trade-off:** This increases APK size (~100-250MB depending on image count/size) but the app is sideloaded via GitHub Actions, not distributed through the Play Store, so APK size limits don't apply. The benefit is true offline-first behavior with zero network code, no cache management, and no loading states for images.
 
 2. **Add a navigation route**
 
@@ -110,7 +104,7 @@ Two infrastructure changes apply across multiple steps and should be built first
    - No new DAO methods needed — `getById` already exists
 
 4. **ExerciseDetailScreen composable**
-   - **Image section:** horizontal pager or vertical scroll of exercise images loaded via Coil `AsyncImage`. Show a placeholder `Icon(Icons.Default.FitnessCenter)` on error/loading.
+   - **Image section:** horizontal pager or vertical scroll of exercise images loaded via Coil `AsyncImage` from bundled assets. Show a placeholder `Icon(Icons.Default.FitnessCenter)` when no images are available.
    - **Header:** exercise name, mechanic badge (compound/isolation), force type (push/pull/static), level badge
    - **Equipment:** displayed as a chip (e.g., "Barbell")
    - **Muscles:** primary muscles as filled chips, secondary muscles as outlined chips
@@ -131,7 +125,7 @@ Two infrastructure changes apply across multiple steps and should be built first
   - Loading an invalid ID sets error state
 - **ExerciseDetailScreen UI tests** (instrumented compose test):
   - Given an exercise, the screen renders name, equipment, muscles, and instructions
-  - Image placeholder is shown when image URL fails to load
+  - Image placeholder is shown when exercise has no images
   - Back button navigates back
 
 ### Deliverable
@@ -565,7 +559,7 @@ A muscle group dashboard shows all 7 groups with color-coded freshness indicator
    - Editing the only log for an exercise to 0 weight/reps: treat as delete, prompt user
    - Excluding all exercises for a muscle group: workout generation warns and skips the group
    - Favoriting an exercise that doesn't match current equipment: it's still favorited but won't appear in workouts until equipment matches (no special handling needed)
-   - Network failure loading exercise images: Coil disk cache serves previously-loaded images; placeholder shown for never-loaded images
+   - Exercise images missing from assets (corrupted APK or missing file): placeholder icon shown gracefully
 
 7. **Navigation cleanup**
    - Ensure back stack behaves correctly: Exercise Detail → back returns to previous screen (Home, History, or Muscle Overview depending on origin)

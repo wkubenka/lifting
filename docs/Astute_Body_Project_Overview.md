@@ -331,4 +331,4 @@ Even as a personal-use app, building with accessibility in mind establishes good
 - **Dataset updates:** Should the app check for new exercises from the GitHub repo, or is a bundled-at-build approach sufficient?
 - **Per-set logging:** The current model logs a single sets/reps/weight per exercise. This could expand to per-set granularity (e.g., set 1: 10×135, set 2: 8×155) if needed.
 - **Stretching and cardio:** The dataset includes stretching and plyometric exercises. These could be incorporated into warmups/cooldowns, or excluded from recommendations.
-- **Image hosting:** Exercise images can be loaded from GitHub raw URLs, but this requires network access. Consider bundling a subset or using placeholders for offline mode.
+- ~~**Image hosting:**~~ Resolved — all exercise images from free-exercise-db are bundled in the APK under `assets/exercises/`. APK size limits don't apply since the app is sideloaded via GitHub Actions.
