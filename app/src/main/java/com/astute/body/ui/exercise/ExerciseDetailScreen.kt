@@ -317,7 +317,7 @@ private fun ImagePlaceholder() {
     ) {
         Icon(
             Icons.Default.FitnessCenter,
-            contentDescription = null,
+            contentDescription = "No exercise images available",
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.outlineVariant
         )

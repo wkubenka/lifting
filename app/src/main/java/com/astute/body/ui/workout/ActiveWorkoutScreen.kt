@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +44,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import android.media.AudioManager
+import android.media.RingtoneManager
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -54,6 +64,40 @@ fun ActiveWorkoutScreen(
     viewModel: WorkoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
+
+    LaunchedEffect(uiState.timerFinished) {
+        if (uiState.timerFinished) {
+            // Vibrate
+            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val manager = context.getSystemService(VibratorManager::class.java)
+                manager?.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(Vibrator::class.java)
+            }
+            vibrator?.vibrate(
+                VibrationEffect.createWaveform(longArrayOf(0, 200, 100, 200), -1)
+            )
+
+            // Play notification sound (respect ringer mode)
+            val audioManager = context.getSystemService(AudioManager::class.java)
+            if (audioManager?.ringerMode != AudioManager.RINGER_MODE_SILENT) {
+                val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                RingtoneManager.getRingtone(context, uri)?.play()
+            }
+
+            viewModel.clearTimerFinished()
+        }
+    }
+
+    LaunchedEffect(uiState.newPRDetected) {
+        if (uiState.newPRDetected) {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            viewModel.clearNewPRDetected()
+        }
+    }
 
     when {
         uiState.isSaved -> {
@@ -451,7 +495,7 @@ private fun WorkoutSummary(
             ) {
                 Icon(
                     Icons.Default.EmojiEvents,
-                    contentDescription = null,
+                    contentDescription = "New personal records",
                     tint = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.size(24.dp)
                 )

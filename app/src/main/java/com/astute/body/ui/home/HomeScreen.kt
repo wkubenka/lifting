@@ -163,7 +163,7 @@ private fun WorkoutPlanContent(
                         ) {
                             Icon(
                                 Icons.Default.Warning,
-                                contentDescription = null,
+                                contentDescription = "Warning",
                                 tint = MaterialTheme.colorScheme.onErrorContainer,
                                 modifier = Modifier.size(18.dp)
                             )

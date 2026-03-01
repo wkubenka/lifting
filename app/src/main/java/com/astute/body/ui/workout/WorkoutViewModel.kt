@@ -65,7 +65,9 @@ data class WorkoutUiState(
     val startTimeMillis: Long = System.currentTimeMillis(),
     val previousPerformance: ExercisePerformance? = null,
     val newPRs: List<NewPR> = emptyList(),
-    val weightUnit: String = "lbs"
+    val weightUnit: String = "lbs",
+    val timerFinished: Boolean = false,
+    val newPRDetected: Boolean = false
 )
 
 @HiltViewModel
@@ -164,7 +166,8 @@ class WorkoutViewModel @Inject constructor(
 
             _uiState.value = state.copy(
                 logEntries = state.logEntries + entry,
-                newPRs = state.newPRs + detectedPRs
+                newPRs = state.newPRs + detectedPRs,
+                newPRDetected = detectedPRs.isNotEmpty()
             )
         }
 
@@ -331,9 +334,17 @@ class WorkoutViewModel @Inject constructor(
                 }
             }
             if (_uiState.value.timerRunning) {
-                _uiState.value = _uiState.value.copy(timerRunning = false)
+                _uiState.value = _uiState.value.copy(timerRunning = false, timerFinished = true)
             }
         }
+    }
+
+    fun clearTimerFinished() {
+        _uiState.value = _uiState.value.copy(timerFinished = false)
+    }
+
+    fun clearNewPRDetected() {
+        _uiState.value = _uiState.value.copy(newPRDetected = false)
     }
 
     fun skipTimer() {
