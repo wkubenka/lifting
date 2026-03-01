@@ -122,6 +122,9 @@ fun AppNavigation() {
                                 inclusive = true
                             }
                         }
+                    },
+                    onNavigateToExerciseDetail = { exerciseId ->
+                        navController.navigate(ExerciseDetailRoute(exerciseId))
                     }
                 )
             }

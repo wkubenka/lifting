@@ -53,6 +53,10 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -61,6 +65,7 @@ import java.util.Locale
 @Composable
 fun ActiveWorkoutScreen(
     onWorkoutComplete: () -> Unit,
+    onNavigateToExerciseDetail: (String) -> Unit = {},
     viewModel: WorkoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -124,7 +129,11 @@ fun ActiveWorkoutScreen(
                 onSkipExercise = { viewModel.skipExercise() },
                 onFinishEarly = { viewModel.finishEarly() },
                 onSkipTimer = { viewModel.skipTimer() },
-                onExtendTimer = { viewModel.extendTimer() }
+                onExtendTimer = { viewModel.extendTimer() },
+                onViewExerciseInfo = { onNavigateToExerciseDetail(uiState.exercises[uiState.currentIndex].exercise.id) },
+                onEditSet = { viewModel.startEditingSet(it) },
+                onSaveEditedSet = { viewModel.saveEditedSet() },
+                onCancelEditingSet = { viewModel.cancelEditingSet() }
             )
         }
         else -> {
@@ -146,7 +155,11 @@ private fun ExerciseLoggingScreen(
     onSkipExercise: () -> Unit,
     onFinishEarly: () -> Unit,
     onSkipTimer: () -> Unit,
-    onExtendTimer: () -> Unit
+    onExtendTimer: () -> Unit,
+    onViewExerciseInfo: () -> Unit,
+    onEditSet: (Int) -> Unit,
+    onSaveEditedSet: () -> Unit,
+    onCancelEditingSet: () -> Unit
 ) {
     val current = uiState.exercises[uiState.currentIndex]
     val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
@@ -171,17 +184,32 @@ private fun ExerciseLoggingScreen(
 
         Spacer(Modifier.height(24.dp))
 
-        // Exercise info
-        Text(
-            text = current.exercise.name,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "${current.muscleGroup.displayName} \u2022 ${current.exercise.mechanic ?: ""}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        // Exercise info with info button
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = current.exercise.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "${current.muscleGroup.displayName} \u2022 ${current.exercise.mechanic ?: ""}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            IconButton(onClick = onViewExerciseInfo) {
+                Icon(
+                    Icons.Default.Info,
+                    contentDescription = "View exercise instructions",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
 
         // Previous performance and PR display
         Spacer(Modifier.height(8.dp))
@@ -200,13 +228,60 @@ private fun ExerciseLoggingScreen(
 
         Spacer(Modifier.height(24.dp))
 
-        // Sets completed indicator
-        if (uiState.setsCompleted > 0) {
+        // Logged sets for current exercise
+        if (uiState.currentExerciseSets.isNotEmpty()) {
             Text(
-                text = "Sets completed: ${uiState.setsCompleted}",
+                text = "Sets completed: ${uiState.currentExerciseSets.size}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
+            Spacer(Modifier.height(8.dp))
+            uiState.currentExerciseSets.forEachIndexed { index, set ->
+                if (uiState.editingSetIndex == index) {
+                    // Editing mode for this set
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                        )
+                    ) {
+                        Row(
+                            Modifier.padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text("Set ${index + 1}", style = MaterialTheme.typography.bodyMedium)
+                            StepperRow(
+                                label = "",
+                                value = uiState.currentReps,
+                                onDecrement = { onUpdateReps(uiState.currentReps - 1) },
+                                onIncrement = { onUpdateReps(uiState.currentReps + 1) }
+                            )
+                            IconButton(onClick = onSaveEditedSet, modifier = Modifier.size(32.dp)) {
+                                Icon(Icons.Default.Check, contentDescription = "Save", modifier = Modifier.size(18.dp))
+                            }
+                            IconButton(onClick = onCancelEditingSet, modifier = Modifier.size(32.dp)) {
+                                Icon(Icons.Default.Close, contentDescription = "Cancel", modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    }
+                } else {
+                    // Display mode
+                    Row(
+                        Modifier.fillMaxWidth().padding(vertical = 2.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Set ${index + 1}: ${set.reps} reps @ ${formatWeight(set.weight)} ${uiState.weightUnit}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        IconButton(onClick = { onEditSet(index) }, modifier = Modifier.size(32.dp)) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit set", modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+            }
             Spacer(Modifier.height(16.dp))
         }
 
@@ -220,8 +295,8 @@ private fun ExerciseLoggingScreen(
             )
         }
 
-        // Input fields (hidden during timer)
-        AnimatedVisibility(visible = !uiState.timerRunning) {
+        // Input fields (hidden during timer and editing)
+        AnimatedVisibility(visible = !uiState.timerRunning && uiState.editingSetIndex == null) {
             Column {
                 // Reps stepper
                 StepperRow(

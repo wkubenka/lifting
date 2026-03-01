@@ -20,12 +20,12 @@ class WorkoutGenerator @Inject constructor(
     companion object {
         const val MIN_EXERCISES_PER_GROUP = 2
         const val SCORE_THRESHOLD_RATIO = 0.20
-        const val MAX_GROUPS = 4
+        const val MAX_GROUPS = 3
         const val MIN_GROUPS = 2
         const val FAVORITED_GROUP_BONUS = 0.05
     }
 
-    suspend fun generate(): WorkoutPlan {
+    suspend fun generate(targetGroups: Set<MuscleGroup>? = null): WorkoutPlan {
         val prefs = repository.getUserPreferences()
         val targetSize = prefs.targetWorkoutSize
         val userExcludedIds = prefs.excludedExercises.toSet()
@@ -42,7 +42,13 @@ class WorkoutGenerator @Inject constructor(
             } else scored
         }
 
-        val selectedGroups = selectGroups(boostedScores, targetSize)
+        val selectedGroups = if (targetGroups != null) {
+            // Use user-selected groups, preserving scores for allocation
+            boostedScores.filter { it.muscleGroup in targetGroups }
+                .ifEmpty { boostedScores.take(MIN_GROUPS) }
+        } else {
+            selectGroups(boostedScores, targetSize)
+        }
         val allocations = allocateExercises(selectedGroups, targetSize)
 
         val muscleGroupAllocations = allocations.map { (scored, count) ->
@@ -123,14 +129,14 @@ class WorkoutGenerator @Inject constructor(
         return plan.copy(muscleGroupAllocations = newAllocations)
     }
 
-    suspend fun regenerateAll(plan: WorkoutPlan): WorkoutPlan {
+    suspend fun regenerateAll(plan: WorkoutPlan, targetGroups: Set<MuscleGroup>? = null): WorkoutPlan {
         val lockedGroups = plan.muscleGroupAllocations.filter { allocation ->
             allocation.exercises.any { it.isLocked }
         }
 
-        if (lockedGroups.isEmpty()) return generate()
+        if (lockedGroups.isEmpty()) return generate(targetGroups)
 
-        var newPlan = generate()
+        var newPlan = generate(targetGroups)
         for (lockedAllocation in lockedGroups) {
             val matchingAllocation = newPlan.muscleGroupAllocations.find {
                 it.muscleGroup == lockedAllocation.muscleGroup
@@ -264,20 +270,18 @@ class WorkoutGenerator @Inject constructor(
         val recentIds = repository.getRecentExerciseIds(muscleGroup, 20).toSet()
 
         // Sort candidates: favorited compound first, then favorited non-compound,
-        // then non-favorited compound, then rest. Within each tier, prefer non-recent.
-        val sorted = candidates.sortedWith(
-            compareByDescending<ExerciseEntity> { it.id in favoritedIds }
-                .thenByDescending { it.mechanic == "compound" }
-                .thenBy { it.id in recentIds }
-        )
-
-        val selected = mutableListOf<ExerciseEntity>()
-        selected.add(sorted.first())
-
-        for (exercise in sorted.drop(1)) {
-            if (selected.size >= count) break
-            selected.add(exercise)
+        // then non-favorited compound, then rest. Within each tier, shuffle for variety.
+        val tierKey = { e: ExerciseEntity ->
+            Triple(e.id in favoritedIds, e.mechanic == "compound", e.id !in recentIds)
         }
+        val sorted = candidates
+            .groupBy(tierKey)
+            .toSortedMap(compareByDescending<Triple<Boolean, Boolean, Boolean>> { it.first }
+                .thenByDescending { it.second }
+                .thenByDescending { it.third })
+            .flatMap { (_, exercises) -> exercises.shuffled() }
+
+        val selected = sorted.take(count)
 
         return selected.map { PlannedExercise(it, muscleGroup) }
     }

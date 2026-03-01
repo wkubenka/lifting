@@ -38,6 +38,12 @@ data class ExerciseLogEntry(
     val weight: Double
 )
 
+@Serializable
+data class SetEntry(
+    val reps: Int,
+    val weight: Double
+)
+
 data class ExercisePerformance(
     val lastWeight: Double?,
     val lastReps: Int?,
@@ -67,6 +73,8 @@ data class WorkoutUiState(
     val currentReps: Int = 10,
     val currentWeight: Double = 0.0,
     val setsCompleted: Int = 0,
+    val currentExerciseSets: List<SetEntry> = emptyList(),
+    val editingSetIndex: Int? = null,
     val timerSeconds: Int = 0,
     val timerRunning: Boolean = false,
     val timerTotal: Int = 0,
@@ -201,9 +209,41 @@ class WorkoutViewModel @Inject constructor(
 
     fun logSet() {
         val state = _uiState.value
-        _uiState.value = state.copy(setsCompleted = state.setsCompleted + 1)
+        val newSet = SetEntry(reps = state.currentReps, weight = state.currentWeight)
+        _uiState.value = state.copy(
+            setsCompleted = state.setsCompleted + 1,
+            currentExerciseSets = state.currentExerciseSets + newSet
+        )
         persistState()
         startRestTimer()
+    }
+
+    fun startEditingSet(index: Int) {
+        val sets = _uiState.value.currentExerciseSets
+        if (index !in sets.indices) return
+        val set = sets[index]
+        _uiState.value = _uiState.value.copy(
+            editingSetIndex = index,
+            currentReps = set.reps,
+            currentWeight = set.weight
+        )
+    }
+
+    fun saveEditedSet() {
+        val state = _uiState.value
+        val index = state.editingSetIndex ?: return
+        val sets = state.currentExerciseSets.toMutableList()
+        if (index !in sets.indices) return
+        sets[index] = SetEntry(reps = state.currentReps, weight = state.currentWeight)
+        _uiState.value = state.copy(
+            currentExerciseSets = sets,
+            editingSetIndex = null
+        )
+        persistState()
+    }
+
+    fun cancelEditingSet() {
+        _uiState.value = _uiState.value.copy(editingSetIndex = null)
     }
 
     fun completeExercise() {
@@ -211,14 +251,16 @@ class WorkoutViewModel @Inject constructor(
         if (state.exercises.isEmpty()) return
 
         val current = state.exercises[state.currentIndex]
-        if (state.setsCompleted > 0) {
+        if (state.currentExerciseSets.isNotEmpty()) {
+            val avgReps = state.currentExerciseSets.map { it.reps }.average().toInt()
+            val maxWeight = state.currentExerciseSets.maxOf { it.weight }
             val entry = ExerciseLogEntry(
                 exerciseId = current.exercise.id,
                 exerciseName = current.exercise.name,
                 muscleGroup = current.muscleGroup.displayName,
-                sets = state.setsCompleted,
-                reps = state.currentReps,
-                weight = state.currentWeight
+                sets = state.currentExerciseSets.size,
+                reps = avgReps,
+                weight = maxWeight
             )
 
             val detectedPRs = detectNewPRs(entry, state.previousPerformance)
@@ -288,6 +330,8 @@ class WorkoutViewModel @Inject constructor(
             _uiState.value = state.copy(
                 currentIndex = nextIndex,
                 setsCompleted = 0,
+                currentExerciseSets = emptyList(),
+                editingSetIndex = null,
                 currentSets = 3,
                 currentReps = 10,
                 currentWeight = 0.0,
@@ -301,14 +345,16 @@ class WorkoutViewModel @Inject constructor(
     fun finishEarly() {
         val state = _uiState.value
         val current = state.exercises.getOrNull(state.currentIndex)
-        if (current != null && state.setsCompleted > 0) {
+        if (current != null && state.currentExerciseSets.isNotEmpty()) {
+            val avgReps = state.currentExerciseSets.map { it.reps }.average().toInt()
+            val maxWeight = state.currentExerciseSets.maxOf { it.weight }
             val entry = ExerciseLogEntry(
                 exerciseId = current.exercise.id,
                 exerciseName = current.exercise.name,
                 muscleGroup = current.muscleGroup.displayName,
-                sets = state.setsCompleted,
-                reps = state.currentReps,
-                weight = state.currentWeight
+                sets = state.currentExerciseSets.size,
+                reps = avgReps,
+                weight = maxWeight
             )
 
             val detectedPRs = detectNewPRs(entry, state.previousPerformance)

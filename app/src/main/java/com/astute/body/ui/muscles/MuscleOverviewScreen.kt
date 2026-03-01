@@ -90,7 +90,7 @@ private fun MuscleGroupCard(status: MuscleGroupStatus) {
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow
         )
     ) {
-        Column(Modifier.padding(16.dp)) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -99,12 +99,12 @@ private fun MuscleGroupCard(status: MuscleGroupStatus) {
                 Column {
                     Text(
                         text = status.muscleGroup.displayName,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = classificationLabel(status.muscleGroup.classification),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -118,15 +118,7 @@ private fun MuscleGroupCard(status: MuscleGroupStatus) {
                 )
             }
 
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                text = formatTimeSince(status.hoursSinceLastTrained),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
 
             val targetProgress = (status.recoveryRatio.coerceAtMost(1.0)).toFloat()
             var animTarget by remember { mutableFloatStateOf(0f) }
@@ -144,13 +136,23 @@ private fun MuscleGroupCard(status: MuscleGroupStatus) {
                 trackColor = freshnessColor.copy(alpha = 0.12f)
             )
 
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(4.dp))
 
-            Text(
-                text = "${status.sessionsLast14Days} session${if (status.sessionsLast14Days != 1) "s" else ""} in last 14 days",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = formatTimeSince(status.hoursSinceLastTrained),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "${status.sessionsLast14Days} session${if (status.sessionsLast14Days != 1) "s" else ""} / 14d",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }

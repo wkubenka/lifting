@@ -5,13 +5,13 @@ enum class MuscleGroup(
     val datasetMuscles: Set<String>,
     val classification: Classification
 ) {
+    SHOULDERS("Shoulders", setOf("shoulders", "neck"), Classification.MAJOR_PUSH),
     CHEST("Chest", setOf("chest", "triceps"), Classification.MAJOR_PUSH),
     BACK("Back", setOf("lats", "middle back", "lower back", "traps"), Classification.MAJOR_PULL),
-    SHOULDERS("Shoulders", setOf("shoulders", "neck"), Classification.MAJOR_PUSH),
     ARMS("Arms", setOf("biceps", "triceps", "forearms"), Classification.MINOR),
+    CORE("Core", setOf("abdominals"), Classification.MAJOR),
     LEGS_PUSH("Legs (Push)", setOf("quadriceps", "glutes", "abductors", "calves"), Classification.MAJOR_PUSH),
-    LEGS_PULL("Legs (Pull)", setOf("hamstrings", "adductors", "glutes"), Classification.MAJOR_PULL),
-    CORE("Core", setOf("abdominals"), Classification.MAJOR);
+    LEGS_PULL("Legs (Pull)", setOf("hamstrings", "adductors", "glutes"), Classification.MAJOR_PULL);
 
     enum class Classification { MAJOR_PUSH, MAJOR_PULL, MAJOR, MINOR }
 
