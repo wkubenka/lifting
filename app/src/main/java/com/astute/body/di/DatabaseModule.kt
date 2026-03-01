@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.astute.body.data.local.AppDatabase
 import com.astute.body.data.local.AppDatabase.Companion.MIGRATION_1_2
+import com.astute.body.data.local.AppDatabase.Companion.MIGRATION_2_3
+import com.astute.body.data.local.dao.ActiveWorkoutDao
 import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.ExerciseLogDao
 import com.astute.body.data.local.dao.PersonalRecordDao
@@ -29,7 +31,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "astutebody.db"
         )
-            .addMigrations(MIGRATION_1_2)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
             .build()
     }
 
@@ -50,4 +52,7 @@ object DatabaseModule {
 
     @Provides
     fun provideRecoveryConfigDao(database: AppDatabase): RecoveryConfigDao = database.recoveryConfigDao()
+
+    @Provides
+    fun provideActiveWorkoutDao(database: AppDatabase): ActiveWorkoutDao = database.activeWorkoutDao()
 }

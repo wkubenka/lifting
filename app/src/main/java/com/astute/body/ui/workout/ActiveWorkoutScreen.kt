@@ -107,7 +107,10 @@ fun ActiveWorkoutScreen(
             WorkoutSummary(
                 uiState = uiState,
                 onSave = { viewModel.saveWorkout() },
-                onDiscard = onWorkoutComplete
+                onDiscard = {
+                    viewModel.discardWorkout()
+                    onWorkoutComplete()
+                }
             )
         }
         uiState.exercises.isNotEmpty() -> {

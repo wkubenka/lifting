@@ -21,7 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +43,7 @@ import com.astute.body.domain.model.PlannedExercise
 @Composable
 fun HomeScreen(
     onStartWorkout: () -> Unit,
+    onResumeWorkout: () -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToExerciseDetail: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
@@ -70,13 +71,15 @@ fun HomeScreen(
                 allocations = uiState.workoutPlan!!.muscleGroupAllocations,
                 favoritedIds = uiState.favoritedIds,
                 hasExcludedInPlan = uiState.hasExcludedInPlan,
+                hasActiveWorkout = uiState.hasActiveWorkout,
                 onSwapExercise = { viewModel.swapExercise(it) },
                 onRegenerateGroup = { viewModel.regenerateGroup(it.muscleGroup) },
                 onRegenerateAll = { viewModel.regenerateAll() },
                 onStartWorkout = {
-                    viewModel.startWorkout()
-                    onStartWorkout()
+                    viewModel.startWorkout { onStartWorkout() }
                 },
+                onResumeWorkout = onResumeWorkout,
+                onDiscardActiveWorkout = { viewModel.discardActiveWorkout() },
                 onExerciseTap = onNavigateToExerciseDetail
             )
         }
@@ -110,10 +113,13 @@ private fun WorkoutPlanContent(
     allocations: List<MuscleGroupAllocation>,
     favoritedIds: Set<String>,
     hasExcludedInPlan: Boolean,
+    hasActiveWorkout: Boolean,
     onSwapExercise: (PlannedExercise) -> Unit,
     onRegenerateGroup: (MuscleGroupAllocation) -> Unit,
     onRegenerateAll: () -> Unit,
     onStartWorkout: () -> Unit,
+    onResumeWorkout: () -> Unit,
+    onDiscardActiveWorkout: () -> Unit,
     onExerciseTap: (String) -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
@@ -123,6 +129,35 @@ private fun WorkoutPlanContent(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            if (hasActiveWorkout) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "You have an unfinished workout",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(onClick = onResumeWorkout) {
+                                    Text("Resume")
+                                }
+                                OutlinedButton(onClick = onDiscardActiveWorkout) {
+                                    Text("Discard")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             item {
                 Row(
                     Modifier

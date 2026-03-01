@@ -100,6 +100,9 @@ fun AppNavigation() {
                     onStartWorkout = {
                         navController.navigate(WorkoutRoute)
                     },
+                    onResumeWorkout = {
+                        navController.navigate(WorkoutRoute)
+                    },
                     onNavigateToSettings = {
                         navController.navigate(SettingsRoute)
                     },

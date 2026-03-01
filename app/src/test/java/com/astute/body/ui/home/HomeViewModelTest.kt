@@ -1,6 +1,8 @@
 package com.astute.body.ui.home
 
+import com.astute.body.data.local.dao.ActiveWorkoutDao
 import com.astute.body.data.local.dao.UserPreferencesDao
+import com.astute.body.data.local.entity.ActiveWorkoutEntity
 import com.astute.body.data.local.entity.UserPreferencesEntity
 import com.astute.body.data.repository.UserPreferencesRepository
 import com.astute.body.domain.generator.FakeWorkoutRepository
@@ -8,7 +10,6 @@ import com.astute.body.domain.generator.FakeWorkoutRepository.Companion.makeExer
 import com.astute.body.domain.generator.WorkoutGenerator
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.scoring.MuscleGroupScorer
-import com.astute.body.ui.workout.ActiveWorkoutState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -35,6 +37,7 @@ class HomeViewModelTest {
     private lateinit var generator: WorkoutGenerator
     private lateinit var prefsDao: FakePrefsDao
     private lateinit var prefsRepo: UserPreferencesRepository
+    private lateinit var activeWorkoutDao: FakeActiveWorkoutDao
     private lateinit var viewModel: HomeViewModel
 
     @Before
@@ -45,6 +48,7 @@ class HomeViewModelTest {
         generator = WorkoutGenerator(repository, MuscleGroupScorer())
         prefsDao = FakePrefsDao()
         prefsRepo = UserPreferencesRepository(prefsDao)
+        activeWorkoutDao = FakeActiveWorkoutDao()
     }
 
     @After
@@ -66,7 +70,7 @@ class HomeViewModelTest {
 
     @Test
     fun `init generates workout plan`() = runTest {
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -78,7 +82,7 @@ class HomeViewModelTest {
     @Test
     fun `needsSetup when no equipment configured`() = runTest {
         repository.preferences = UserPreferencesEntity(availableEquipment = emptyList())
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -88,7 +92,7 @@ class HomeViewModelTest {
 
     @Test
     fun `swapExercise updates plan with different exercise`() = runTest {
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
         advanceUntilIdle()
 
         val plan = viewModel.uiState.value.workoutPlan!!
@@ -105,7 +109,7 @@ class HomeViewModelTest {
 
     @Test
     fun `regenerateAll produces a new plan`() = runTest {
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
         advanceUntilIdle()
 
         val originalPlan = viewModel.uiState.value.workoutPlan!!
@@ -121,7 +125,7 @@ class HomeViewModelTest {
     @Test
     fun `onSetupComplete clears needsSetup and generates workout`() = runTest {
         repository.preferences = UserPreferencesEntity(availableEquipment = emptyList())
-        viewModel = HomeViewModel(generator, repository, ActiveWorkoutState(), prefsRepo)
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
         advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.needsSetup)
@@ -137,6 +141,76 @@ class HomeViewModelTest {
         assertFalse(viewModel.uiState.value.needsSetup)
         assertNotNull(viewModel.uiState.value.workoutPlan)
     }
+
+    @Test
+    fun `hasActiveWorkout is true when active workout exists`() = runTest {
+        activeWorkoutDao.entity = ActiveWorkoutEntity(
+            exerciseRefs = "[]",
+            currentIndex = 0,
+            logEntries = "[]",
+            setsCompleted = 0,
+            currentSets = 3,
+            currentReps = 10,
+            currentWeight = 0.0,
+            startedAtMillis = System.currentTimeMillis(),
+            newPRs = "[]"
+        )
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.hasActiveWorkout)
+    }
+
+    @Test
+    fun `hasActiveWorkout is false when no active workout`() = runTest {
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.hasActiveWorkout)
+    }
+
+    @Test
+    fun `discardActiveWorkout clears DB and sets flag false`() = runTest {
+        activeWorkoutDao.entity = ActiveWorkoutEntity(
+            exerciseRefs = "[]",
+            currentIndex = 0,
+            logEntries = "[]",
+            setsCompleted = 0,
+            currentSets = 3,
+            currentReps = 10,
+            currentWeight = 0.0,
+            startedAtMillis = System.currentTimeMillis(),
+            newPRs = "[]"
+        )
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
+        advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.hasActiveWorkout)
+
+        viewModel.discardActiveWorkout()
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.hasActiveWorkout)
+        assertNull(activeWorkoutDao.entity)
+    }
+
+    @Test
+    fun `startWorkout persists initial state to DB`() = runTest {
+        viewModel = HomeViewModel(generator, repository, activeWorkoutDao, prefsRepo)
+        advanceUntilIdle()
+
+        assertNotNull(viewModel.uiState.value.workoutPlan)
+        assertNull(activeWorkoutDao.entity)
+
+        var callbackCalled = false
+        viewModel.startWorkout { callbackCalled = true }
+        advanceUntilIdle()
+
+        assertTrue(callbackCalled)
+        assertNotNull(activeWorkoutDao.entity)
+        assertEquals(0, activeWorkoutDao.entity!!.currentIndex)
+        assertEquals(0, activeWorkoutDao.entity!!.setsCompleted)
+    }
 }
 
 private class FakePrefsDao : UserPreferencesDao {
@@ -148,5 +222,19 @@ private class FakePrefsDao : UserPreferencesDao {
 
     override suspend fun upsert(preferences: UserPreferencesEntity) {
         prefs = preferences
+    }
+}
+
+private class FakeActiveWorkoutDao : ActiveWorkoutDao {
+    var entity: ActiveWorkoutEntity? = null
+
+    override suspend fun get(): ActiveWorkoutEntity? = entity
+
+    override suspend fun upsert(entity: ActiveWorkoutEntity) {
+        this.entity = entity
+    }
+
+    override suspend fun clear() {
+        entity = null
     }
 }

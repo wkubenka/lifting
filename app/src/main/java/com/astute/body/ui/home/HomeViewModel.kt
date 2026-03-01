@@ -2,18 +2,24 @@ package com.astute.body.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.astute.body.data.local.dao.ActiveWorkoutDao
+import com.astute.body.data.local.entity.ActiveWorkoutEntity
 import com.astute.body.data.repository.IWorkoutRepository
 import com.astute.body.data.repository.UserPreferencesRepository
 import com.astute.body.domain.generator.WorkoutGenerator
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.model.PlannedExercise
 import com.astute.body.domain.model.WorkoutPlan
-import com.astute.body.ui.workout.ActiveWorkoutState
+import com.astute.body.ui.workout.ExerciseLogEntry
+import com.astute.body.ui.workout.NewPR
+import com.astute.body.ui.workout.PlannedExerciseRef
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 data class HomeUiState(
@@ -21,22 +27,29 @@ data class HomeUiState(
     val isLoading: Boolean = true,
     val needsSetup: Boolean = false,
     val favoritedIds: Set<String> = emptySet(),
-    val hasExcludedInPlan: Boolean = false
+    val hasExcludedInPlan: Boolean = false,
+    val hasActiveWorkout: Boolean = false
 )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val generator: WorkoutGenerator,
     private val repository: IWorkoutRepository,
-    private val activeWorkoutState: ActiveWorkoutState,
+    private val activeWorkoutDao: ActiveWorkoutDao,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    private val json = Json { ignoreUnknownKeys = true }
+
     init {
         generateWorkout()
+        viewModelScope.launch {
+            val active = activeWorkoutDao.get()
+            _uiState.value = _uiState.value.copy(hasActiveWorkout = active != null)
+        }
         viewModelScope.launch {
             userPreferencesRepository.preferences.collect { prefs ->
                 val favoritedIds = prefs.favoritedExercises.toSet()
@@ -64,7 +77,7 @@ class HomeViewModel @Inject constructor(
             }
 
             val plan = generator.generate()
-            _uiState.value = HomeUiState(workoutPlan = plan, isLoading = false)
+            _uiState.value = _uiState.value.copy(workoutPlan = plan, isLoading = false)
         }
     }
 
@@ -93,8 +106,36 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun startWorkout() {
-        activeWorkoutState.workoutPlan = _uiState.value.workoutPlan
+    fun startWorkout(onReady: () -> Unit) {
+        val plan = _uiState.value.workoutPlan ?: return
+        val allExercises = plan.muscleGroupAllocations.flatMap { it.exercises }
+        val refs = allExercises.map {
+            PlannedExerciseRef(it.exercise.id, it.muscleGroup.displayName)
+        }
+
+        viewModelScope.launch {
+            activeWorkoutDao.upsert(
+                ActiveWorkoutEntity(
+                    exerciseRefs = json.encodeToString(refs),
+                    currentIndex = 0,
+                    logEntries = json.encodeToString(emptyList<ExerciseLogEntry>()),
+                    setsCompleted = 0,
+                    currentSets = 3,
+                    currentReps = 10,
+                    currentWeight = 0.0,
+                    startedAtMillis = System.currentTimeMillis(),
+                    newPRs = json.encodeToString(emptyList<NewPR>())
+                )
+            )
+            onReady()
+        }
+    }
+
+    fun discardActiveWorkout() {
+        viewModelScope.launch {
+            activeWorkoutDao.clear()
+            _uiState.value = _uiState.value.copy(hasActiveWorkout = false)
+        }
     }
 
     fun onSetupComplete() {

@@ -5,12 +5,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.astute.body.data.local.dao.ActiveWorkoutDao
 import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.ExerciseLogDao
 import com.astute.body.data.local.dao.PersonalRecordDao
 import com.astute.body.data.local.dao.RecoveryConfigDao
 import com.astute.body.data.local.dao.UserPreferencesDao
 import com.astute.body.data.local.dao.WorkoutSessionDao
+import com.astute.body.data.local.entity.ActiveWorkoutEntity
 import com.astute.body.data.local.entity.ExerciseEntity
 import com.astute.body.data.local.entity.ExerciseLogEntity
 import com.astute.body.data.local.entity.PersonalRecordEntity
@@ -25,9 +27,10 @@ import com.astute.body.data.local.entity.WorkoutSessionEntity
         ExerciseLogEntity::class,
         PersonalRecordEntity::class,
         UserPreferencesEntity::class,
-        RecoveryConfigEntity::class
+        RecoveryConfigEntity::class,
+        ActiveWorkoutEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -38,11 +41,31 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun personalRecordDao(): PersonalRecordDao
     abstract fun userPreferencesDao(): UserPreferencesDao
     abstract fun recoveryConfigDao(): RecoveryConfigDao
+    abstract fun activeWorkoutDao(): ActiveWorkoutDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_exercise_logs_exerciseId ON exercise_logs(exerciseId)")
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS active_workout (
+                        id INTEGER NOT NULL PRIMARY KEY,
+                        exerciseRefs TEXT NOT NULL,
+                        currentIndex INTEGER NOT NULL,
+                        logEntries TEXT NOT NULL,
+                        setsCompleted INTEGER NOT NULL,
+                        currentSets INTEGER NOT NULL,
+                        currentReps INTEGER NOT NULL,
+                        currentWeight REAL NOT NULL,
+                        startedAtMillis INTEGER NOT NULL,
+                        newPRs TEXT NOT NULL
+                    )
+                """.trimIndent())
             }
         }
     }
