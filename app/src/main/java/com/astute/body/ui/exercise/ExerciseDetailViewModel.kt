@@ -3,12 +3,10 @@ package com.astute.body.ui.exercise
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.UserPreferencesDao
 import com.astute.body.data.local.entity.ExerciseEntity
 import com.astute.body.data.repository.UserPreferencesRepository
-import com.astute.body.ui.navigation.ExerciseDetailRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,8 +36,7 @@ class ExerciseDetailViewModel @Inject constructor(
     private val exerciseId: String
 
     init {
-        val route = savedStateHandle.toRoute<ExerciseDetailRoute>()
-        exerciseId = route.exerciseId
+        exerciseId = checkNotNull(savedStateHandle.get<String>("exerciseId"))
         loadExercise(exerciseId)
         viewModelScope.launch {
             userPreferencesRepository.preferences.collect { prefs ->

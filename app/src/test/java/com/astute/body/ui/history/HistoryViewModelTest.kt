@@ -278,6 +278,51 @@ class HistoryViewModelTest {
     }
 
     @Test
+    fun `deleteSession recalculates PRs for all affected exercises`() = runTest {
+        // Session 1 has the PR-holding logs (higher values)
+        sessionDao.sessions.value = listOf(
+            WorkoutSessionEntity(sessionId = 1, date = 1000L, muscleGroups = listOf("Chest", "Legs"), completed = true),
+            WorkoutSessionEntity(sessionId = 2, date = 2000L, muscleGroups = listOf("Chest", "Legs"), completed = true)
+        )
+        logDao.logsBySession[1L] = listOf(
+            ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 185.0),
+            ExerciseLogEntity(logId = 2, sessionId = 1, exerciseId = "Squat", muscleGroup = "Legs", sets = 3, reps = 8, weight = 315.0)
+        )
+        // Session 2 has lower values
+        logDao.logsBySession[2L] = listOf(
+            ExerciseLogEntity(logId = 3, sessionId = 2, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 8, weight = 135.0),
+            ExerciseLogEntity(logId = 4, sessionId = 2, exerciseId = "Squat", muscleGroup = "Legs", sets = 3, reps = 6, weight = 225.0)
+        )
+        personalRecordDao.records["Bench_Press"] = PersonalRecordEntity(
+            exerciseId = "Bench_Press", maxWeight = 185.0, maxReps = 10
+        )
+        personalRecordDao.records["Squat"] = PersonalRecordEntity(
+            exerciseId = "Squat", maxWeight = 315.0, maxReps = 8
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.selectSession(1L)
+        advanceUntilIdle()
+
+        // Delete the session with the PR-holding logs
+        viewModel.deleteSession(1L)
+        advanceUntilIdle()
+
+        // PRs should be recalculated to session 2's lower values
+        val benchPR = personalRecordDao.records["Bench_Press"]
+        assertNotNull(benchPR)
+        assertEquals(135.0, benchPR!!.maxWeight, 0.01)
+        assertEquals(8, benchPR.maxReps)
+
+        val squatPR = personalRecordDao.records["Squat"]
+        assertNotNull(squatPR)
+        assertEquals(225.0, squatPR!!.maxWeight, 0.01)
+        assertEquals(6, squatPR.maxReps)
+    }
+
+    @Test
     fun `startEditingLog and cancelEdit manage editing state correctly`() = runTest {
         val log = ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 135.0)
 
