@@ -4,6 +4,7 @@ import com.astute.body.data.local.entity.UserPreferencesEntity
 import com.astute.body.domain.generator.FakeWorkoutRepository.Companion.makeExercise
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.model.PlannedExercise
+import com.astute.body.ui.home.getRestDuration
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -21,7 +22,7 @@ class RestTimerTest {
             exercise = makeExercise("Bench_Press", listOf("chest"), mechanic = "compound", equipment = "barbell"),
             muscleGroup = MuscleGroup.CHEST
         )
-        assertEquals(60, WorkoutViewModel.getRestDuration(exercise, defaultPrefs))
+        assertEquals(60, getRestDuration(exercise, defaultPrefs))
     }
 
     @Test
@@ -30,7 +31,7 @@ class RestTimerTest {
             exercise = makeExercise("Bicep_Curl", listOf("biceps"), mechanic = "isolation", equipment = "dumbbell"),
             muscleGroup = MuscleGroup.ARMS
         )
-        assertEquals(45, WorkoutViewModel.getRestDuration(exercise, defaultPrefs))
+        assertEquals(45, getRestDuration(exercise, defaultPrefs))
     }
 
     @Test
@@ -39,7 +40,7 @@ class RestTimerTest {
             exercise = makeExercise("Crunch", listOf("abdominals"), mechanic = "isolation", equipment = "body only"),
             muscleGroup = MuscleGroup.CORE
         )
-        assertEquals(30, WorkoutViewModel.getRestDuration(exercise, defaultPrefs))
+        assertEquals(30, getRestDuration(exercise, defaultPrefs))
     }
 
     @Test
@@ -48,7 +49,7 @@ class RestTimerTest {
             exercise = makeExercise("Cable_Crunch", listOf("abdominals"), mechanic = "isolation", equipment = "cable"),
             muscleGroup = MuscleGroup.CORE
         )
-        assertEquals(45, WorkoutViewModel.getRestDuration(exercise, defaultPrefs))
+        assertEquals(45, getRestDuration(exercise, defaultPrefs))
     }
 
     @Test
@@ -57,7 +58,7 @@ class RestTimerTest {
             exercise = makeExercise("Plank", listOf("abdominals"), mechanic = null, equipment = null),
             muscleGroup = MuscleGroup.CORE
         )
-        assertEquals(30, WorkoutViewModel.getRestDuration(exercise, defaultPrefs))
+        assertEquals(30, getRestDuration(exercise, defaultPrefs))
     }
 
     @Test
@@ -67,6 +68,6 @@ class RestTimerTest {
             exercise = makeExercise("Squat", listOf("quadriceps"), mechanic = "compound"),
             muscleGroup = MuscleGroup.LEGS_PUSH
         )
-        assertEquals(90, WorkoutViewModel.getRestDuration(compound, customPrefs))
+        assertEquals(90, getRestDuration(compound, customPrefs))
     }
 }

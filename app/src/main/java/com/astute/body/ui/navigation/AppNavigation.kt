@@ -28,11 +28,9 @@ import com.astute.body.ui.history.HistoryScreen
 import com.astute.body.ui.home.HomeScreen
 import com.astute.body.ui.muscles.MuscleOverviewScreen
 import com.astute.body.ui.settings.SettingsScreen
-import com.astute.body.ui.workout.ActiveWorkoutScreen
 import kotlinx.serialization.Serializable
 
 @Serializable data object HomeRoute
-@Serializable data object WorkoutRoute
 @Serializable data object HistoryRoute
 @Serializable data object SettingsRoute
 @Serializable data class ExerciseDetailRoute(val exerciseId: String)
@@ -97,12 +95,6 @@ fun AppNavigation() {
         ) {
             composable<HomeRoute> {
                 HomeScreen(
-                    onStartWorkout = {
-                        navController.navigate(WorkoutRoute)
-                    },
-                    onResumeWorkout = {
-                        navController.navigate(WorkoutRoute)
-                    },
                     onNavigateToSettings = {
                         navController.navigate(SettingsRoute)
                     },
@@ -113,20 +105,6 @@ fun AppNavigation() {
             }
             composable<MusclesRoute> {
                 MuscleOverviewScreen()
-            }
-            composable<WorkoutRoute> {
-                ActiveWorkoutScreen(
-                    onWorkoutComplete = {
-                        navController.navigate(HomeRoute) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                inclusive = true
-                            }
-                        }
-                    },
-                    onNavigateToExerciseDetail = { exerciseId ->
-                        navController.navigate(ExerciseDetailRoute(exerciseId))
-                    }
-                )
             }
             composable<HistoryRoute> {
                 HistoryScreen(

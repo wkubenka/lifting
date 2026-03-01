@@ -14,5 +14,6 @@ data class ActiveWorkoutEntity(
     val currentReps: Int,
     val currentWeight: Double,
     val startedAtMillis: Long,
-    val newPRs: String
+    val newPRs: String,
+    val currentExerciseSets: String = "[]"
 )

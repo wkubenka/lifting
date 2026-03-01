@@ -30,7 +30,7 @@ import com.astute.body.data.local.entity.WorkoutSessionEntity
         RecoveryConfigEntity::class,
         ActiveWorkoutEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -66,6 +66,12 @@ abstract class AppDatabase : RoomDatabase() {
                         newPRs TEXT NOT NULL
                     )
                 """.trimIndent())
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE active_workout ADD COLUMN currentExerciseSets TEXT NOT NULL DEFAULT '[]'")
             }
         }
     }
