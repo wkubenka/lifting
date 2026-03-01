@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -196,15 +197,25 @@ private fun WorkoutPlanContent(
 
             // Muscle group filter chips
             item {
+                val todaysMuscleGroups = exercises.map { it.muscleGroup }.toSet()
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     MuscleGroup.entries.forEach { group ->
+                        val isInTodaysWorkout = group in todaysMuscleGroups
                         FilterChip(
                             selected = group in selectedMuscleGroups,
                             onClick = { onToggleMuscleGroup(group) },
-                            label = { Text(group.displayName, style = MaterialTheme.typography.labelSmall) }
+                            label = { Text(group.displayName, style = MaterialTheme.typography.labelSmall) },
+                            colors = if (isInTodaysWorkout) {
+                                FilterChipDefaults.filterChipColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    labelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            } else {
+                                FilterChipDefaults.filterChipColors()
+                            }
                         )
                     }
                     if (selectedMuscleGroups.isNotEmpty()) {
