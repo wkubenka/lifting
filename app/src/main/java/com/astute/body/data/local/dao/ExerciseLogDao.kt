@@ -3,6 +3,7 @@ package com.astute.body.data.local.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.astute.body.data.local.entity.ExerciseLogEntity
 
 @Dao
@@ -24,4 +25,10 @@ interface ExerciseLogDao {
 
     @Insert
     suspend fun insertAll(logs: List<ExerciseLogEntity>)
+
+    @Update
+    suspend fun update(log: ExerciseLogEntity)
+
+    @Query("DELETE FROM exercise_logs WHERE logId = :logId")
+    suspend fun deleteById(logId: Long)
 }

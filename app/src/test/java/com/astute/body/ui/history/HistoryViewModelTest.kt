@@ -2,11 +2,14 @@ package com.astute.body.ui.history
 
 import com.astute.body.data.local.dao.ExerciseLogDao
 import com.astute.body.data.local.dao.PersonalRecordDao
+import com.astute.body.data.local.dao.UserPreferencesDao
 import com.astute.body.data.local.dao.WorkoutSessionDao
 import com.astute.body.data.local.entity.ExerciseLogEntity
 import com.astute.body.data.local.entity.PersonalRecordEntity
+import com.astute.body.data.local.entity.UserPreferencesEntity
 import com.astute.body.data.local.entity.WorkoutSessionEntity
 import com.astute.body.data.repository.PersonalRecordRecalculator
+import com.astute.body.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -31,6 +35,8 @@ class HistoryViewModelTest {
     private lateinit var logDao: FakeExerciseLogDao
     private lateinit var personalRecordDao: FakePersonalRecordDao
     private lateinit var recalculator: PersonalRecordRecalculator
+    private lateinit var prefsDao: FakePrefsDao
+    private lateinit var prefsRepo: UserPreferencesRepository
     private lateinit var viewModel: HistoryViewModel
 
     @Before
@@ -40,12 +46,16 @@ class HistoryViewModelTest {
         logDao = FakeExerciseLogDao()
         personalRecordDao = FakePersonalRecordDao()
         recalculator = PersonalRecordRecalculator(logDao, personalRecordDao, sessionDao)
+        prefsDao = FakePrefsDao()
+        prefsRepo = UserPreferencesRepository(prefsDao)
     }
 
     @After
     fun teardown() {
         Dispatchers.resetMain()
     }
+
+    private fun createViewModel() = HistoryViewModel(sessionDao, logDao, recalculator, prefsRepo)
 
     @Test
     fun `sessions are loaded on init`() = runTest {
@@ -54,7 +64,7 @@ class HistoryViewModelTest {
             WorkoutSessionEntity(sessionId = 2, date = 1000L, muscleGroups = listOf("Legs"), completed = true)
         )
 
-        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -65,7 +75,7 @@ class HistoryViewModelTest {
 
     @Test
     fun `empty state when no sessions`() = runTest {
-        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -83,7 +93,7 @@ class HistoryViewModelTest {
             ExerciseLogEntity(logId = 2, sessionId = 1, exerciseId = "Incline_Dumbbell_Press", muscleGroup = "Chest", sets = 3, reps = 12, weight = 50.0)
         )
 
-        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.selectSession(1L)
@@ -104,7 +114,7 @@ class HistoryViewModelTest {
             ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 135.0)
         )
 
-        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.selectSession(1L)
@@ -123,7 +133,7 @@ class HistoryViewModelTest {
             WorkoutSessionEntity(sessionId = 1, date = 1000L, muscleGroups = listOf("Chest"), completed = true)
         )
 
-        viewModel = HistoryViewModel(sessionDao, logDao, recalculator)
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.selectSession(1L)
@@ -136,6 +146,161 @@ class HistoryViewModelTest {
         assertNull(state.selectedSessionId)
         assertTrue(state.selectedSessionLogs.isEmpty())
         assertTrue(sessionDao.deletedIds.contains(1L))
+    }
+
+    @Test
+    fun `updateLog persists changes and refreshes displayed logs`() = runTest {
+        sessionDao.sessions.value = listOf(
+            WorkoutSessionEntity(sessionId = 1, date = 1000L, muscleGroups = listOf("Chest"), completed = true)
+        )
+        val originalLog = ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 135.0)
+        logDao.logsBySession[1L] = listOf(originalLog)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.selectSession(1L)
+        advanceUntilIdle()
+
+        viewModel.updateLog(originalLog, sets = 4, reps = 8, weight = 155.0)
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(1, state.selectedSessionLogs.size)
+        val updatedLog = state.selectedSessionLogs[0]
+        assertEquals(4, updatedLog.sets)
+        assertEquals(8, updatedLog.reps)
+        assertEquals(155.0, updatedLog.weight, 0.01)
+        assertNull(state.editingLog)
+    }
+
+    @Test
+    fun `updateLog triggers PR recalculation`() = runTest {
+        sessionDao.sessions.value = listOf(
+            WorkoutSessionEntity(sessionId = 1, date = 1000L, muscleGroups = listOf("Chest"), completed = true)
+        )
+        val originalLog = ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 135.0)
+        logDao.logsBySession[1L] = listOf(originalLog)
+        personalRecordDao.records["Bench_Press"] = PersonalRecordEntity(
+            exerciseId = "Bench_Press", maxWeight = 135.0, maxReps = 10
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.selectSession(1L)
+        advanceUntilIdle()
+
+        viewModel.updateLog(originalLog, sets = 3, reps = 10, weight = 185.0)
+        advanceUntilIdle()
+
+        val pr = personalRecordDao.records["Bench_Press"]
+        assertNotNull(pr)
+        assertEquals(185.0, pr!!.maxWeight, 0.01)
+    }
+
+    @Test
+    fun `deleteLog removes log and refreshes displayed logs`() = runTest {
+        sessionDao.sessions.value = listOf(
+            WorkoutSessionEntity(sessionId = 1, date = 1000L, muscleGroups = listOf("Chest"), completed = true)
+        )
+        logDao.logsBySession[1L] = listOf(
+            ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 135.0),
+            ExerciseLogEntity(logId = 2, sessionId = 1, exerciseId = "Fly", muscleGroup = "Chest", sets = 3, reps = 12, weight = 30.0)
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.selectSession(1L)
+        advanceUntilIdle()
+
+        viewModel.deleteLog(1L, "Bench_Press")
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(1, state.selectedSessionLogs.size)
+        assertEquals("Fly", state.selectedSessionLogs[0].exerciseId)
+        assertEquals(1L, state.selectedSessionId)
+    }
+
+    @Test
+    fun `deleteLog triggers PR recalculation`() = runTest {
+        sessionDao.sessions.value = listOf(
+            WorkoutSessionEntity(sessionId = 1, date = 1000L, muscleGroups = listOf("Chest"), completed = true)
+        )
+        logDao.logsBySession[1L] = listOf(
+            ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 185.0),
+            ExerciseLogEntity(logId = 2, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 8, weight = 135.0)
+        )
+        personalRecordDao.records["Bench_Press"] = PersonalRecordEntity(
+            exerciseId = "Bench_Press", maxWeight = 185.0, maxReps = 10
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.selectSession(1L)
+        advanceUntilIdle()
+
+        // Delete the PR-holding log
+        viewModel.deleteLog(1L, "Bench_Press")
+        advanceUntilIdle()
+
+        val pr = personalRecordDao.records["Bench_Press"]
+        assertNotNull(pr)
+        assertEquals(135.0, pr!!.maxWeight, 0.01)
+        assertEquals(8, pr.maxReps)
+    }
+
+    @Test
+    fun `deleteLog removes empty session when last log deleted`() = runTest {
+        sessionDao.sessions.value = listOf(
+            WorkoutSessionEntity(sessionId = 1, date = 1000L, muscleGroups = listOf("Chest"), completed = true)
+        )
+        logDao.logsBySession[1L] = listOf(
+            ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 135.0)
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.selectSession(1L)
+        advanceUntilIdle()
+
+        viewModel.deleteLog(1L, "Bench_Press")
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertNull(state.selectedSessionId)
+        assertTrue(state.selectedSessionLogs.isEmpty())
+        assertTrue(sessionDao.deletedIds.contains(1L))
+    }
+
+    @Test
+    fun `startEditingLog and cancelEdit manage editing state correctly`() = runTest {
+        val log = ExerciseLogEntity(logId = 1, sessionId = 1, exerciseId = "Bench_Press", muscleGroup = "Chest", sets = 3, reps = 10, weight = 135.0)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.startEditingLog(log)
+        assertEquals(log, viewModel.uiState.value.editingLog)
+
+        viewModel.cancelEdit()
+        assertNull(viewModel.uiState.value.editingLog)
+    }
+}
+
+private class FakePrefsDao : UserPreferencesDao {
+    var prefs: UserPreferencesEntity? = UserPreferencesEntity()
+
+    override fun get(): Flow<UserPreferencesEntity?> = MutableStateFlow(prefs)
+
+    override suspend fun getOnce(): UserPreferencesEntity? = prefs
+
+    override suspend fun upsert(preferences: UserPreferencesEntity) {
+        prefs = preferences
     }
 }
 
@@ -183,6 +348,21 @@ private class FakeExerciseLogDao : ExerciseLogDao {
     override suspend fun insertAll(logs: List<ExerciseLogEntity>) {
         logs.groupBy { it.sessionId }.forEach { (sessionId, sessionLogs) ->
             logsBySession[sessionId] = (logsBySession[sessionId] ?: emptyList()) + sessionLogs
+        }
+    }
+
+    override suspend fun update(log: ExerciseLogEntity) {
+        logsBySession.forEach { (sessionId, logs) ->
+            val index = logs.indexOfFirst { it.logId == log.logId }
+            if (index >= 0) {
+                logsBySession[sessionId] = logs.toMutableList().apply { set(index, log) }
+            }
+        }
+    }
+
+    override suspend fun deleteById(logId: Long) {
+        logsBySession.forEach { (sessionId, logs) ->
+            logsBySession[sessionId] = logs.filter { it.logId != logId }
         }
     }
 }
