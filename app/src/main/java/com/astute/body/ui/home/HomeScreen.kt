@@ -718,23 +718,40 @@ private fun CurrentExerciseCard(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainer
                             )
                         ) {
-                            Row(
-                                Modifier.padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Text("Set ${index + 1}", style = MaterialTheme.typography.bodyMedium)
-                                StepperRow(
-                                    label = "",
-                                    value = uiState.currentReps,
-                                    onDecrement = { onUpdateReps(uiState.currentReps - 1) },
-                                    onIncrement = { onUpdateReps(uiState.currentReps + 1) }
-                                )
-                                IconButton(onClick = onSaveEditedSet, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Check, contentDescription = "Save", modifier = Modifier.size(18.dp))
+                            Column(Modifier.padding(8.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text("Set ${index + 1}", style = MaterialTheme.typography.bodyMedium)
+                                    Spacer(Modifier.weight(1f))
+                                    IconButton(onClick = onSaveEditedSet, modifier = Modifier.size(32.dp)) {
+                                        Icon(Icons.Default.Check, contentDescription = "Save", modifier = Modifier.size(18.dp))
+                                    }
+                                    IconButton(onClick = onCancelEditingSet, modifier = Modifier.size(32.dp)) {
+                                        Icon(Icons.Default.Close, contentDescription = "Cancel", modifier = Modifier.size(18.dp))
+                                    }
                                 }
-                                IconButton(onClick = onCancelEditingSet, modifier = Modifier.size(32.dp)) {
-                                    Icon(Icons.Default.Close, contentDescription = "Cancel", modifier = Modifier.size(18.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    StepperRow(
+                                        label = "Reps",
+                                        value = uiState.currentReps,
+                                        onDecrement = { onUpdateReps(uiState.currentReps - 1) },
+                                        onIncrement = { onUpdateReps(uiState.currentReps + 1) }
+                                    )
+                                    OutlinedTextField(
+                                        value = if (uiState.currentWeight == 0.0) "" else uiState.currentWeight.toBigDecimal().stripTrailingZeros().toPlainString(),
+                                        onValueChange = { text ->
+                                            onUpdateWeight(text.toDoubleOrNull() ?: 0.0)
+                                        },
+                                        label = { Text(uiState.weightUnit) },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                        modifier = Modifier.width(100.dp),
+                                        singleLine = true
+                                    )
                                 }
                             }
                         }
