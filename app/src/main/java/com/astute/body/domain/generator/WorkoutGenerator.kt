@@ -193,6 +193,14 @@ class WorkoutGenerator @Inject constructor(
         for (candidate in sorted) {
             if (selected.size >= MAX_GROUPS) break
 
+            // Hard constraint: never select both leg groups
+            val isLeg = candidate.muscleGroup == MuscleGroup.LEGS_PUSH ||
+                    candidate.muscleGroup == MuscleGroup.LEGS_PULL
+            val hasLeg = selected.any {
+                it.muscleGroup == MuscleGroup.LEGS_PUSH || it.muscleGroup == MuscleGroup.LEGS_PULL
+            }
+            if (isLeg && hasLeg) continue
+
             val adjustedScore = scorer.applyOverlapPenalty(
                 candidate.score,
                 candidate.muscleGroup,
@@ -269,21 +277,31 @@ class WorkoutGenerator @Inject constructor(
 
         val recentIds = repository.getRecentExerciseIds(muscleGroup, 20).toSet()
 
-        // Sort candidates: favorited compound first, then favorited non-compound,
-        // then non-favorited compound, then rest. Within each tier, shuffle for variety.
-        val tierKey = { e: ExerciseEntity ->
-            Triple(e.id in favoritedIds, e.mechanic == "compound", e.id !in recentIds)
+        // Phase 1: First exercise — prefer compound, then favorited, then not-recent
+        val compounds = candidates.filter { it.mechanic == "compound" }
+        val firstExercise = if (compounds.isNotEmpty()) {
+            compounds
+                .groupBy { Pair(it.id in favoritedIds, it.id !in recentIds) }
+                .toSortedMap(compareByDescending<Pair<Boolean, Boolean>> { it.first }
+                    .thenByDescending { it.second })
+                .flatMap { (_, exercises) -> exercises.shuffled() }
+                .first()
+        } else {
+            candidates.shuffled().first()
         }
-        val sorted = candidates
-            .groupBy(tierKey)
-            .toSortedMap(compareByDescending<Triple<Boolean, Boolean, Boolean>> { it.first }
-                .thenByDescending { it.second }
-                .thenByDescending { it.third })
+
+        if (count == 1) return listOf(PlannedExercise(firstExercise, muscleGroup))
+
+        // Phase 2: Remaining exercises — no compound preference, sort by favorited + not-recent
+        val remaining = candidates.filter { it.id != firstExercise.id }
+            .groupBy { Pair(it.id in favoritedIds, it.id !in recentIds) }
+            .toSortedMap(compareByDescending<Pair<Boolean, Boolean>> { it.first }
+                .thenByDescending { it.second })
             .flatMap { (_, exercises) -> exercises.shuffled() }
+            .take(count - 1)
 
-        val selected = sorted.take(count)
-
-        return selected.map { PlannedExercise(it, muscleGroup) }
+        return listOf(PlannedExercise(firstExercise, muscleGroup)) +
+            remaining.map { PlannedExercise(it, muscleGroup) }
     }
 
     private suspend fun findGroupsWithFavoritedExercises(

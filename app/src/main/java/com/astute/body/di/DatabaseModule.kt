@@ -6,6 +6,7 @@ import com.astute.body.data.local.AppDatabase
 import com.astute.body.data.local.AppDatabase.Companion.MIGRATION_1_2
 import com.astute.body.data.local.AppDatabase.Companion.MIGRATION_2_3
 import com.astute.body.data.local.AppDatabase.Companion.MIGRATION_3_4
+import com.astute.body.data.local.AppDatabase.Companion.MIGRATION_4_5
 import com.astute.body.data.local.dao.ActiveWorkoutDao
 import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.ExerciseLogDao
@@ -32,7 +33,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "astutebody.db"
         )
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .build()
     }
 

@@ -59,7 +59,8 @@ data class HomeUiState(
     val newPRs: List<NewPR> = emptyList(),
     val weightUnit: String = "lbs",
     val timerFinished: Boolean = false,
-    val newPRDetected: Boolean = false
+    val newPRDetected: Boolean = false,
+    val allExerciseSets: Map<String, List<SetEntry>> = emptyMap()
 )
 
 @HiltViewModel
@@ -216,7 +217,8 @@ class HomeViewModel @Inject constructor(
                     currentWeight = 0.0,
                     startedAtMillis = now,
                     newPRs = json.encodeToString(emptyList<NewPR>()),
-                    currentExerciseSets = json.encodeToString(emptyList<SetEntry>())
+                    currentExerciseSets = json.encodeToString(emptyList<SetEntry>()),
+                    allExerciseSets = json.encodeToString(emptyMap<String, List<SetEntry>>())
                 )
             )
             _uiState.value = _uiState.value.copy(
@@ -230,7 +232,8 @@ class HomeViewModel @Inject constructor(
                 currentExerciseSets = emptyList(),
                 startTimeMillis = now,
                 newPRs = emptyList(),
-                previousPerformance = null
+                previousPerformance = null,
+                allExerciseSets = emptyMap()
             )
             loadPreviousPerformance()
         }
@@ -243,6 +246,9 @@ class HomeViewModel @Inject constructor(
             val logEntries: List<ExerciseLogEntry> = json.decodeFromString(saved.logEntries)
             val newPRs: List<NewPR> = json.decodeFromString(saved.newPRs)
             val savedSets: List<SetEntry> = json.decodeFromString(saved.currentExerciseSets)
+            val savedAllSets: Map<String, List<SetEntry>> = try {
+                json.decodeFromString(saved.allExerciseSets)
+            } catch (_: Exception) { emptyMap() }
 
             val exerciseIds = refs.map { it.exerciseId }
             val exerciseMap = exerciseDao.getByIds(exerciseIds).associateBy { it.id }
@@ -265,7 +271,8 @@ class HomeViewModel @Inject constructor(
                 currentWeight = saved.currentWeight,
                 startTimeMillis = saved.startedAtMillis,
                 newPRs = newPRs,
-                currentExerciseSets = savedSets
+                currentExerciseSets = savedSets,
+                allExerciseSets = savedAllSets
             )
 
             loadPreviousPerformance()
@@ -291,7 +298,8 @@ class HomeViewModel @Inject constructor(
                     currentWeight = state.currentWeight,
                     startedAtMillis = state.startTimeMillis,
                     newPRs = json.encodeToString(state.newPRs),
-                    currentExerciseSets = json.encodeToString(state.currentExerciseSets)
+                    currentExerciseSets = json.encodeToString(state.currentExerciseSets),
+                    allExerciseSets = json.encodeToString(state.allExerciseSets)
                 )
             )
         }
@@ -377,6 +385,8 @@ class HomeViewModel @Inject constructor(
         if (state.flatExercises.isEmpty()) return
 
         val current = state.flatExercises[state.currentIndex]
+        val updatedMap = state.allExerciseSets + (current.exercise.id to state.currentExerciseSets)
+
         if (state.currentExerciseSets.isNotEmpty()) {
             val avgReps = state.currentExerciseSets.map { it.reps }.average().toInt()
             val maxWeight = state.currentExerciseSets.maxOf { it.weight }
@@ -394,8 +404,11 @@ class HomeViewModel @Inject constructor(
             _uiState.value = state.copy(
                 logEntries = state.logEntries + entry,
                 newPRs = state.newPRs + detectedPRs,
-                newPRDetected = detectedPRs.isNotEmpty()
+                newPRDetected = detectedPRs.isNotEmpty(),
+                allExerciseSets = updatedMap
             )
+        } else {
+            _uiState.value = state.copy(allExerciseSets = updatedMap)
         }
 
         advanceToNext()
@@ -426,6 +439,38 @@ class HomeViewModel @Inject constructor(
             persistState()
             loadPreviousPerformance()
         }
+    }
+
+    fun goToPreviousExercise() {
+        val state = _uiState.value
+        if (state.currentIndex <= 0) return
+
+        stopTimer()
+
+        val current = state.flatExercises[state.currentIndex]
+        val updatedMap = state.allExerciseSets + (current.exercise.id to state.currentExerciseSets)
+
+        val prevIndex = state.currentIndex - 1
+        val prevExercise = state.flatExercises[prevIndex]
+        val prevSets = updatedMap[prevExercise.exercise.id] ?: emptyList()
+
+        val updatedLogEntries = state.logEntries.filter { it.exerciseId != prevExercise.exercise.id }
+        val updatedPRs = state.newPRs.filter { it.exerciseId != prevExercise.exercise.id }
+
+        _uiState.value = state.copy(
+            currentIndex = prevIndex,
+            currentExerciseSets = prevSets,
+            setsCompleted = prevSets.size,
+            editingSetIndex = null,
+            allExerciseSets = updatedMap,
+            logEntries = updatedLogEntries,
+            newPRs = updatedPRs,
+            previousPerformance = null,
+            currentReps = prevSets.lastOrNull()?.reps ?: 10,
+            currentWeight = prevSets.lastOrNull()?.weight ?: 0.0
+        )
+        persistState()
+        loadPreviousPerformance()
     }
 
     fun finishEarly() {
@@ -512,7 +557,8 @@ class HomeViewModel @Inject constructor(
                 previousPerformance = null,
                 editingSetIndex = null,
                 timerRunning = false,
-                timerSeconds = 0
+                timerSeconds = 0,
+                allExerciseSets = emptyMap()
             )
             generateWorkout()
         }
@@ -530,7 +576,8 @@ class HomeViewModel @Inject constructor(
                 setsCompleted = 0,
                 newPRs = emptyList(),
                 previousPerformance = null,
-                editingSetIndex = null
+                editingSetIndex = null,
+                allExerciseSets = emptyMap()
             )
         }
     }

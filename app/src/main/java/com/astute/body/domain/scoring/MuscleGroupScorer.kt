@@ -26,6 +26,7 @@ class MuscleGroupScorer {
         const val STALENESS_WEIGHT = 0.30
         const val FREQUENCY_BALANCE_WEIGHT = 0.25
         const val OVERLAP_PENALTY_FACTOR = 0.3
+        const val RECOVERY_TIME_TIEBREAKER = 0.02
     }
 
     fun scoreAll(trainingData: List<MuscleGroupTrainingData>): List<ScoredMuscleGroup> {
@@ -40,15 +41,19 @@ class MuscleGroupScorer {
 
         val maxHours = trainingData.mapNotNull { it.hoursSinceTrained }.maxOrNull() ?: 1.0
         val maxSessions = trainingData.maxOf { it.sessionsLast14Days }.coerceAtLeast(1)
+        val maxRecoveryHours = trainingData.maxOf { it.minRecoveryHours }.coerceAtLeast(1)
 
         return trainingData.map { data ->
             val recovery = recoveryScore(data.hoursSinceTrained, data.minRecoveryHours)
             val staleness = stalenessScore(data.hoursSinceTrained, maxHours)
             val frequencyBalance = frequencyBalanceScore(data.sessionsLast14Days, maxSessions)
 
-            val rawScore = (recovery * RECOVERY_WEIGHT +
+            val baseScore = recovery * RECOVERY_WEIGHT +
                     staleness * STALENESS_WEIGHT +
-                    frequencyBalance * FREQUENCY_BALANCE_WEIGHT) * 100
+                    frequencyBalance * FREQUENCY_BALANCE_WEIGHT
+            val recoveryTiebreaker = data.minRecoveryHours.toDouble() / maxRecoveryHours * RECOVERY_TIME_TIEBREAKER
+
+            val rawScore = (baseScore + recoveryTiebreaker) * 100
 
             ScoredMuscleGroup(data.muscleGroup, rawScore, recovery, staleness, frequencyBalance)
         }

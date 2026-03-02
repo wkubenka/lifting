@@ -153,6 +153,7 @@ fun HomeScreen(
                 onLogSet = { viewModel.logSet() },
                 onCompleteExercise = { viewModel.completeExercise() },
                 onSkipExercise = { viewModel.skipExercise() },
+                onGoBack = { viewModel.goToPreviousExercise() },
                 onFinishEarly = { viewModel.finishEarly() },
                 onSkipTimer = { viewModel.skipTimer() },
                 onExtendTimer = { viewModel.extendTimer() },
@@ -204,6 +205,7 @@ private fun HomeContent(
     onLogSet: () -> Unit,
     onCompleteExercise: () -> Unit,
     onSkipExercise: () -> Unit,
+    onGoBack: () -> Unit,
     onFinishEarly: () -> Unit,
     onSkipTimer: () -> Unit,
     onExtendTimer: () -> Unit,
@@ -366,6 +368,7 @@ private fun HomeContent(
                                     onLogSet = onLogSet,
                                     onCompleteExercise = onCompleteExercise,
                                     onSkipExercise = onSkipExercise,
+                                    onGoBack = onGoBack,
                                     onSkipTimer = onSkipTimer,
                                     onExtendTimer = onExtendTimer,
                                     onEditSet = onEditSet,
@@ -639,6 +642,7 @@ private fun CurrentExerciseCard(
     onLogSet: () -> Unit,
     onCompleteExercise: () -> Unit,
     onSkipExercise: () -> Unit,
+    onGoBack: () -> Unit,
     onSkipTimer: () -> Unit,
     onExtendTimer: () -> Unit,
     onEditSet: (Int) -> Unit,
@@ -811,6 +815,16 @@ private fun CurrentExerciseCard(
                             modifier = Modifier.weight(1f)
                         ) {
                             Text("Skip")
+                        }
+                    }
+
+                    if (uiState.currentIndex > 0) {
+                        Spacer(Modifier.height(4.dp))
+                        TextButton(
+                            onClick = onGoBack,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Previous Exercise")
                         }
                     }
                 }

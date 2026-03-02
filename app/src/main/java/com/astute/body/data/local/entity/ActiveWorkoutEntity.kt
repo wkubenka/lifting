@@ -15,5 +15,6 @@ data class ActiveWorkoutEntity(
     val currentWeight: Double,
     val startedAtMillis: Long,
     val newPRs: String,
-    val currentExerciseSets: String = "[]"
+    val currentExerciseSets: String = "[]",
+    val allExerciseSets: String = "{}"
 )
