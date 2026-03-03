@@ -736,11 +736,15 @@ private fun CurrentExerciseCard(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
-                                    StepperRow(
-                                        label = "Reps",
-                                        value = uiState.currentReps,
-                                        onDecrement = { onUpdateReps(uiState.currentReps - 1) },
-                                        onIncrement = { onUpdateReps(uiState.currentReps + 1) }
+                                    OutlinedTextField(
+                                        value = uiState.currentReps.toString(),
+                                        onValueChange = { text ->
+                                            onUpdateReps(text.toIntOrNull() ?: 1)
+                                        },
+                                        label = { Text("Reps") },
+                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        modifier = Modifier.weight(1f),
+                                        singleLine = true
                                     )
                                     OutlinedTextField(
                                         value = if (uiState.currentWeight == 0.0) "" else uiState.currentWeight.toBigDecimal().stripTrailingZeros().toPlainString(),
@@ -749,7 +753,7 @@ private fun CurrentExerciseCard(
                                         },
                                         label = { Text(uiState.weightUnit) },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                                        modifier = Modifier.width(100.dp),
+                                        modifier = Modifier.weight(1f),
                                         singleLine = true
                                     )
                                 }
