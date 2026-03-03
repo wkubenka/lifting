@@ -89,18 +89,21 @@ class HomeViewModel @Inject constructor(
             userPreferencesRepository.preferences.collect { prefs ->
                 cachedPrefs = prefs
                 val favoritedIds = prefs.favoritedExercises.toSet()
-                val excludedIds = prefs.excludedExercises.toSet()
-                val plan = _uiState.value.workoutPlan
-                val hasExcluded = plan != null && plan.muscleGroupAllocations
-                    .flatMap { it.exercises }
-                    .any { it.exercise.id in excludedIds }
                 _uiState.value = _uiState.value.copy(
                     favoritedIds = favoritedIds,
-                    hasExcludedInPlan = hasExcluded,
+                    hasExcludedInPlan = checkForExcludedExercises(),
                     weightUnit = prefs.weightUnit
                 )
             }
         }
+    }
+
+    private fun checkForExcludedExercises(): Boolean {
+        val excludedIds = cachedPrefs.excludedExercises.toSet()
+        val plan = _uiState.value.workoutPlan ?: return false
+        return plan.muscleGroupAllocations
+            .flatMap { it.exercises }
+            .any { it.exercise.id in excludedIds }
     }
 
     // --- Planning methods ---
@@ -122,6 +125,7 @@ class HomeViewModel @Inject constructor(
                 flatExercises = plan.flatExercisesSortedByEquipment(),
                 isLoading = false
             )
+            _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
         }
     }
 
@@ -133,6 +137,7 @@ class HomeViewModel @Inject constructor(
                 workoutPlan = newPlan,
                 flatExercises = newPlan.flatExercisesSortedByEquipment()
             )
+            _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
         }
     }
 
@@ -144,6 +149,7 @@ class HomeViewModel @Inject constructor(
                 workoutPlan = newPlan,
                 flatExercises = newPlan.flatExercisesSortedByEquipment()
             )
+            _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
         }
     }
 
@@ -158,6 +164,7 @@ class HomeViewModel @Inject constructor(
                 flatExercises = newPlan.flatExercisesSortedByEquipment(),
                 isLoading = false
             )
+            _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
         }
     }
 
