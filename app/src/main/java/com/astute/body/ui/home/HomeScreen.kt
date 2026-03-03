@@ -363,6 +363,7 @@ private fun HomeContent(
                                     exercise = exercise,
                                     uiState = uiState,
                                     onExerciseTap = { onExerciseTap(exercise.exercise.id) },
+                                    onSwapExercise = { onSwapExercise(exercise) },
                                     onUpdateReps = onUpdateReps,
                                     onUpdateWeight = onUpdateWeight,
                                     onLogSet = onLogSet,
@@ -383,7 +384,8 @@ private fun HomeContent(
                                     currentIndex = uiState.currentIndex,
                                     totalExercises = uiState.flatExercises.size,
                                     onMoveUp = if (index > uiState.currentIndex + 1) ({ onMoveExercise(index, index - 1) }) else null,
-                                    onMoveDown = if (index < uiState.flatExercises.size - 1) ({ onMoveExercise(index, index + 1) }) else null
+                                    onMoveDown = if (index < uiState.flatExercises.size - 1) ({ onMoveExercise(index, index + 1) }) else null,
+                                    onSwapExercise = { onSwapExercise(exercise) }
                                 )
                             }
                         }
@@ -637,6 +639,7 @@ private fun CurrentExerciseCard(
     exercise: PlannedExercise,
     uiState: HomeUiState,
     onExerciseTap: () -> Unit,
+    onSwapExercise: () -> Unit,
     onUpdateReps: (Int) -> Unit,
     onUpdateWeight: (Double) -> Unit,
     onLogSet: () -> Unit,
@@ -674,6 +677,13 @@ private fun CurrentExerciseCard(
                         text = "${exercise.muscleGroup.displayName} \u2022 ${exercise.exercise.mechanic ?: ""}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = onSwapExercise) {
+                    Icon(
+                        Icons.Default.SwapHoriz,
+                        contentDescription = "Swap exercise",
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
                 IconButton(onClick = onExerciseTap) {
@@ -863,7 +873,8 @@ private fun UpcomingExerciseCard(
     currentIndex: Int,
     totalExercises: Int,
     onMoveUp: (() -> Unit)?,
-    onMoveDown: (() -> Unit)?
+    onMoveDown: (() -> Unit)?,
+    onSwapExercise: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -921,6 +932,9 @@ private fun UpcomingExerciseCard(
                         )
                     }
                 }
+            }
+            IconButton(onClick = onSwapExercise) {
+                Icon(Icons.Default.SwapHoriz, contentDescription = "Swap exercise")
             }
         }
     }

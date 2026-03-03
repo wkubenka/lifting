@@ -133,10 +133,45 @@ class HomeViewModel @Inject constructor(
         val currentPlan = _uiState.value.workoutPlan ?: return
         viewModelScope.launch {
             val newPlan = generator.swapExercise(currentPlan, exercise)
-            _uiState.value = _uiState.value.copy(
-                workoutPlan = newPlan,
-                flatExercises = newPlan.flatExercisesSortedByEquipment()
-            )
+            if (newPlan === currentPlan) return@launch // no candidate found
+            val state = _uiState.value
+
+            if (state.workoutMode == WorkoutMode.ACTIVE) {
+                // Find the replacement by comparing old vs new plan allocation
+                val newAllocation = newPlan.muscleGroupAllocations
+                    .find { it.muscleGroup == exercise.muscleGroup } ?: return@launch
+                val usedIds = state.flatExercises.map { it.exercise.id }.toSet()
+                val replacement = newAllocation.exercises
+                    .find { it.exercise.id !in usedIds } ?: return@launch
+
+                // In-place swap in flatExercises preserving order
+                val newFlatExercises = state.flatExercises.map {
+                    if (it.exercise.id == exercise.exercise.id) replacement else it
+                }
+
+                val isCurrentExercise = state.flatExercises.getOrNull(state.currentIndex)
+                    ?.exercise?.id == exercise.exercise.id
+
+                if (isCurrentExercise) stopTimer()
+
+                _uiState.value = state.copy(
+                    workoutPlan = newPlan,
+                    flatExercises = newFlatExercises,
+                    currentExerciseSets = if (isCurrentExercise) emptyList() else state.currentExerciseSets,
+                    setsCompleted = if (isCurrentExercise) 0 else state.setsCompleted,
+                    currentReps = if (isCurrentExercise) 10 else state.currentReps,
+                    currentWeight = if (isCurrentExercise) 0.0 else state.currentWeight,
+                    editingSetIndex = if (isCurrentExercise) null else state.editingSetIndex,
+                    previousPerformance = if (isCurrentExercise) null else state.previousPerformance
+                )
+                persistState()
+                if (isCurrentExercise) loadPreviousPerformance()
+            } else {
+                _uiState.value = state.copy(
+                    workoutPlan = newPlan,
+                    flatExercises = newPlan.flatExercisesSortedByEquipment()
+                )
+            }
             _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
         }
     }
