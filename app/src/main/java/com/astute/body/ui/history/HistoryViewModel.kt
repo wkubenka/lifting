@@ -2,6 +2,7 @@ package com.astute.body.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.ExerciseLogDao
 import com.astute.body.data.local.dao.WorkoutSessionDao
 import com.astute.body.data.local.entity.ExerciseLogEntity
@@ -22,13 +23,15 @@ data class HistoryUiState(
     val selectedSessionLogs: List<ExerciseLogEntity> = emptyList(),
     val editingLog: ExerciseLogEntity? = null,
     val showDeleteLogConfirm: Long? = null,
-    val weightUnit: String = "lbs"
+    val weightUnit: String = "lbs",
+    val volumeMultipliers: Map<String, Int> = emptyMap()
 )
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val workoutSessionDao: WorkoutSessionDao,
     private val exerciseLogDao: ExerciseLogDao,
+    private val exerciseDao: ExerciseDao,
     private val personalRecordRecalculator: PersonalRecordRecalculator,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
@@ -68,10 +71,14 @@ class HistoryViewModel @Inject constructor(
 
         viewModelScope.launch {
             val logs = exerciseLogDao.getBySessionId(sessionId)
+            val exerciseIds = logs.map { it.exerciseId }.distinct()
+            val exercises = exerciseDao.getByIds(exerciseIds)
+            val multiplierMap = exercises.associate { it.id to it.volumeMultiplier }
             _uiState.value = _uiState.value.copy(
                 selectedSessionId = sessionId,
                 selectedSessionLogs = logs,
-                editingLog = null
+                editingLog = null,
+                volumeMultipliers = multiplierMap
             )
         }
     }

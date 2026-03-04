@@ -438,7 +438,8 @@ class HomeViewModel @Inject constructor(
                 muscleGroup = current.muscleGroup.displayName,
                 sets = state.currentExerciseSets.size,
                 reps = avgReps,
-                weight = maxWeight
+                weight = maxWeight,
+                volumeMultiplier = current.exercise.volumeMultiplier
             )
 
             val detectedPRs = detectNewPRs(entry, state.previousPerformance)
@@ -527,7 +528,8 @@ class HomeViewModel @Inject constructor(
                 muscleGroup = current.muscleGroup.displayName,
                 sets = state.currentExerciseSets.size,
                 reps = avgReps,
-                weight = maxWeight
+                weight = maxWeight,
+                volumeMultiplier = current.exercise.volumeMultiplier
             )
 
             val detectedPRs = detectNewPRs(entry, state.previousPerformance)

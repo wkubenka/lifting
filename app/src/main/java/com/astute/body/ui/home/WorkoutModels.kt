@@ -17,7 +17,8 @@ data class ExerciseLogEntry(
     val muscleGroup: String,
     val sets: Int,
     val reps: Int,
-    val weight: Double
+    val weight: Double,
+    val volumeMultiplier: Int = 1
 )
 
 @Serializable

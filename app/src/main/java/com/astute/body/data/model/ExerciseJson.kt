@@ -14,5 +14,6 @@ data class ExerciseJson(
     val primaryMuscles: List<String>,
     val secondaryMuscles: List<String> = emptyList(),
     val instructions: List<String> = emptyList(),
-    val images: List<String> = emptyList()
+    val images: List<String> = emptyList(),
+    val volumeMultiplier: Int = 1
 )

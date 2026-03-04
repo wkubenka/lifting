@@ -1117,11 +1117,11 @@ private fun InlineWorkoutSummary(
     onDiscard: () -> Unit
 ) {
     val totalSets = uiState.logEntries.sumOf { it.sets }
-    val totalVolume = uiState.logEntries.sumOf { it.sets * it.reps * it.weight }
+    val totalVolume = uiState.logEntries.sumOf { it.sets * it.reps * it.weight * it.volumeMultiplier }
     val durationMinutes = ((System.currentTimeMillis() - uiState.startTimeMillis) / 60000).toInt()
     val volumeByGroup = uiState.logEntries
         .groupBy { it.muscleGroup }
-        .mapValues { (_, logs) -> logs.sumOf { it.sets * it.reps * it.weight } }
+        .mapValues { (_, logs) -> logs.sumOf { it.sets * it.reps * it.weight * it.volumeMultiplier } }
 
     Column(Modifier.padding(top = 16.dp)) {
         Text(

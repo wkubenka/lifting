@@ -125,6 +125,7 @@ fun HistoryScreen(
                             logs = if (uiState.selectedSessionId == session.sessionId) uiState.selectedSessionLogs else emptyList(),
                             editingLog = uiState.editingLog,
                             weightUnit = uiState.weightUnit,
+                            volumeMultipliers = uiState.volumeMultipliers,
                             onToggle = { viewModel.selectSession(session.sessionId) },
                             onDelete = { viewModel.deleteSession(session.sessionId) },
                             onExerciseTap = onNavigateToExerciseDetail,
@@ -150,6 +151,7 @@ private fun SessionCard(
     logs: List<ExerciseLogEntity>,
     editingLog: ExerciseLogEntity?,
     weightUnit: String,
+    volumeMultipliers: Map<String, Int>,
     onToggle: () -> Unit,
     onDelete: () -> Unit,
     onExerciseTap: (String) -> Unit,
@@ -160,7 +162,7 @@ private fun SessionCard(
 ) {
     val dateFormat = SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault())
     val totalExercises = if (isExpanded) logs.size else 0
-    val totalVolume = if (isExpanded) logs.sumOf { it.sets * it.reps * it.weight } else 0.0
+    val totalVolume = if (isExpanded) logs.sumOf { it.sets * it.reps * it.weight * (volumeMultipliers[it.exerciseId] ?: 1) } else 0.0
 
     Card(
         modifier = Modifier

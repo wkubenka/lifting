@@ -30,7 +30,7 @@ import com.astute.body.data.local.entity.WorkoutSessionEntity
         RecoveryConfigEntity::class,
         ActiveWorkoutEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -78,6 +78,71 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE active_workout ADD COLUMN allExerciseSets TEXT NOT NULL DEFAULT '{}'")
+            }
+        }
+
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE exercises ADD COLUMN volumeMultiplier INTEGER NOT NULL DEFAULT 1")
+
+                // All dumbbell exercises default to x2 (per-dumbbell weight)
+                db.execSQL("UPDATE exercises SET volumeMultiplier = 2 WHERE equipment = 'dumbbell'")
+
+                // Single-dumbbell bilateral exceptions back to x1
+                db.execSQL("""
+                    UPDATE exercises SET volumeMultiplier = 1 WHERE id IN (
+                        'Bent-Arm_Dumbbell_Pullover',
+                        'Straight-Arm_Dumbbell_Pullover',
+                        'Seated_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension',
+                        'Standing_Bent-Over_Two-Arm_Dumbbell_Triceps_Extension',
+                        'Two-Arm_Dumbbell_Preacher_Curl',
+                        'Single_Dumbbell_Raise',
+                        'Seated_Triceps_Press',
+                        'Standing_Dumbbell_Triceps_Extension',
+                        'Plie_Dumbbell_Squat',
+                        'Calf_Raise_On_A_Dumbbell',
+                        'Vertical_Swing'
+                    )
+                """.trimIndent())
+
+                // Cable dual-cable and unilateral exercises to x2
+                db.execSQL("""
+                    UPDATE exercises SET volumeMultiplier = 2 WHERE id IN (
+                        'Cable_Crossover',
+                        'Cable_Iron_Cross',
+                        'Flat_Bench_Cable_Flyes',
+                        'Incline_Cable_Flye',
+                        'Low_Cable_Crossover',
+                        'Cable_Chest_Press',
+                        'Incline_Cable_Chest_Press',
+                        'Cable_Rear_Delt_Fly',
+                        'Overhead_Cable_Curl',
+                        'High_Cable_Curls',
+                        'Alternating_Cable_Shoulder_Press',
+                        'Cable_One_Arm_Tricep_Extension',
+                        'Kneeling_Single-Arm_High_Pulley_Row',
+                        'One-Arm_High-Pulley_Cable_Side_Bends',
+                        'One-Legged_Cable_Kickback',
+                        'One_Arm_Lat_Pulldown',
+                        'Seated_One-arm_Cable_Pulley_Rows',
+                        'Single-Arm_Cable_Crossover',
+                        'Standing_Low-Pulley_One-Arm_Triceps_Extension',
+                        'Standing_One-Arm_Cable_Curl'
+                    )
+                """.trimIndent())
+
+                // Other equipment unilateral exercises to x2
+                db.execSQL("""
+                    UPDATE exercises SET volumeMultiplier = 2
+                    WHERE (equipment IS NULL OR equipment NOT IN ('dumbbell', 'cable'))
+                      AND (
+                          LOWER(name) LIKE '%one-arm%' OR LOWER(name) LIKE '%one arm%'
+                          OR LOWER(name) LIKE '%one-leg%' OR LOWER(name) LIKE '%one leg%'
+                          OR LOWER(name) LIKE '%single-arm%' OR LOWER(name) LIKE '%single arm%'
+                          OR LOWER(name) LIKE '%single-leg%' OR LOWER(name) LIKE '%single leg%'
+                          OR LOWER(name) LIKE '%alternate%' OR LOWER(name) LIKE '%alternating%'
+                      )
+                """.trimIndent())
             }
         }
     }

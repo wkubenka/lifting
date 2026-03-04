@@ -1,9 +1,11 @@
 package com.astute.body.ui.history
 
+import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.ExerciseLogDao
 import com.astute.body.data.local.dao.PersonalRecordDao
 import com.astute.body.data.local.dao.UserPreferencesDao
 import com.astute.body.data.local.dao.WorkoutSessionDao
+import com.astute.body.data.local.entity.ExerciseEntity
 import com.astute.body.data.local.entity.ExerciseLogEntity
 import com.astute.body.data.local.entity.PersonalRecordEntity
 import com.astute.body.data.local.entity.UserPreferencesEntity
@@ -33,6 +35,7 @@ class HistoryViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var sessionDao: FakeWorkoutSessionDao
     private lateinit var logDao: FakeExerciseLogDao
+    private lateinit var exerciseDao: FakeExerciseDao
     private lateinit var personalRecordDao: FakePersonalRecordDao
     private lateinit var recalculator: PersonalRecordRecalculator
     private lateinit var prefsDao: FakePrefsDao
@@ -44,6 +47,7 @@ class HistoryViewModelTest {
         Dispatchers.setMain(testDispatcher)
         sessionDao = FakeWorkoutSessionDao()
         logDao = FakeExerciseLogDao()
+        exerciseDao = FakeExerciseDao()
         personalRecordDao = FakePersonalRecordDao()
         recalculator = PersonalRecordRecalculator(logDao, personalRecordDao, sessionDao)
         prefsDao = FakePrefsDao()
@@ -55,7 +59,7 @@ class HistoryViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel() = HistoryViewModel(sessionDao, logDao, recalculator, prefsRepo)
+    private fun createViewModel() = HistoryViewModel(sessionDao, logDao, exerciseDao, recalculator, prefsRepo)
 
     @Test
     fun `sessions are loaded on init`() = runTest {
@@ -425,5 +429,29 @@ private class FakePersonalRecordDao : PersonalRecordDao {
 
     override suspend fun deleteByExerciseId(exerciseId: String) {
         records.remove(exerciseId)
+    }
+}
+
+private class FakeExerciseDao : ExerciseDao {
+    val exerciseMap = mutableMapOf<String, ExerciseEntity>()
+
+    override fun getAll(): Flow<List<ExerciseEntity>> =
+        MutableStateFlow(exerciseMap.values.toList())
+
+    override suspend fun getById(id: String): ExerciseEntity? = exerciseMap[id]
+
+    override suspend fun getByIds(ids: List<String>): List<ExerciseEntity> =
+        ids.mapNotNull { exerciseMap[it] }
+
+    override suspend fun getByMuscle(muscle: String): List<ExerciseEntity> =
+        exerciseMap.values.filter { muscle in it.primaryMuscles }
+
+    override suspend fun getDistinctEquipment(): List<String> =
+        exerciseMap.values.mapNotNull { it.equipment }.distinct()
+
+    override suspend fun count(): Int = exerciseMap.size
+
+    override suspend fun insertAll(exercises: List<ExerciseEntity>) {
+        exercises.forEach { exerciseMap[it.id] = it }
     }
 }
