@@ -61,6 +61,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -756,15 +757,11 @@ private fun CurrentExerciseCard(
                                         modifier = Modifier.weight(1f),
                                         singleLine = true
                                     )
-                                    OutlinedTextField(
-                                        value = if (uiState.currentWeight == 0.0) "" else uiState.currentWeight.toBigDecimal().stripTrailingZeros().toPlainString(),
-                                        onValueChange = { text ->
-                                            onUpdateWeight(text.toDoubleOrNull() ?: 0.0)
-                                        },
+                                    WeightTextField(
+                                        weight = uiState.currentWeight,
+                                        onWeightChange = onUpdateWeight,
                                         label = { Text(uiState.weightUnit) },
-                                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                                        modifier = Modifier.weight(1f),
-                                        singleLine = true
+                                        modifier = Modifier.weight(1f)
                                     )
                                 }
                             }
@@ -810,13 +807,10 @@ private fun CurrentExerciseCard(
 
                     Spacer(Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = if (uiState.currentWeight == 0.0) "" else uiState.currentWeight.toBigDecimal().stripTrailingZeros().toPlainString(),
-                        onValueChange = { text ->
-                            onUpdateWeight(text.toDoubleOrNull() ?: 0.0)
-                        },
+                    WeightTextField(
+                        weight = uiState.currentWeight,
+                        onWeightChange = onUpdateWeight,
                         label = { Text("Weight (${uiState.weightUnit})") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -1025,6 +1019,35 @@ private fun NewPRBadge(prs: List<NewPR>, weightUnit: String) {
             }
         }
     }
+}
+
+@Composable
+private fun WeightTextField(
+    weight: Double,
+    onWeightChange: (Double) -> Unit,
+    label: @Composable (() -> Unit),
+    modifier: Modifier = Modifier
+) {
+    var text by remember { mutableStateOf(if (weight == 0.0) "" else formatWeight(weight)) }
+
+    LaunchedEffect(weight) {
+        val textAsDouble = text.toDoubleOrNull() ?: 0.0
+        if (textAsDouble != weight) {
+            text = if (weight == 0.0) "" else formatWeight(weight)
+        }
+    }
+
+    OutlinedTextField(
+        value = text,
+        onValueChange = {
+            text = it
+            onWeightChange(it.toDoubleOrNull() ?: 0.0)
+        },
+        label = label,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        modifier = modifier,
+        singleLine = true
+    )
 }
 
 @Composable

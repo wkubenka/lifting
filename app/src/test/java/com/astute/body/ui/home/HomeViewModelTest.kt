@@ -239,6 +239,32 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `logSet preserves half-pound decimal weights`() = runTest {
+        createViewModel()
+        advanceUntilIdle()
+
+        viewModel.startWorkout()
+        advanceUntilIdle()
+
+        viewModel.updateReps(8)
+        viewModel.updateWeight(132.5)
+        viewModel.logSet()
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(1, state.currentExerciseSets.size)
+        assertEquals(132.5, state.currentExerciseSets[0].weight, 0.001)
+
+        viewModel.updateWeight(137.5)
+        viewModel.logSet()
+        advanceUntilIdle()
+
+        val updated = viewModel.uiState.value
+        assertEquals(2, updated.currentExerciseSets.size)
+        assertEquals(137.5, updated.currentExerciseSets[1].weight, 0.001)
+    }
+
+    @Test
     fun `completeExercise advances to next exercise`() = runTest {
         createViewModel()
         advanceUntilIdle()
