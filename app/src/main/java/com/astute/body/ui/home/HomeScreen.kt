@@ -1156,7 +1156,7 @@ private fun InlineWorkoutSummary(
 
         Spacer(Modifier.height(24.dp))
 
-        SummaryRow("Exercises", "${uiState.logEntries.size}")
+        SummaryRow("Exercises", "${uiState.logEntries.distinctBy { it.exerciseId }.size}")
         SummaryRow("Total Sets", "$totalSets")
         SummaryRow("Total Volume", "${totalVolume.toLong()} ${uiState.weightUnit}")
         SummaryRow("Duration", "$durationMinutes min")

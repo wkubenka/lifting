@@ -430,22 +430,11 @@ class HomeViewModel @Inject constructor(
         val updatedMap = state.allExerciseSets + (current.exercise.id to state.currentExerciseSets)
 
         if (state.currentExerciseSets.isNotEmpty()) {
-            val avgReps = state.currentExerciseSets.map { it.reps }.average().toInt()
-            val maxWeight = state.currentExerciseSets.maxOf { it.weight }
-            val entry = ExerciseLogEntry(
-                exerciseId = current.exercise.id,
-                exerciseName = current.exercise.name,
-                muscleGroup = current.muscleGroup.displayName,
-                sets = state.currentExerciseSets.size,
-                reps = avgReps,
-                weight = maxWeight,
-                volumeMultiplier = current.exercise.volumeMultiplier
-            )
-
-            val detectedPRs = detectNewPRs(entry, state.previousPerformance)
+            val entries = buildLogEntries(current, state.currentExerciseSets)
+            val detectedPRs = entries.flatMap { detectNewPRs(it, state.previousPerformance) }
 
             _uiState.value = state.copy(
-                logEntries = state.logEntries + entry,
+                logEntries = state.logEntries + entries,
                 newPRs = state.newPRs + detectedPRs,
                 newPRDetected = detectedPRs.isNotEmpty(),
                 allExerciseSets = updatedMap
@@ -459,6 +448,21 @@ class HomeViewModel @Inject constructor(
 
     fun skipExercise() {
         advanceToNext()
+    }
+
+    private fun buildLogEntries(exercise: PlannedExercise, sets: List<SetEntry>): List<ExerciseLogEntry> {
+        return sets.groupBy { Pair(it.reps, it.weight) }
+            .map { (key, grouped) ->
+                ExerciseLogEntry(
+                    exerciseId = exercise.exercise.id,
+                    exerciseName = exercise.exercise.name,
+                    muscleGroup = exercise.muscleGroup.displayName,
+                    sets = grouped.size,
+                    reps = key.first,
+                    weight = key.second,
+                    volumeMultiplier = exercise.exercise.volumeMultiplier
+                )
+            }
     }
 
     private fun advanceToNext() {
@@ -520,22 +524,11 @@ class HomeViewModel @Inject constructor(
         val state = _uiState.value
         val current = state.flatExercises.getOrNull(state.currentIndex)
         if (current != null && state.currentExerciseSets.isNotEmpty()) {
-            val avgReps = state.currentExerciseSets.map { it.reps }.average().toInt()
-            val maxWeight = state.currentExerciseSets.maxOf { it.weight }
-            val entry = ExerciseLogEntry(
-                exerciseId = current.exercise.id,
-                exerciseName = current.exercise.name,
-                muscleGroup = current.muscleGroup.displayName,
-                sets = state.currentExerciseSets.size,
-                reps = avgReps,
-                weight = maxWeight,
-                volumeMultiplier = current.exercise.volumeMultiplier
-            )
-
-            val detectedPRs = detectNewPRs(entry, state.previousPerformance)
+            val entries = buildLogEntries(current, state.currentExerciseSets)
+            val detectedPRs = entries.flatMap { detectNewPRs(it, state.previousPerformance) }
 
             _uiState.value = state.copy(
-                logEntries = state.logEntries + entry,
+                logEntries = state.logEntries + entries,
                 newPRs = state.newPRs + detectedPRs,
                 workoutMode = WorkoutMode.COMPLETE
             )
@@ -574,17 +567,19 @@ class HomeViewModel @Inject constructor(
             }
             exerciseLogDao.insertAll(logs)
 
-            for (entry in state.logEntries) {
-                val existing = personalRecordDao.getByExerciseId(entry.exerciseId)
+            for ((exerciseId, entries) in state.logEntries.groupBy { it.exerciseId }) {
+                val existing = personalRecordDao.getByExerciseId(exerciseId)
                 val now = System.currentTimeMillis()
+                val sessionMaxWeight = entries.maxOf { it.weight }
+                val sessionMaxReps = entries.maxOf { it.reps }
                 val newRecord = PersonalRecordEntity(
-                    exerciseId = entry.exerciseId,
-                    maxWeight = maxOf(existing?.maxWeight ?: 0.0, entry.weight),
-                    maxWeightDate = if (entry.weight > (existing?.maxWeight ?: 0.0)) now else existing?.maxWeightDate,
-                    maxReps = maxOf(existing?.maxReps ?: 0, entry.reps),
-                    maxRepsDate = if (entry.reps > (existing?.maxReps ?: 0)) now else existing?.maxRepsDate,
-                    lastWeight = entry.weight,
-                    lastReps = entry.reps,
+                    exerciseId = exerciseId,
+                    maxWeight = maxOf(existing?.maxWeight ?: 0.0, sessionMaxWeight),
+                    maxWeightDate = if (sessionMaxWeight > (existing?.maxWeight ?: 0.0)) now else existing?.maxWeightDate,
+                    maxReps = maxOf(existing?.maxReps ?: 0, sessionMaxReps),
+                    maxRepsDate = if (sessionMaxReps > (existing?.maxReps ?: 0)) now else existing?.maxRepsDate,
+                    lastWeight = sessionMaxWeight,
+                    lastReps = sessionMaxReps,
                     lastPerformed = now
                 )
                 personalRecordDao.upsert(newRecord)

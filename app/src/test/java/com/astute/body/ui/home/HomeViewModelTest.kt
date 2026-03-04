@@ -265,6 +265,46 @@ class HomeViewModelTest {
     }
 
     @Test
+    fun `completeExercise creates separate log entries for different weights`() = runTest {
+        createViewModel()
+        advanceUntilIdle()
+
+        viewModel.startWorkout()
+        advanceUntilIdle()
+
+        // Log sets with varying weight and reps
+        viewModel.updateReps(8)
+        viewModel.updateWeight(135.0)
+        viewModel.logSet()
+        viewModel.skipTimer()
+
+        viewModel.updateReps(8)
+        viewModel.updateWeight(135.0)
+        viewModel.logSet()
+        viewModel.skipTimer()
+
+        viewModel.updateReps(6)
+        viewModel.updateWeight(155.0)
+        viewModel.logSet()
+        viewModel.skipTimer()
+        advanceUntilIdle()
+
+        viewModel.completeExercise()
+        advanceUntilIdle()
+
+        val entries = viewModel.uiState.value.logEntries
+        assertEquals(2, entries.size)
+
+        val light = entries.find { it.weight == 135.0 }!!
+        assertEquals(2, light.sets)
+        assertEquals(8, light.reps)
+
+        val heavy = entries.find { it.weight == 155.0 }!!
+        assertEquals(1, heavy.sets)
+        assertEquals(6, heavy.reps)
+    }
+
+    @Test
     fun `completeExercise advances to next exercise`() = runTest {
         createViewModel()
         advanceUntilIdle()
