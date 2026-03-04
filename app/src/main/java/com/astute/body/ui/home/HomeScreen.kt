@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -1264,11 +1265,34 @@ private fun InlineWorkoutSummary(
 
         Spacer(Modifier.height(8.dp))
 
+        var showDiscardConfirm by remember { mutableStateOf(false) }
+
         TextButton(
-            onClick = onDiscard,
+            onClick = { showDiscardConfirm = true },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Discard")
+        }
+
+        if (showDiscardConfirm) {
+            AlertDialog(
+                onDismissRequest = { showDiscardConfirm = false },
+                title = { Text("Discard Workout?") },
+                text = { Text("This workout will not be saved. This cannot be undone.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        showDiscardConfirm = false
+                        onDiscard()
+                    }) {
+                        Text("Discard", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDiscardConfirm = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
 
         Spacer(Modifier.height(32.dp))

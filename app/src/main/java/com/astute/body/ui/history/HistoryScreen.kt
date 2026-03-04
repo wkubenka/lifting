@@ -61,24 +61,19 @@ fun HistoryScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    if (uiState.showDeleteLogConfirm != null) {
-        val logId = uiState.showDeleteLogConfirm!!
-        val log = uiState.selectedSessionLogs.find { it.logId == logId }
+    if (uiState.showDeleteSessionConfirm != null) {
+        val sessionId = uiState.showDeleteSessionConfirm!!
         AlertDialog(
-            onDismissRequest = { viewModel.cancelDeleteLog() },
-            title = { Text("Delete Exercise Log?") },
-            text = { Text("This cannot be undone. Personal records will be recalculated.") },
+            onDismissRequest = { viewModel.cancelDeleteSession() },
+            title = { Text("Delete Workout?") },
+            text = { Text("This will permanently delete this workout session and all its exercise logs. Personal records will be recalculated.") },
             confirmButton = {
-                TextButton(onClick = {
-                    if (log != null) {
-                        viewModel.deleteLog(logId, log.exerciseId)
-                    }
-                }) {
+                TextButton(onClick = { viewModel.deleteSession(sessionId) }) {
                     Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.cancelDeleteLog() }) {
+                TextButton(onClick = { viewModel.cancelDeleteSession() }) {
                     Text("Cancel")
                 }
             }
@@ -127,10 +122,9 @@ fun HistoryScreen(
                             weightUnit = uiState.weightUnit,
                             volumeMultipliers = uiState.volumeMultipliers,
                             onToggle = { viewModel.selectSession(session.sessionId) },
-                            onDelete = { viewModel.deleteSession(session.sessionId) },
+                            onDelete = { viewModel.confirmDeleteSession(session.sessionId) },
                             onExerciseTap = onNavigateToExerciseDetail,
                             onEditLog = { viewModel.startEditingLog(it) },
-                            onDeleteLog = { viewModel.confirmDeleteLog(it.logId) },
                             onSaveEdit = { log, sets, reps, weight ->
                                 viewModel.updateLog(log, sets, reps, weight)
                             },
@@ -156,7 +150,6 @@ private fun SessionCard(
     onDelete: () -> Unit,
     onExerciseTap: (String) -> Unit,
     onEditLog: (ExerciseLogEntity) -> Unit,
-    onDeleteLog: (ExerciseLogEntity) -> Unit,
     onSaveEdit: (ExerciseLogEntity, Int, Int, Double) -> Unit,
     onCancelEdit: () -> Unit
 ) {
@@ -235,8 +228,7 @@ private fun SessionCard(
                                 log = log,
                                 weightUnit = weightUnit,
                                 onTap = { onExerciseTap(log.exerciseId) },
-                                onEdit = { onEditLog(log) },
-                                onDelete = { onDeleteLog(log) }
+                                onEdit = { onEditLog(log) }
                             )
                         }
                     }
@@ -266,8 +258,7 @@ private fun ExerciseLogRow(
     log: ExerciseLogEntity,
     weightUnit: String,
     onTap: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onEdit: () -> Unit
 ) {
     Row(
         Modifier
@@ -293,14 +284,6 @@ private fun ExerciseLogRow(
                 Icons.Default.Edit,
                 contentDescription = "Edit log",
                 modifier = Modifier.size(18.dp)
-            )
-        }
-        IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-            Icon(
-                Icons.Default.Delete,
-                contentDescription = "Delete log",
-                modifier = Modifier.size(18.dp),
-                tint = MaterialTheme.colorScheme.error
             )
         }
     }

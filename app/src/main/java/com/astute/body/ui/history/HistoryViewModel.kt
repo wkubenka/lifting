@@ -22,7 +22,7 @@ data class HistoryUiState(
     val selectedSessionId: Long? = null,
     val selectedSessionLogs: List<ExerciseLogEntity> = emptyList(),
     val editingLog: ExerciseLogEntity? = null,
-    val showDeleteLogConfirm: Long? = null,
+    val showDeleteSessionConfirm: Long? = null,
     val weightUnit: String = "lbs",
     val volumeMultipliers: Map<String, Int> = emptyMap()
 )
@@ -106,37 +106,12 @@ class HistoryViewModel @Inject constructor(
         }
     }
 
-    fun confirmDeleteLog(logId: Long) {
-        _uiState.value = _uiState.value.copy(showDeleteLogConfirm = logId)
+    fun confirmDeleteSession(sessionId: Long) {
+        _uiState.value = _uiState.value.copy(showDeleteSessionConfirm = sessionId)
     }
 
-    fun cancelDeleteLog() {
-        _uiState.value = _uiState.value.copy(showDeleteLogConfirm = null)
-    }
-
-    fun deleteLog(logId: Long, exerciseId: String) {
-        viewModelScope.launch {
-            exerciseLogDao.deleteById(logId)
-            personalRecordRecalculator.recalculateForExercise(exerciseId)
-
-            val sessionId = _uiState.value.selectedSessionId ?: return@launch
-            val refreshedLogs = exerciseLogDao.getBySessionId(sessionId)
-
-            if (refreshedLogs.isEmpty()) {
-                workoutSessionDao.deleteById(sessionId)
-                _uiState.value = _uiState.value.copy(
-                    selectedSessionId = null,
-                    selectedSessionLogs = emptyList(),
-                    showDeleteLogConfirm = null,
-                    editingLog = null
-                )
-            } else {
-                _uiState.value = _uiState.value.copy(
-                    selectedSessionLogs = refreshedLogs,
-                    showDeleteLogConfirm = null
-                )
-            }
-        }
+    fun cancelDeleteSession() {
+        _uiState.value = _uiState.value.copy(showDeleteSessionConfirm = null)
     }
 
     fun deleteSession(sessionId: Long) {
@@ -150,13 +125,12 @@ class HistoryViewModel @Inject constructor(
                 personalRecordRecalculator.recalculateForExercise(exerciseId)
             }
 
-            if (_uiState.value.selectedSessionId == sessionId) {
-                _uiState.value = _uiState.value.copy(
-                    selectedSessionId = null,
-                    selectedSessionLogs = emptyList(),
-                    editingLog = null
-                )
-            }
+            _uiState.value = _uiState.value.copy(
+                selectedSessionId = if (_uiState.value.selectedSessionId == sessionId) null else _uiState.value.selectedSessionId,
+                selectedSessionLogs = if (_uiState.value.selectedSessionId == sessionId) emptyList() else _uiState.value.selectedSessionLogs,
+                editingLog = if (_uiState.value.selectedSessionId == sessionId) null else _uiState.value.editingLog,
+                showDeleteSessionConfirm = null
+            )
         }
     }
 }
