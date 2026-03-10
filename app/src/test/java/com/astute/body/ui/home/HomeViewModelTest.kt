@@ -1,18 +1,11 @@
 package com.astute.body.ui.home
 
-import com.astute.body.data.local.dao.ActiveWorkoutDao
-import com.astute.body.data.local.dao.ExerciseDao
-import com.astute.body.data.local.dao.ExerciseLogDao
-import com.astute.body.data.local.dao.PersonalRecordDao
 import com.astute.body.data.local.dao.UserPreferencesDao
-import com.astute.body.data.local.dao.WorkoutSessionDao
 import com.astute.body.data.local.entity.ActiveWorkoutEntity
 import com.astute.body.data.local.entity.ExerciseEntity
-import com.astute.body.data.local.entity.ExerciseLogEntity
-import com.astute.body.data.local.entity.PersonalRecordEntity
 import com.astute.body.data.local.entity.UserPreferencesEntity
-import com.astute.body.data.local.entity.WorkoutSessionEntity
 import com.astute.body.data.repository.UserPreferencesRepository
+import com.astute.body.domain.AppClock
 import com.astute.body.domain.generator.FakeWorkoutRepository
 import com.astute.body.domain.generator.FakeWorkoutRepository.Companion.makeExercise
 import com.astute.body.domain.generator.WorkoutGenerator
@@ -45,26 +38,18 @@ class HomeViewModelTest {
     private lateinit var generator: WorkoutGenerator
     private lateinit var prefsDao: FakePrefsDao
     private lateinit var prefsRepo: UserPreferencesRepository
-    private lateinit var activeWorkoutDao: FakeActiveWorkoutDao
-    private lateinit var workoutSessionDao: FakeWorkoutSessionDao
-    private lateinit var exerciseLogDao: FakeExerciseLogDao
-    private lateinit var personalRecordDao: FakePersonalRecordDao
-    private lateinit var exerciseDao: FakeExerciseDao
+    private lateinit var clock: FakeClock
     private lateinit var viewModel: HomeViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = FakeWorkoutRepository()
+        clock = FakeClock()
         setupExercises()
-        generator = WorkoutGenerator(repository, MuscleGroupScorer())
+        generator = WorkoutGenerator(repository, MuscleGroupScorer(), clock)
         prefsDao = FakePrefsDao()
         prefsRepo = UserPreferencesRepository(prefsDao)
-        activeWorkoutDao = FakeActiveWorkoutDao()
-        workoutSessionDao = FakeWorkoutSessionDao()
-        exerciseLogDao = FakeExerciseLogDao()
-        personalRecordDao = FakePersonalRecordDao()
-        exerciseDao = FakeExerciseDao()
     }
 
     @After
@@ -85,10 +70,7 @@ class HomeViewModelTest {
     }
 
     private fun createViewModel(): HomeViewModel {
-        viewModel = HomeViewModel(
-            generator, repository, activeWorkoutDao, prefsRepo,
-            workoutSessionDao, exerciseLogDao, personalRecordDao, exerciseDao
-        )
+        viewModel = HomeViewModel(generator, repository, prefsRepo, clock)
         return viewModel
     }
 
@@ -179,16 +161,21 @@ class HomeViewModelTest {
         advanceUntilIdle()
 
         assertEquals(WorkoutMode.ACTIVE, viewModel.uiState.value.workoutMode)
-        assertNotNull(activeWorkoutDao.entity)
-        assertEquals(0, activeWorkoutDao.entity!!.currentIndex)
+        assertNotNull(repository.activeWorkout)
+        assertEquals(0, repository.activeWorkout!!.currentIndex)
     }
 
     @Test
     fun `restoreWorkout restores state from persisted ActiveWorkoutEntity`() = runTest {
-        exerciseDao.exerciseMap["bench_press"] = makeTestExercise("bench_press", "Bench Press", listOf("chest"))
-        exerciseDao.exerciseMap["squat"] = makeTestExercise("squat", "Squat", listOf("quadriceps"))
+        // Add exercises to the repository so they can be found by ID
+        val benchPress = makeTestExercise("bench_press", "Bench Press", listOf("chest"))
+        val squat = makeTestExercise("squat", "Squat", listOf("quadriceps"))
+        repository.exercises = repository.exercises + mapOf(
+            setOf("chest") to listOf(benchPress),
+            setOf("quadriceps") to listOf(squat)
+        )
 
-        activeWorkoutDao.entity = ActiveWorkoutEntity(
+        repository.activeWorkout = ActiveWorkoutEntity(
             exerciseRefs = """[{"exerciseId":"bench_press","muscleGroup":"Chest"},{"exerciseId":"squat","muscleGroup":"Legs (Push)"}]""",
             currentIndex = 1,
             logEntries = """[{"exerciseId":"bench_press","exerciseName":"Bench Press","muscleGroup":"Chest","sets":3,"reps":10,"weight":135.0}]""",
@@ -366,9 +353,12 @@ class HomeViewModelTest {
 
     @Test
     fun `saveWorkout clears active workout and resets to PLANNING`() = runTest {
-        exerciseDao.exerciseMap["bench_press"] = makeTestExercise("bench_press", "Bench Press", listOf("chest"))
+        val benchPress = makeTestExercise("bench_press", "Bench Press", listOf("chest"))
+        repository.exercises = repository.exercises + mapOf(
+            setOf("chest") to listOf(benchPress)
+        )
 
-        activeWorkoutDao.entity = ActiveWorkoutEntity(
+        repository.activeWorkout = ActiveWorkoutEntity(
             exerciseRefs = """[{"exerciseId":"bench_press","muscleGroup":"Chest"}]""",
             currentIndex = 0,
             logEntries = """[{"exerciseId":"bench_press","exerciseName":"Bench Press","muscleGroup":"Chest","sets":3,"reps":10,"weight":135.0}]""",
@@ -394,15 +384,18 @@ class HomeViewModelTest {
         advanceUntilIdle()
 
         assertEquals(WorkoutMode.PLANNING, viewModel.uiState.value.workoutMode)
-        assertNull(activeWorkoutDao.entity)
+        assertNull(repository.activeWorkout)
         assertTrue(viewModel.uiState.value.logEntries.isEmpty())
     }
 
     @Test
     fun `discardWorkout clears DB and resets to PLANNING`() = runTest {
-        exerciseDao.exerciseMap["bench_press"] = makeTestExercise("bench_press", "Bench Press", listOf("chest"))
+        val benchPress = makeTestExercise("bench_press", "Bench Press", listOf("chest"))
+        repository.exercises = repository.exercises + mapOf(
+            setOf("chest") to listOf(benchPress)
+        )
 
-        activeWorkoutDao.entity = ActiveWorkoutEntity(
+        repository.activeWorkout = ActiveWorkoutEntity(
             exerciseRefs = """[{"exerciseId":"bench_press","muscleGroup":"Chest"}]""",
             currentIndex = 0,
             logEntries = "[]",
@@ -424,7 +417,7 @@ class HomeViewModelTest {
         advanceUntilIdle()
 
         assertEquals(WorkoutMode.PLANNING, viewModel.uiState.value.workoutMode)
-        assertNull(activeWorkoutDao.entity)
+        assertNull(repository.activeWorkout)
     }
 
     @Test
@@ -437,15 +430,10 @@ class HomeViewModelTest {
 
         val state = viewModel.uiState.value
         if (state.flatExercises.size >= 3) {
-            val originalSecond = state.flatExercises[1].exercise.id
-
             // Try to move current exercise (index 0) — should be blocked
             viewModel.moveExercise(0, 1)
             assertEquals(state.flatExercises[0].exercise.id, viewModel.uiState.value.flatExercises[0].exercise.id)
 
-            // Move upcoming exercises (index 1 to 2) — should also be blocked since index 1 is right after current
-            // But moving 2 to 1 should be blocked (toIndex <= currentIndex not applicable since current is 0)
-            // Move index 2 down (should work if there's a 3rd+)
             if (state.flatExercises.size >= 4) {
                 val thirdId = state.flatExercises[2].exercise.id
                 viewModel.moveExercise(2, 3)
@@ -472,7 +460,7 @@ class HomeViewModelTest {
     )
 }
 
-// --- Fake DAOs ---
+// --- Fakes ---
 
 private class FakePrefsDao : UserPreferencesDao {
     var prefs: UserPreferencesEntity? = UserPreferencesEntity()
@@ -486,104 +474,6 @@ private class FakePrefsDao : UserPreferencesDao {
     }
 }
 
-private class FakeActiveWorkoutDao : ActiveWorkoutDao {
-    var entity: ActiveWorkoutEntity? = null
-
-    override suspend fun get(): ActiveWorkoutEntity? = entity
-
-    override suspend fun upsert(entity: ActiveWorkoutEntity) {
-        this.entity = entity
-    }
-
-    override suspend fun clear() {
-        entity = null
-    }
-}
-
-private class FakeWorkoutSessionDao : WorkoutSessionDao {
-    val sessions = MutableStateFlow<List<WorkoutSessionEntity>>(emptyList())
-
-    override fun getAllOrderedByDate(): Flow<List<WorkoutSessionEntity>> = sessions
-
-    override suspend fun getById(sessionId: Long): WorkoutSessionEntity? =
-        sessions.value.find { it.sessionId == sessionId }
-
-    override suspend fun getSessionsSince(sinceEpochMillis: Long): List<WorkoutSessionEntity> =
-        sessions.value.filter { it.date >= sinceEpochMillis }
-
-    override suspend fun insert(session: WorkoutSessionEntity): Long {
-        val id = (sessions.value.maxOfOrNull { it.sessionId } ?: 0) + 1
-        sessions.value = sessions.value + session.copy(sessionId = id)
-        return id
-    }
-
-    override suspend fun deleteById(sessionId: Long) {
-        sessions.value = sessions.value.filter { it.sessionId != sessionId }
-    }
-}
-
-private class FakeExerciseLogDao : ExerciseLogDao {
-    val logsBySession = mutableMapOf<Long, List<ExerciseLogEntity>>()
-
-    override suspend fun getBySessionId(sessionId: Long): List<ExerciseLogEntity> =
-        logsBySession[sessionId] ?: emptyList()
-
-    override suspend fun getByExerciseId(exerciseId: String): List<ExerciseLogEntity> =
-        logsBySession.values.flatten().filter { it.exerciseId == exerciseId }
-
-    override suspend fun getRecentExerciseIds(muscleGroup: String, limit: Int): List<String> =
-        emptyList()
-
-    override suspend fun insertAll(logs: List<ExerciseLogEntity>) {
-        logs.groupBy { it.sessionId }.forEach { (sessionId, sessionLogs) ->
-            logsBySession[sessionId] = (logsBySession[sessionId] ?: emptyList()) + sessionLogs
-        }
-    }
-
-    override suspend fun update(log: ExerciseLogEntity) {}
-
-    override suspend fun deleteById(logId: Long) {
-        logsBySession.forEach { (sessionId, logs) ->
-            logsBySession[sessionId] = logs.filter { it.logId != logId }
-        }
-    }
-}
-
-private class FakePersonalRecordDao : PersonalRecordDao {
-    val records = mutableMapOf<String, PersonalRecordEntity>()
-
-    override suspend fun getByExerciseId(exerciseId: String): PersonalRecordEntity? =
-        records[exerciseId]
-
-    override suspend fun upsert(record: PersonalRecordEntity) {
-        records[record.exerciseId] = record
-    }
-
-    override suspend fun deleteByExerciseId(exerciseId: String) {
-        records.remove(exerciseId)
-    }
-}
-
-private class FakeExerciseDao : ExerciseDao {
-    val exerciseMap = mutableMapOf<String, ExerciseEntity>()
-
-    override fun getAll(): Flow<List<ExerciseEntity>> =
-        MutableStateFlow(exerciseMap.values.toList())
-
-    override suspend fun getById(id: String): ExerciseEntity? = exerciseMap[id]
-
-    override suspend fun getByIds(ids: List<String>): List<ExerciseEntity> =
-        ids.mapNotNull { exerciseMap[it] }
-
-    override suspend fun getByMuscle(muscle: String): List<ExerciseEntity> =
-        exerciseMap.values.filter { muscle in it.primaryMuscles }
-
-    override suspend fun getDistinctEquipment(): List<String> =
-        exerciseMap.values.mapNotNull { it.equipment }.distinct()
-
-    override suspend fun count(): Int = exerciseMap.size
-
-    override suspend fun insertAll(exercises: List<ExerciseEntity>) {
-        exercises.forEach { exerciseMap[it.id] = it }
-    }
+class FakeClock(var currentTimeMillis: Long = System.currentTimeMillis()) : AppClock {
+    override fun now(): Long = currentTimeMillis
 }

@@ -5,6 +5,7 @@ import com.astute.body.domain.generator.FakeWorkoutRepository.Companion.makeExer
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.model.PlannedExercise
 import com.astute.body.domain.scoring.MuscleGroupScorer
+import com.astute.body.ui.home.FakeClock
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
@@ -20,7 +21,7 @@ class WorkoutGeneratorTest {
     @Before
     fun setup() {
         repository = FakeWorkoutRepository()
-        generator = WorkoutGenerator(repository, MuscleGroupScorer())
+        generator = WorkoutGenerator(repository, MuscleGroupScorer(), FakeClock())
         setupExercisesForAllGroups()
     }
 

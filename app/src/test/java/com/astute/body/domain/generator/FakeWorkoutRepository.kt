@@ -1,8 +1,12 @@
 package com.astute.body.domain.generator
 
+import com.astute.body.data.local.entity.ActiveWorkoutEntity
 import com.astute.body.data.local.entity.ExerciseEntity
+import com.astute.body.data.local.entity.ExerciseLogEntity
+import com.astute.body.data.local.entity.PersonalRecordEntity
 import com.astute.body.data.local.entity.RecoveryConfigEntity
 import com.astute.body.data.local.entity.UserPreferencesEntity
+import com.astute.body.data.local.entity.WorkoutSessionEntity
 import com.astute.body.data.repository.IWorkoutRepository
 import com.astute.body.domain.model.MuscleGroup
 
@@ -17,11 +21,19 @@ class FakeWorkoutRepository : IWorkoutRepository {
         experienceLevel = "intermediate"
     )
 
+    // Active workout state
+    var activeWorkout: ActiveWorkoutEntity? = null
+
+    // Saved data
+    val savedSessions = mutableListOf<WorkoutSessionEntity>()
+    val savedLogs = mutableListOf<ExerciseLogEntity>()
+    val personalRecords = mutableMapOf<String, PersonalRecordEntity>()
+
     override suspend fun getLastTrainedMillis(muscleGroup: MuscleGroup): Long? {
         return lastTrainedMillis[muscleGroup]
     }
 
-    override suspend fun getSessionCountLast14Days(muscleGroup: MuscleGroup): Int {
+    override suspend fun getSessionCountLast14Days(muscleGroup: MuscleGroup, nowMillis: Long): Int {
         return sessionCounts[muscleGroup] ?: 0
     }
 
@@ -59,6 +71,42 @@ class FakeWorkoutRepository : IWorkoutRepository {
     override suspend fun getExercisesByIds(ids: List<String>): List<ExerciseEntity> {
         val allExercises = exercises.values.flatten()
         return allExercises.filter { it.id in ids }
+    }
+
+    // Active workout persistence
+
+    override suspend fun getActiveWorkout(): ActiveWorkoutEntity? {
+        return activeWorkout
+    }
+
+    override suspend fun saveActiveWorkout(entity: ActiveWorkoutEntity) {
+        activeWorkout = entity
+    }
+
+    override suspend fun clearActiveWorkout() {
+        activeWorkout = null
+    }
+
+    // Workout saving
+
+    override suspend fun insertWorkoutSession(session: WorkoutSessionEntity): Long {
+        val id = (savedSessions.maxOfOrNull { it.sessionId } ?: 0) + 1
+        savedSessions.add(session.copy(sessionId = id))
+        return id
+    }
+
+    override suspend fun insertExerciseLogs(logs: List<ExerciseLogEntity>) {
+        savedLogs.addAll(logs)
+    }
+
+    // Personal records
+
+    override suspend fun getPersonalRecord(exerciseId: String): PersonalRecordEntity? {
+        return personalRecords[exerciseId]
+    }
+
+    override suspend fun upsertPersonalRecord(record: PersonalRecordEntity) {
+        personalRecords[record.exerciseId] = record
     }
 
     companion object {

@@ -2,6 +2,8 @@ package com.astute.body.di
 
 import com.astute.body.data.repository.IWorkoutRepository
 import com.astute.body.data.repository.WorkoutRepository
+import com.astute.body.domain.AppClock
+import com.astute.body.domain.SystemClock
 import com.astute.body.domain.scoring.MuscleGroupScorer
 import dagger.Binds
 import dagger.Module
@@ -17,6 +19,10 @@ object DomainModule {
     @Provides
     @Singleton
     fun provideMuscleGroupScorer(): MuscleGroupScorer = MuscleGroupScorer()
+
+    @Provides
+    @Singleton
+    fun provideAppClock(): AppClock = SystemClock()
 }
 
 @Module

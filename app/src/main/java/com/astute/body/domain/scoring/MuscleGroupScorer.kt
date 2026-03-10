@@ -22,8 +22,8 @@ data class ScoredMuscleGroup(
 class MuscleGroupScorer {
 
     companion object {
-        const val RECOVERY_WEIGHT = 0.35
-        const val STALENESS_WEIGHT = 0.30
+        const val RECOVERY_WEIGHT = 0.40
+        const val STALENESS_WEIGHT = 0.35
         const val FREQUENCY_BALANCE_WEIGHT = 0.25
         const val OVERLAP_PENALTY_FACTOR = 0.3
         const val RECOVERY_TIME_TIEBREAKER = 0.02

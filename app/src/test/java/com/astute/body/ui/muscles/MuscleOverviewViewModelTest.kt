@@ -3,6 +3,7 @@ package com.astute.body.ui.muscles
 import com.astute.body.domain.generator.FakeWorkoutRepository
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.scoring.MuscleGroupScorer
+import com.astute.body.ui.home.FakeClock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -23,12 +24,14 @@ class MuscleOverviewViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var repository: FakeWorkoutRepository
     private lateinit var scorer: MuscleGroupScorer
+    private lateinit var clock: FakeClock
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         repository = FakeWorkoutRepository()
         scorer = MuscleGroupScorer()
+        clock = FakeClock()
     }
 
     @After
@@ -38,7 +41,7 @@ class MuscleOverviewViewModelTest {
 
     @Test
     fun `all 7 muscle groups are present in state`() = runTest {
-        val viewModel = MuscleOverviewViewModel(repository, scorer)
+        val viewModel = MuscleOverviewViewModel(repository, scorer, clock)
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
@@ -53,7 +56,7 @@ class MuscleOverviewViewModelTest {
     @Test
     fun `never trained group is OVERDUE with null lastTrainedMillis`() = runTest {
         // No lastTrainedMillis set for any group
-        val viewModel = MuscleOverviewViewModel(repository, scorer)
+        val viewModel = MuscleOverviewViewModel(repository, scorer, clock)
         advanceUntilIdle()
 
         val chest = viewModel.uiState.value.groups.find { it.muscleGroup == MuscleGroup.CHEST }!!
@@ -70,7 +73,7 @@ class MuscleOverviewViewModelTest {
             MuscleGroup.CHEST to (now - 12 * 60 * 60 * 1000L)
         )
 
-        val viewModel = MuscleOverviewViewModel(repository, scorer)
+        val viewModel = MuscleOverviewViewModel(repository, scorer, clock)
         advanceUntilIdle()
 
         val chest = viewModel.uiState.value.groups.find { it.muscleGroup == MuscleGroup.CHEST }!!
@@ -85,7 +88,7 @@ class MuscleOverviewViewModelTest {
             MuscleGroup.CHEST to (now - 60 * 60 * 60 * 1000L)
         )
 
-        val viewModel = MuscleOverviewViewModel(repository, scorer)
+        val viewModel = MuscleOverviewViewModel(repository, scorer, clock)
         advanceUntilIdle()
 
         val chest = viewModel.uiState.value.groups.find { it.muscleGroup == MuscleGroup.CHEST }!!
@@ -100,7 +103,7 @@ class MuscleOverviewViewModelTest {
             MuscleGroup.CHEST to (now - 120 * 60 * 60 * 1000L)
         )
 
-        val viewModel = MuscleOverviewViewModel(repository, scorer)
+        val viewModel = MuscleOverviewViewModel(repository, scorer, clock)
         advanceUntilIdle()
 
         val chest = viewModel.uiState.value.groups.find { it.muscleGroup == MuscleGroup.CHEST }!!
@@ -115,7 +118,7 @@ class MuscleOverviewViewModelTest {
             MuscleGroup.CHEST to (now - 200 * 60 * 60 * 1000L)
         )
 
-        val viewModel = MuscleOverviewViewModel(repository, scorer)
+        val viewModel = MuscleOverviewViewModel(repository, scorer, clock)
         advanceUntilIdle()
 
         val chest = viewModel.uiState.value.groups.find { it.muscleGroup == MuscleGroup.CHEST }!!
@@ -130,7 +133,7 @@ class MuscleOverviewViewModelTest {
             MuscleGroup.LEGS_PUSH to 1
         )
 
-        val viewModel = MuscleOverviewViewModel(repository, scorer)
+        val viewModel = MuscleOverviewViewModel(repository, scorer, clock)
         advanceUntilIdle()
 
         val groups = viewModel.uiState.value.groups

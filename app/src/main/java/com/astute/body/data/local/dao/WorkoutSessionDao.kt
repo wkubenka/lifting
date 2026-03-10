@@ -18,6 +18,12 @@ interface WorkoutSessionDao {
     @Query("SELECT * FROM workout_sessions WHERE date >= :sinceEpochMillis ORDER BY date DESC")
     suspend fun getSessionsSince(sinceEpochMillis: Long): List<WorkoutSessionEntity>
 
+    @Query("SELECT MAX(date) FROM workout_sessions WHERE muscleGroups LIKE '%' || :muscleGroup || '%'")
+    suspend fun getLastTrainedDate(muscleGroup: String): Long?
+
+    @Query("SELECT COUNT(*) FROM workout_sessions WHERE muscleGroups LIKE '%' || :muscleGroup || '%' AND date >= :sinceEpochMillis")
+    suspend fun getSessionCountSince(muscleGroup: String, sinceEpochMillis: Long): Int
+
     @Insert
     suspend fun insert(session: WorkoutSessionEntity): Long
 

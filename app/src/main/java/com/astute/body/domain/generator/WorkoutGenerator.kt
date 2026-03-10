@@ -2,6 +2,7 @@ package com.astute.body.domain.generator
 
 import com.astute.body.data.local.entity.ExerciseEntity
 import com.astute.body.data.repository.IWorkoutRepository
+import com.astute.body.domain.AppClock
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.model.MuscleGroupAllocation
 import com.astute.body.domain.model.PlannedExercise
@@ -15,7 +16,8 @@ import javax.inject.Singleton
 @Singleton
 class WorkoutGenerator @Inject constructor(
     private val repository: IWorkoutRepository,
-    private val scorer: MuscleGroupScorer
+    private val scorer: MuscleGroupScorer,
+    private val clock: AppClock
 ) {
     companion object {
         const val MIN_EXERCISES_PER_GROUP = 2
@@ -161,7 +163,7 @@ class WorkoutGenerator @Inject constructor(
     }
 
     private suspend fun buildTrainingData(): List<MuscleGroupTrainingData> {
-        val now = System.currentTimeMillis()
+        val now = clock.now()
         val configs = repository.getAllRecoveryConfigs()
         val configMap = configs.associateBy { it.muscleGroup }
 
@@ -170,7 +172,7 @@ class WorkoutGenerator @Inject constructor(
             val hoursSinceTrained = lastTrainedMillis?.let {
                 (now - it).toDouble() / (1000 * 60 * 60)
             }
-            val sessions = repository.getSessionCountLast14Days(group)
+            val sessions = repository.getSessionCountLast14Days(group, now)
             val minRecovery = configMap[group.displayName]?.minRecoveryHours ?: 48
 
             MuscleGroupTrainingData(group, hoursSinceTrained, sessions, minRecovery)

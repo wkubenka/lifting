@@ -4,6 +4,7 @@ import com.astute.body.data.local.entity.UserPreferencesEntity
 import com.astute.body.domain.generator.FakeWorkoutRepository.Companion.makeExercise
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.scoring.MuscleGroupScorer
+import com.astute.body.ui.home.FakeClock
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -18,7 +19,7 @@ class FavoritesExclusionsTest {
     @Before
     fun setup() {
         repository = FakeWorkoutRepository()
-        generator = WorkoutGenerator(repository, MuscleGroupScorer())
+        generator = WorkoutGenerator(repository, MuscleGroupScorer(), FakeClock())
         setupExercisesForAllGroups()
     }
 

@@ -2,11 +2,6 @@ package com.astute.body.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.astute.body.data.local.dao.ActiveWorkoutDao
-import com.astute.body.data.local.dao.ExerciseDao
-import com.astute.body.data.local.dao.ExerciseLogDao
-import com.astute.body.data.local.dao.PersonalRecordDao
-import com.astute.body.data.local.dao.WorkoutSessionDao
 import com.astute.body.data.local.entity.ActiveWorkoutEntity
 import com.astute.body.data.local.entity.ExerciseLogEntity
 import com.astute.body.data.local.entity.PersonalRecordEntity
@@ -14,6 +9,7 @@ import com.astute.body.data.local.entity.UserPreferencesEntity
 import com.astute.body.data.local.entity.WorkoutSessionEntity
 import com.astute.body.data.repository.IWorkoutRepository
 import com.astute.body.data.repository.UserPreferencesRepository
+import com.astute.body.domain.AppClock
 import com.astute.body.domain.generator.WorkoutGenerator
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.model.PlannedExercise
@@ -67,12 +63,8 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val generator: WorkoutGenerator,
     private val repository: IWorkoutRepository,
-    private val activeWorkoutDao: ActiveWorkoutDao,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val workoutSessionDao: WorkoutSessionDao,
-    private val exerciseLogDao: ExerciseLogDao,
-    private val personalRecordDao: PersonalRecordDao,
-    private val exerciseDao: ExerciseDao
+    private val clock: AppClock
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -83,24 +75,29 @@ class HomeViewModel @Inject constructor(
     private var cachedPrefs: UserPreferencesEntity = UserPreferencesEntity()
 
     init {
-        generateWorkout()
-        restoreWorkout()
+        // Restore active workout first, only generate if none exists
+        viewModelScope.launch {
+            val restored = tryRestoreWorkout()
+            if (!restored) {
+                generateWorkoutInternal()
+            }
+        }
         viewModelScope.launch {
             userPreferencesRepository.preferences.collect { prefs ->
                 cachedPrefs = prefs
-                val favoritedIds = prefs.favoritedExercises.toSet()
-                _uiState.value = _uiState.value.copy(
-                    favoritedIds = favoritedIds,
-                    hasExcludedInPlan = checkForExcludedExercises(),
+                val state = _uiState.value
+                _uiState.value = state.copy(
+                    favoritedIds = prefs.favoritedExercises.toSet(),
+                    hasExcludedInPlan = checkForExcludedExercises(state.workoutPlan),
                     weightUnit = prefs.weightUnit
                 )
             }
         }
     }
 
-    private fun checkForExcludedExercises(): Boolean {
+    private fun checkForExcludedExercises(plan: WorkoutPlan?): Boolean {
         val excludedIds = cachedPrefs.excludedExercises.toSet()
-        val plan = _uiState.value.workoutPlan ?: return false
+        plan ?: return false
         return plan.muscleGroupAllocations
             .flatMap { it.exercises }
             .any { it.exercise.id in excludedIds }
@@ -109,24 +106,26 @@ class HomeViewModel @Inject constructor(
     // --- Planning methods ---
 
     fun generateWorkout() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+        viewModelScope.launch { generateWorkoutInternal() }
+    }
 
-            val prefs = repository.getUserPreferences()
-            if (prefs.availableEquipment.isEmpty()) {
-                _uiState.value = HomeUiState(isLoading = false, needsSetup = true)
-                return@launch
-            }
+    private suspend fun generateWorkoutInternal() {
+        _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val targetGroups = _uiState.value.selectedMuscleGroups.ifEmpty { null }
-            val plan = generator.generate(targetGroups)
-            _uiState.value = _uiState.value.copy(
-                workoutPlan = plan,
-                flatExercises = plan.flatExercisesSortedByEquipment(),
-                isLoading = false
-            )
-            _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
+        val prefs = repository.getUserPreferences()
+        if (prefs.availableEquipment.isEmpty()) {
+            _uiState.value = HomeUiState(isLoading = false, needsSetup = true)
+            return
         }
+
+        val targetGroups = _uiState.value.selectedMuscleGroups.ifEmpty { null }
+        val plan = generator.generate(targetGroups)
+        _uiState.value = _uiState.value.copy(
+            workoutPlan = plan,
+            flatExercises = plan.flatExercisesSortedByEquipment(),
+            isLoading = false,
+            hasExcludedInPlan = checkForExcludedExercises(plan)
+        )
     }
 
     fun swapExercise(exercise: PlannedExercise) {
@@ -157,6 +156,7 @@ class HomeViewModel @Inject constructor(
                 _uiState.value = state.copy(
                     workoutPlan = newPlan,
                     flatExercises = newFlatExercises,
+                    hasExcludedInPlan = checkForExcludedExercises(newPlan),
                     currentExerciseSets = if (isCurrentExercise) emptyList() else state.currentExerciseSets,
                     setsCompleted = if (isCurrentExercise) 0 else state.setsCompleted,
                     currentReps = if (isCurrentExercise) 10 else state.currentReps,
@@ -169,10 +169,10 @@ class HomeViewModel @Inject constructor(
             } else {
                 _uiState.value = state.copy(
                     workoutPlan = newPlan,
-                    flatExercises = newPlan.flatExercisesSortedByEquipment()
+                    flatExercises = newPlan.flatExercisesSortedByEquipment(),
+                    hasExcludedInPlan = checkForExcludedExercises(newPlan)
                 )
             }
-            _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
         }
     }
 
@@ -182,9 +182,9 @@ class HomeViewModel @Inject constructor(
             val newPlan = generator.regenerateGroup(currentPlan, muscleGroup)
             _uiState.value = _uiState.value.copy(
                 workoutPlan = newPlan,
-                flatExercises = newPlan.flatExercisesSortedByEquipment()
+                flatExercises = newPlan.flatExercisesSortedByEquipment(),
+                hasExcludedInPlan = checkForExcludedExercises(newPlan)
             )
-            _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
         }
     }
 
@@ -197,9 +197,9 @@ class HomeViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 workoutPlan = newPlan,
                 flatExercises = newPlan.flatExercisesSortedByEquipment(),
-                isLoading = false
+                isLoading = false,
+                hasExcludedInPlan = checkForExcludedExercises(newPlan)
             )
-            _uiState.value = _uiState.value.copy(hasExcludedInPlan = checkForExcludedExercises())
         }
     }
 
@@ -246,9 +246,9 @@ class HomeViewModel @Inject constructor(
             PlannedExerciseRef(it.exercise.id, it.muscleGroup.displayName)
         }
 
-        val now = System.currentTimeMillis()
+        val now = clock.now()
         viewModelScope.launch {
-            activeWorkoutDao.upsert(
+            repository.saveActiveWorkout(
                 ActiveWorkoutEntity(
                     exerciseRefs = json.encodeToString(refs),
                     currentIndex = 0,
@@ -281,44 +281,43 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun restoreWorkout() {
-        viewModelScope.launch {
-            val saved = activeWorkoutDao.get() ?: return@launch
-            val refs: List<PlannedExerciseRef> = json.decodeFromString(saved.exerciseRefs)
-            val logEntries: List<ExerciseLogEntry> = json.decodeFromString(saved.logEntries)
-            val newPRs: List<NewPR> = json.decodeFromString(saved.newPRs)
-            val savedSets: List<SetEntry> = json.decodeFromString(saved.currentExerciseSets)
-            val savedAllSets: Map<String, List<SetEntry>> = try {
-                json.decodeFromString(saved.allExerciseSets)
-            } catch (_: Exception) { emptyMap() }
+    private suspend fun tryRestoreWorkout(): Boolean {
+        val saved = repository.getActiveWorkout() ?: return false
+        val refs: List<PlannedExerciseRef> = json.decodeFromString(saved.exerciseRefs)
+        val logEntries: List<ExerciseLogEntry> = json.decodeFromString(saved.logEntries)
+        val newPRs: List<NewPR> = json.decodeFromString(saved.newPRs)
+        val savedSets: List<SetEntry> = json.decodeFromString(saved.currentExerciseSets)
+        val savedAllSets: Map<String, List<SetEntry>> = try {
+            json.decodeFromString(saved.allExerciseSets)
+        } catch (_: Exception) { emptyMap() }
 
-            val exerciseIds = refs.map { it.exerciseId }
-            val exerciseMap = exerciseDao.getByIds(exerciseIds).associateBy { it.id }
-            val exercises = refs.mapNotNull { ref ->
-                val entity = exerciseMap[ref.exerciseId] ?: return@mapNotNull null
-                val muscleGroup = MuscleGroup.fromDisplayName(ref.muscleGroup) ?: return@mapNotNull null
-                PlannedExercise(exercise = entity, muscleGroup = muscleGroup)
-            }
-
-            if (exercises.isEmpty()) return@launch
-
-            _uiState.value = _uiState.value.copy(
-                workoutMode = WorkoutMode.ACTIVE,
-                flatExercises = exercises,
-                currentIndex = saved.currentIndex.coerceAtMost(exercises.size - 1).coerceAtLeast(0),
-                logEntries = logEntries,
-                setsCompleted = saved.setsCompleted,
-                currentSets = saved.currentSets,
-                currentReps = saved.currentReps,
-                currentWeight = saved.currentWeight,
-                startTimeMillis = saved.startedAtMillis,
-                newPRs = newPRs,
-                currentExerciseSets = savedSets,
-                allExerciseSets = savedAllSets
-            )
-
-            loadPreviousPerformance()
+        val exerciseIds = refs.map { it.exerciseId }
+        val exerciseMap = repository.getExercisesByIds(exerciseIds).associateBy { it.id }
+        val exercises = refs.mapNotNull { ref ->
+            val entity = exerciseMap[ref.exerciseId] ?: return@mapNotNull null
+            val muscleGroup = MuscleGroup.fromDisplayName(ref.muscleGroup) ?: return@mapNotNull null
+            PlannedExercise(exercise = entity, muscleGroup = muscleGroup)
         }
+
+        if (exercises.isEmpty()) return false
+
+        _uiState.value = _uiState.value.copy(
+            workoutMode = WorkoutMode.ACTIVE,
+            flatExercises = exercises,
+            currentIndex = saved.currentIndex.coerceAtMost(exercises.size - 1).coerceAtLeast(0),
+            logEntries = logEntries,
+            setsCompleted = saved.setsCompleted,
+            currentSets = saved.currentSets,
+            currentReps = saved.currentReps,
+            currentWeight = saved.currentWeight,
+            startTimeMillis = saved.startedAtMillis,
+            newPRs = newPRs,
+            currentExerciseSets = savedSets,
+            allExerciseSets = savedAllSets
+        )
+
+        loadPreviousPerformance()
+        return true
     }
 
     private fun persistState() {
@@ -329,7 +328,7 @@ class HomeViewModel @Inject constructor(
             val refs = state.flatExercises.map {
                 PlannedExerciseRef(it.exercise.id, it.muscleGroup.displayName)
             }
-            activeWorkoutDao.upsert(
+            repository.saveActiveWorkout(
                 ActiveWorkoutEntity(
                     exerciseRefs = json.encodeToString(refs),
                     currentIndex = state.currentIndex,
@@ -355,7 +354,7 @@ class HomeViewModel @Inject constructor(
         val current = exercises[_uiState.value.currentIndex]
 
         viewModelScope.launch {
-            val record = personalRecordDao.getByExerciseId(current.exercise.id)
+            val record = repository.getPersonalRecord(current.exercise.id)
             _uiState.value = _uiState.value.copy(
                 previousPerformance = record?.let {
                     ExercisePerformance(
@@ -546,10 +545,11 @@ class HomeViewModel @Inject constructor(
         if (state.logEntries.isEmpty()) return
 
         viewModelScope.launch {
+            val now = clock.now()
             val muscleGroups = state.logEntries.map { it.muscleGroup }.distinct()
-            val sessionId = workoutSessionDao.insert(
+            val sessionId = repository.insertWorkoutSession(
                 WorkoutSessionEntity(
-                    date = System.currentTimeMillis(),
+                    date = now,
                     muscleGroups = muscleGroups,
                     completed = true
                 )
@@ -565,11 +565,10 @@ class HomeViewModel @Inject constructor(
                     weight = it.weight
                 )
             }
-            exerciseLogDao.insertAll(logs)
+            repository.insertExerciseLogs(logs)
 
             for ((exerciseId, entries) in state.logEntries.groupBy { it.exerciseId }) {
-                val existing = personalRecordDao.getByExerciseId(exerciseId)
-                val now = System.currentTimeMillis()
+                val existing = repository.getPersonalRecord(exerciseId)
                 val sessionMaxWeight = entries.maxOf { it.weight }
                 val sessionMaxReps = entries.maxOf { it.reps }
                 val newRecord = PersonalRecordEntity(
@@ -582,10 +581,10 @@ class HomeViewModel @Inject constructor(
                     lastReps = sessionMaxReps,
                     lastPerformed = now
                 )
-                personalRecordDao.upsert(newRecord)
+                repository.upsertPersonalRecord(newRecord)
             }
 
-            activeWorkoutDao.clear()
+            repository.clearActiveWorkout()
             _uiState.value = state.copy(
                 workoutMode = WorkoutMode.PLANNING,
                 currentIndex = 0,
@@ -599,13 +598,13 @@ class HomeViewModel @Inject constructor(
                 timerSeconds = 0,
                 allExerciseSets = emptyMap()
             )
-            generateWorkout()
+            generateWorkoutInternal()
         }
     }
 
     fun discardWorkout() {
         viewModelScope.launch {
-            activeWorkoutDao.clear()
+            repository.clearActiveWorkout()
             stopTimer()
             _uiState.value = _uiState.value.copy(
                 workoutMode = WorkoutMode.PLANNING,

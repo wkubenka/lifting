@@ -289,6 +289,12 @@ private class FakeWorkoutSessionDao : WorkoutSessionDao {
         return sessions.value.filter { it.date >= sinceEpochMillis }
     }
 
+    override suspend fun getLastTrainedDate(muscleGroup: String): Long? =
+        sessions.value.filter { muscleGroup in it.muscleGroups }.maxByOrNull { it.date }?.date
+
+    override suspend fun getSessionCountSince(muscleGroup: String, sinceEpochMillis: Long): Int =
+        sessions.value.count { muscleGroup in it.muscleGroups && it.date >= sinceEpochMillis }
+
     override suspend fun insert(session: WorkoutSessionEntity): Long {
         val id = (sessions.value.maxOfOrNull { it.sessionId } ?: 0) + 1
         sessions.value = sessions.value + session.copy(sessionId = id)

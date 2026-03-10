@@ -3,6 +3,7 @@ package com.astute.body.ui.muscles
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.astute.body.data.repository.IWorkoutRepository
+import com.astute.body.domain.AppClock
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.scoring.MuscleGroupScorer
 import com.astute.body.domain.scoring.MuscleGroupTrainingData
@@ -33,7 +34,8 @@ data class MuscleOverviewUiState(
 @HiltViewModel
 class MuscleOverviewViewModel @Inject constructor(
     private val repository: IWorkoutRepository,
-    private val scorer: MuscleGroupScorer
+    private val scorer: MuscleGroupScorer,
+    private val clock: AppClock
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MuscleOverviewUiState())
@@ -51,13 +53,13 @@ class MuscleOverviewViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val now = System.currentTimeMillis()
+            val now = clock.now()
             val trainingDataList = mutableListOf<MuscleGroupTrainingData>()
             val statusList = mutableListOf<MuscleGroupStatus>()
 
             for (group in MuscleGroup.entries) {
                 val lastTrained = repository.getLastTrainedMillis(group)
-                val sessionsLast14Days = repository.getSessionCountLast14Days(group)
+                val sessionsLast14Days = repository.getSessionCountLast14Days(group, now)
                 val config = repository.getRecoveryConfig(group)
                 val minRecoveryHours = config?.minRecoveryHours ?: 48
 
