@@ -12,6 +12,8 @@ import com.astute.body.domain.scoring.MuscleGroupTrainingData
 import com.astute.body.domain.scoring.ScoredMuscleGroup
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.pow
+import kotlin.random.Random
 
 @Singleton
 class WorkoutGenerator @Inject constructor(
@@ -20,11 +22,12 @@ class WorkoutGenerator @Inject constructor(
     private val clock: AppClock
 ) {
     companion object {
-        const val MIN_EXERCISES_PER_GROUP = 2
+        const val EXERCISES_PER_GROUP = 3
         const val SCORE_THRESHOLD_RATIO = 0.20
         const val MAX_GROUPS = 3
-        const val MIN_GROUPS = 2
         const val FAVORITED_GROUP_BONUS = 0.05
+        const val COMPOUND_WEIGHT = 2.0
+        const val ISOLATION_WEIGHT = 1.0
     }
 
     suspend fun generate(targetGroups: Set<MuscleGroup>? = null): WorkoutPlan {
@@ -47,7 +50,7 @@ class WorkoutGenerator @Inject constructor(
         val selectedGroups = if (targetGroups != null) {
             // Use user-selected groups, preserving scores for allocation
             boostedScores.filter { it.muscleGroup in targetGroups }
-                .ifEmpty { boostedScores.take(MIN_GROUPS) }
+                .ifEmpty { boostedScores.take(2) }
         } else {
             selectGroups(boostedScores, targetSize)
         }
@@ -183,17 +186,23 @@ class WorkoutGenerator @Inject constructor(
         scores: List<ScoredMuscleGroup>,
         targetSize: Int
     ): List<ScoredMuscleGroup> {
-        val sorted = scores.sortedByDescending { it.score }
-        if (sorted.isEmpty()) return emptyList()
+        val remainder = targetSize % 3
+        val maxGroups = (targetSize / 3).coerceAtMost(MAX_GROUPS)
 
-        val topScore = sorted.first().score
+        // When remainder == 2, Core is reserved for remainder only — exclude from normal selection
+        val excludeCore = remainder == 2
+        val eligible = scores
+            .filter { !excludeCore || it.muscleGroup != MuscleGroup.CORE }
+            .sortedByDescending { it.score }
+        if (eligible.isEmpty()) return emptyList()
+
+        val topScore = eligible.first().score
         val threshold = topScore * SCORE_THRESHOLD_RATIO
 
         val selected = mutableListOf<ScoredMuscleGroup>()
-        var totalExercises = 0
 
-        for (candidate in sorted) {
-            if (selected.size >= MAX_GROUPS) break
+        for (candidate in eligible) {
+            if (selected.size >= maxGroups) break
 
             // Hard constraint: never select both leg groups
             val isLeg = candidate.muscleGroup == MuscleGroup.LEGS_PUSH ||
@@ -209,11 +218,9 @@ class WorkoutGenerator @Inject constructor(
                 selected.map { it.muscleGroup }
             )
 
-            if (selected.size >= MIN_GROUPS && adjustedScore < threshold) break
-            if (selected.size >= MIN_GROUPS && totalExercises + MIN_EXERCISES_PER_GROUP > targetSize) break
+            if (selected.size >= 2 && adjustedScore < threshold) break
 
             selected.add(candidate.copy(score = adjustedScore))
-            totalExercises += MIN_EXERCISES_PER_GROUP
         }
 
         return selected
@@ -225,31 +232,22 @@ class WorkoutGenerator @Inject constructor(
     ): List<Pair<ScoredMuscleGroup, Int>> {
         if (groups.isEmpty()) return emptyList()
 
-        val totalScore = groups.sumOf { it.score }
-        if (totalScore <= 0) {
-            return groups.map { it to MIN_EXERCISES_PER_GROUP }
-        }
+        val remainder = targetSize % 3
 
-        val allocations = groups.map { group ->
-            val proportion = group.score / totalScore
-            val raw = (proportion * targetSize).toInt().coerceAtLeast(MIN_EXERCISES_PER_GROUP)
-            group to raw
-        }.toMutableList()
+        // Each selected group gets exactly 3 exercises
+        val allocations = groups.map { it to EXERCISES_PER_GROUP }.toMutableList()
 
-        var total = allocations.sumOf { it.second }
-        while (total > targetSize && allocations.any { it.second > MIN_EXERCISES_PER_GROUP }) {
-            val idx = allocations.indices
-                .filter { allocations[it].second > MIN_EXERCISES_PER_GROUP }
-                .minByOrNull { allocations[it].first.score }
-                ?: break
-            allocations[idx] = allocations[idx].let { (g, c) -> g to (c - 1) }
-            total--
-        }
-
-        while (total < targetSize) {
-            val idx = allocations.indices.maxByOrNull { allocations[it].first.score } ?: break
-            allocations[idx] = allocations[idx].let { (g, c) -> g to (c + 1) }
-            total++
+        // Add Core remainder when targetSize is not divisible by 3
+        if (remainder > 0) {
+            val coreAlready = allocations.indexOfFirst { it.first.muscleGroup == MuscleGroup.CORE }
+            if (coreAlready >= 0) {
+                // Core was already selected as a normal group — add remainder on top
+                allocations[coreAlready] = allocations[coreAlready].let { (g, c) -> g to c + remainder }
+            } else {
+                // Add Core as a new group with just the remainder exercises
+                val coreScore = ScoredMuscleGroup(MuscleGroup.CORE, 0.0)
+                allocations.add(coreScore to remainder)
+            }
         }
 
         return allocations
@@ -279,31 +277,16 @@ class WorkoutGenerator @Inject constructor(
 
         val recentIds = repository.getRecentExerciseIds(muscleGroup, 20).toSet()
 
-        // Phase 1: First exercise — prefer compound, then favorited, then not-recent
-        val compounds = candidates.filter { it.mechanic == "compound" }
-        val firstExercise = if (compounds.isNotEmpty()) {
-            compounds
-                .groupBy { Pair(it.id in favoritedIds, it.id !in recentIds) }
-                .toSortedMap(compareByDescending<Pair<Boolean, Boolean>> { it.first }
-                    .thenByDescending { it.second })
-                .flatMap { (_, exercises) -> exercises.shuffled() }
-                .first()
-        } else {
-            candidates.shuffled().first()
-        }
-
-        if (count == 1) return listOf(PlannedExercise(firstExercise, muscleGroup))
-
-        // Phase 2: Remaining exercises — no compound preference, sort by favorited + not-recent
-        val remaining = candidates.filter { it.id != firstExercise.id }
+        // Sort candidates into priority tiers: favorited+not-recent > favorited > not-recent > other
+        // Within each tier, use weighted random sampling: compound = 2x chance vs isolation
+        val selected = candidates
             .groupBy { Pair(it.id in favoritedIds, it.id !in recentIds) }
             .toSortedMap(compareByDescending<Pair<Boolean, Boolean>> { it.first }
                 .thenByDescending { it.second })
-            .flatMap { (_, exercises) -> exercises.shuffled() }
-            .take(count - 1)
+            .flatMap { (_, exercises) -> weightedShuffle(exercises) }
+            .take(count)
 
-        return listOf(PlannedExercise(firstExercise, muscleGroup)) +
-            remaining.map { PlannedExercise(it, muscleGroup) }
+        return selected.map { PlannedExercise(it, muscleGroup) }
     }
 
     private suspend fun findGroupsWithFavoritedExercises(
@@ -320,6 +303,19 @@ class WorkoutGenerator @Inject constructor(
             }
         }
         return groups
+    }
+
+    /**
+     * Weighted shuffle: compound exercises get [COMPOUND_WEIGHT] (2x) chance,
+     * isolation/null get [ISOLATION_WEIGHT] (1x). Uses the classic weighted
+     * reservoir sampling trick: sort by random^(1/weight) descending.
+     */
+    private fun weightedShuffle(exercises: List<ExerciseEntity>): List<ExerciseEntity> {
+        return exercises.map { exercise ->
+            val weight = if (exercise.mechanic == "compound") COMPOUND_WEIGHT else ISOLATION_WEIGHT
+            val key = Random.nextDouble().pow(1.0 / weight)
+            exercise to key
+        }.sortedByDescending { it.second }.map { it.first }
     }
 
     private suspend fun getFilteredExercises(
