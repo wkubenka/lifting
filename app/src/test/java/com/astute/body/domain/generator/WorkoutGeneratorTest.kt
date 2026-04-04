@@ -268,6 +268,8 @@ class WorkoutGeneratorTest {
         val groups = plan.muscleGroupAllocations.map { it.muscleGroup }
         assertFalse("Core must not be injected into a manual selection", MuscleGroup.CORE in groups)
         assertEquals("Only the two chosen groups should be present", 2, groups.size)
+        val totalExercises = plan.muscleGroupAllocations.sumOf { it.exercises.size }
+        assertEquals("Manual selection with targetSize=7 delivers 6 exercises (2 groups × 3), not 7", 6, totalExercises)
     }
 
     @Test

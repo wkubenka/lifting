@@ -91,7 +91,7 @@ class WorkoutGenerator @Inject constructor(
             prefs.experienceLevel
         ).filter { it.id !in currentIds && it.id !in userExcludedIds }
 
-        val replacement = candidates.firstOrNull() ?: return plan
+        val replacement = weightedShuffle(candidates).firstOrNull() ?: return plan
         val newExercises = allocation.exercises.map {
             if (it.exercise.id == exerciseToReplace.exercise.id) {
                 PlannedExercise(replacement, exerciseToReplace.muscleGroup)
