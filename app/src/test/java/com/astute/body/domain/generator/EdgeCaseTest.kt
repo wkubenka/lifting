@@ -113,7 +113,7 @@ class EdgeCaseTest {
         val plan = generator.generate()
         val totalExercises = plan.muscleGroupAllocations.sumOf { it.exercises.size }
 
-        assertTrue("Should have roughly 12 exercises, got $totalExercises", totalExercises in 10..14)
+        assertEquals("Should have exactly 12 exercises", 12, totalExercises)
     }
 
     @Test

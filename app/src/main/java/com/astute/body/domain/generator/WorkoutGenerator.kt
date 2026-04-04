@@ -54,7 +54,7 @@ class WorkoutGenerator @Inject constructor(
         } else {
             selectGroups(boostedScores, targetSize)
         }
-        val allocations = allocateExercises(selectedGroups, targetSize)
+        val allocations = allocateExercises(selectedGroups, targetSize, isManualSelection = targetGroups != null)
 
         val muscleGroupAllocations = allocations.map { (scored, count) ->
             val exercises = selectExercisesForGroup(
@@ -228,7 +228,8 @@ class WorkoutGenerator @Inject constructor(
 
     private fun allocateExercises(
         groups: List<ScoredMuscleGroup>,
-        targetSize: Int
+        targetSize: Int,
+        isManualSelection: Boolean = false
     ): List<Pair<ScoredMuscleGroup, Int>> {
         if (groups.isEmpty()) return emptyList()
 
@@ -241,8 +242,12 @@ class WorkoutGenerator @Inject constructor(
         if (remainder > 0) {
             val coreAlready = allocations.indexOfFirst { it.first.muscleGroup == MuscleGroup.CORE }
             if (coreAlready >= 0) {
-                // Core was already selected as a normal group — add remainder on top
-                allocations[coreAlready] = allocations[coreAlready].let { (g, c) -> g to c + remainder }
+                // Core was manually selected or auto-selected as a normal group.
+                // Only inflate it with remainder during auto-selection — if the user
+                // explicitly chose Core, leave it at its normal 3-exercise allocation.
+                if (!isManualSelection) {
+                    allocations[coreAlready] = allocations[coreAlready].let { (g, c) -> g to c + remainder }
+                }
             } else {
                 // Add Core as a new group with just the remainder exercises
                 val coreScore = ScoredMuscleGroup(MuscleGroup.CORE, 0.0, 0.0, 0.0, 0.0)
