@@ -33,6 +33,7 @@ class WorkoutGenerator @Inject constructor(
     suspend fun generate(targetGroups: Set<MuscleGroup>? = null): WorkoutPlan {
         val prefs = repository.getUserPreferences()
         val targetSize = prefs.targetWorkoutSize
+        require(targetSize >= 3) { "targetWorkoutSize must be at least 3, got $targetSize" }
         val userExcludedIds = prefs.excludedExercises.toSet()
         val favoritedIds = prefs.favoritedExercises.toSet()
 
@@ -248,8 +249,8 @@ class WorkoutGenerator @Inject constructor(
                 if (!isManualSelection) {
                     allocations[coreAlready] = allocations[coreAlready].let { (g, c) -> g to c + remainder }
                 }
-            } else {
-                // Add Core as a new group with just the remainder exercises
+            } else if (!isManualSelection) {
+                // Add Core as a new group with just the remainder exercises (auto-selection only)
                 val coreScore = ScoredMuscleGroup(MuscleGroup.CORE, 0.0, 0.0, 0.0, 0.0)
                 allocations.add(coreScore to remainder)
             }

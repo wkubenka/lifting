@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
@@ -114,6 +115,30 @@ class EdgeCaseTest {
         val totalExercises = plan.muscleGroupAllocations.sumOf { it.exercises.size }
 
         assertEquals("Should have exactly 12 exercises", 12, totalExercises)
+    }
+
+    @Test
+    fun `targetSize less than 3 throws IllegalArgumentException`() = runTest {
+        repository.preferences = repository.preferences.copy(targetWorkoutSize = 2)
+
+        try {
+            generator.generate()
+            fail("Expected IllegalArgumentException for targetSize=2")
+        } catch (e: IllegalArgumentException) {
+            assertTrue(e.message?.contains("3") == true)
+        }
+    }
+
+    @Test
+    fun `targetSize of 1 throws IllegalArgumentException`() = runTest {
+        repository.preferences = repository.preferences.copy(targetWorkoutSize = 1)
+
+        try {
+            generator.generate()
+            fail("Expected IllegalArgumentException for targetSize=1")
+        } catch (e: IllegalArgumentException) {
+            assertTrue(e.message?.contains("3") == true)
+        }
     }
 
     @Test

@@ -8,6 +8,7 @@ import com.astute.body.domain.scoring.MuscleGroupScorer
 import com.astute.body.ui.home.FakeClock
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -257,6 +258,16 @@ class WorkoutGeneratorTest {
             "Locked exercise should still be present",
             newAllocation.exercises.any { it.exercise.id == lockedExercise.exercise.id }
         )
+    }
+
+    @Test
+    fun `manual selection does not inject Core when targetSize has a remainder`() = runTest {
+        // targetSize=7 → remainder=1; user picks Chest+Back only — Core must NOT appear
+        repository.preferences = repository.preferences.copy(targetWorkoutSize = 7)
+        val plan = generator.generate(targetGroups = setOf(MuscleGroup.CHEST, MuscleGroup.BACK))
+        val groups = plan.muscleGroupAllocations.map { it.muscleGroup }
+        assertFalse("Core must not be injected into a manual selection", MuscleGroup.CORE in groups)
+        assertEquals("Only the two chosen groups should be present", 2, groups.size)
     }
 
     @Test
