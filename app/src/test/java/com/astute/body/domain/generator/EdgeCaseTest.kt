@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 
@@ -103,7 +104,7 @@ class EdgeCaseTest {
         val plan = generator.generate()
         val totalExercises = plan.muscleGroupAllocations.sumOf { it.exercises.size }
 
-        assertTrue("Should have roughly 5 exercises, got $totalExercises", totalExercises in 4..6)
+        assertEquals("Should have exactly 5 exercises", 5, totalExercises)
     }
 
     @Test
@@ -113,7 +114,31 @@ class EdgeCaseTest {
         val plan = generator.generate()
         val totalExercises = plan.muscleGroupAllocations.sumOf { it.exercises.size }
 
-        assertTrue("Should have roughly 12 exercises, got $totalExercises", totalExercises in 10..14)
+        assertEquals("Should have exactly 12 exercises", 12, totalExercises)
+    }
+
+    @Test
+    fun `targetSize less than 3 throws IllegalArgumentException`() = runTest {
+        repository.preferences = repository.preferences.copy(targetWorkoutSize = 2)
+
+        try {
+            generator.generate()
+            fail("Expected IllegalArgumentException for targetSize=2")
+        } catch (e: IllegalArgumentException) {
+            assertTrue(e.message?.contains("3") == true)
+        }
+    }
+
+    @Test
+    fun `targetSize of 1 throws IllegalArgumentException`() = runTest {
+        repository.preferences = repository.preferences.copy(targetWorkoutSize = 1)
+
+        try {
+            generator.generate()
+            fail("Expected IllegalArgumentException for targetSize=1")
+        } catch (e: IllegalArgumentException) {
+            assertTrue(e.message?.contains("3") == true)
+        }
     }
 
     @Test
