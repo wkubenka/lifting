@@ -24,7 +24,7 @@ class WorkoutGenerator @Inject constructor(
     companion object {
         const val EXERCISES_PER_GROUP = 3
         const val SCORE_THRESHOLD_RATIO = 0.20
-        const val MAX_GROUPS = 3
+        const val MAX_GROUPS = 4
         const val FAVORITED_GROUP_BONUS = 0.05
         const val COMPOUND_WEIGHT = 2.0
         const val ISOLATION_WEIGHT = 1.0
@@ -245,7 +245,7 @@ class WorkoutGenerator @Inject constructor(
                 allocations[coreAlready] = allocations[coreAlready].let { (g, c) -> g to c + remainder }
             } else {
                 // Add Core as a new group with just the remainder exercises
-                val coreScore = ScoredMuscleGroup(MuscleGroup.CORE, 0.0)
+                val coreScore = ScoredMuscleGroup(MuscleGroup.CORE, 0.0, 0.0, 0.0, 0.0)
                 allocations.add(coreScore to remainder)
             }
         }
