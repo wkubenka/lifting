@@ -396,7 +396,13 @@ private fun HomeContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Text("Finish Early")
+                    val lastExercise = uiState.flatExercises.lastOrNull()
+                    val isOnLastExercise = uiState.currentIndex == uiState.flatExercises.size - 1
+                    val lastHasSets = lastExercise != null && (
+                        uiState.allExerciseSets[lastExercise.exercise.id]?.isNotEmpty() == true ||
+                        (isOnLastExercise && uiState.currentExerciseSets.isNotEmpty())
+                    )
+                    Text(if (lastHasSets) "Finish" else "Finish Early")
                 }
             }
             WorkoutMode.COMPLETE -> { /* Save/Discard are inline in the summary */ }
