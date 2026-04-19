@@ -130,7 +130,8 @@ fun HomeScreen(
                 onSaveEditedSet = { viewModel.saveEditedSet() },
                 onCancelEditingSet = { viewModel.cancelEditingSet() },
                 onSaveWorkout = { viewModel.saveWorkout() },
-                onDiscardWorkout = { viewModel.discardWorkout() }
+                onDiscardWorkout = { viewModel.discardWorkout() },
+                onResumeWorkout = { viewModel.resumeWorkout() }
             )
         }
     }
@@ -182,7 +183,8 @@ private fun HomeContent(
     onSaveEditedSet: () -> Unit,
     onCancelEditingSet: () -> Unit,
     onSaveWorkout: () -> Unit,
-    onDiscardWorkout: () -> Unit
+    onDiscardWorkout: () -> Unit,
+    onResumeWorkout: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -368,7 +370,8 @@ private fun HomeContent(
                         InlineWorkoutSummary(
                             uiState = uiState,
                             onSave = onSaveWorkout,
-                            onDiscard = onDiscardWorkout
+                            onDiscard = onDiscardWorkout,
+                            onResume = onResumeWorkout
                         )
                     }
                 }

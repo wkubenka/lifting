@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,7 +32,8 @@ import androidx.compose.ui.unit.dp
 internal fun InlineWorkoutSummary(
     uiState: HomeUiState,
     onSave: () -> Unit,
-    onDiscard: () -> Unit
+    onDiscard: () -> Unit,
+    onResume: () -> Unit
 ) {
     val totalSets = uiState.logEntries.sumOf { it.sets }
     val totalVolume = uiState.logEntries.sumOf { it.sets * it.reps * it.weight * it.volumeMultiplier }
@@ -154,6 +156,15 @@ internal fun InlineWorkoutSummary(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Save Workout")
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        OutlinedButton(
+            onClick = onResume,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Resume Workout")
         }
 
         Spacer(Modifier.height(8.dp))

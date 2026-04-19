@@ -538,6 +538,35 @@ class HomeViewModel @Inject constructor(
         stopTimer()
     }
 
+    fun resumeWorkout() {
+        val state = _uiState.value
+        if (state.workoutMode != WorkoutMode.COMPLETE) return
+        val lastIndex = state.flatExercises.size - 1
+        if (lastIndex < 0) return
+
+        val lastExercise = state.flatExercises[lastIndex]
+        val lastSets = state.allExerciseSets[lastExercise.exercise.id] ?: emptyList()
+
+        // Remove log entries and PRs for the last exercise so it can be re-completed
+        val updatedLogEntries = state.logEntries.filter { it.exerciseId != lastExercise.exercise.id }
+        val updatedPRs = state.newPRs.filter { it.exerciseId != lastExercise.exercise.id }
+
+        _uiState.value = state.copy(
+            workoutMode = WorkoutMode.ACTIVE,
+            currentIndex = lastIndex,
+            currentExerciseSets = lastSets,
+            setsCompleted = lastSets.size,
+            editingSetIndex = null,
+            logEntries = updatedLogEntries,
+            newPRs = updatedPRs,
+            currentReps = lastSets.lastOrNull()?.reps ?: 10,
+            currentWeight = lastSets.lastOrNull()?.weight ?: 0.0,
+            previousPerformance = null
+        )
+        persistState()
+        loadPreviousPerformance()
+    }
+
     // --- Save / Discard ---
 
     fun saveWorkout() {
