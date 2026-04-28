@@ -45,7 +45,7 @@ Full replacement of the JSON with 74 entries, each shaped like:
   "primaryMuscles": ["chest"],
   "secondaryMuscles": [],
   "instructions": ["Lying on a bench, hold a pair of dumbbells on your thighs with neutral grip, then press upward to build chest, shoulders, and triceps."],
-  "volumeMultiplier": 1
+  "volumeMultiplier": 2
 }
 ```
 
@@ -56,7 +56,7 @@ Conventions for filling in fields the Endomondo source doesn't provide:
 - **`category`**: `"strength"` for all.
 - **`level`**: `"intermediate"` for all (user can adjust later via DB).
 - **`secondaryMuscles`**: `[]` for all.
-- **`volumeMultiplier`**: `1` for all. (Note: the v5→v6 migration set existing dumbbell exercises to 2 to account for per-dumbbell weight entry. The user explicitly chose `1` here for the new library; if they later want the same per-dumbbell behavior, that's a separate change.)
+- **`volumeMultiplier`**: `2` for all (per-dumbbell weight entry, matching the convention established by the v5→v6 migration for existing dumbbell exercises).
 - **`force`**: `"push"` or `"pull"` per exercise (presses/raises = push, curls/rows/pulls/hinges = pull).
 - **`mechanic`**: `"compound"` for multi-joint movements (presses, rows, squats, deadlifts, lunges, RDLs, Arnold press, renegade row, squat-to-press combos); `"isolation"` for single-joint (curls, extensions, raises, flyes, shrugs, calf raises, wrist work).
 - **`primaryMuscles`**: chosen so the existing `MuscleGroup.datasetMuscles` matching produces the right bucket:
@@ -177,5 +177,4 @@ Remove the `images` parameter from `ExerciseEntity(...)` constructors in:
 
 ## Out-of-scope follow-ups (noted, not done)
 
-- Per-dumbbell weight handling (`volumeMultiplier = 2`) for the new library: deferred — currently every new exercise is `1`. If the user wants the same behavior the v5→v6 migration applied, that's a one-line UPDATE in a future migration or a JSON tweak.
 - Replacing the now-redundant `MuscleGroup.datasetMuscles` with a direct `muscleGroup` field on `ExerciseEntity`: deferred — the current bucketing works and the user opted for the smaller diff.
