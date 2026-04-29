@@ -147,8 +147,7 @@ class ExerciseDetailViewModelTest {
             category = "strength",
             primaryMuscles = listOf("chest"),
             secondaryMuscles = emptyList(),
-            instructions = listOf("Step 1", "Step 2"),
-            images = listOf("bench_press/0.jpg")
+            instructions = listOf("Step 1", "Step 2")
         )
 }
 

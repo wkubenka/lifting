@@ -455,8 +455,7 @@ class HomeViewModelTest {
         category = "strength",
         primaryMuscles = muscles,
         secondaryMuscles = emptyList(),
-        instructions = emptyList(),
-        images = emptyList()
+        instructions = emptyList()
     )
 }
 

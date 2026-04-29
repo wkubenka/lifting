@@ -136,8 +136,7 @@ class FakeWorkoutRepository : IWorkoutRepository {
             category = "strength",
             primaryMuscles = primaryMuscles,
             secondaryMuscles = emptyList(),
-            instructions = emptyList(),
-            images = emptyList()
+            instructions = emptyList()
         )
     }
 }

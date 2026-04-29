@@ -49,7 +49,6 @@ object DatabaseSeeder {
         primaryMuscles = primaryMuscles,
         secondaryMuscles = secondaryMuscles,
         instructions = instructions,
-        images = images,
         volumeMultiplier = volumeMultiplier
     )
 }

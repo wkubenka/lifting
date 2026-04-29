@@ -30,7 +30,7 @@ import com.astute.body.data.local.entity.WorkoutSessionEntity
         RecoveryConfigEntity::class,
         ActiveWorkoutEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -143,6 +143,36 @@ abstract class AppDatabase : RoomDatabase() {
                           OR LOWER(name) LIKE '%alternate%' OR LOWER(name) LIKE '%alternating%'
                       )
                 """.trimIndent())
+            }
+        }
+
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Wipe per-exercise data so the new dumbbell-only library starts clean.
+                db.execSQL("DELETE FROM workout_sessions")
+                db.execSQL("DELETE FROM exercise_logs")
+                db.execSQL("DELETE FROM personal_records")
+                db.execSQL("DELETE FROM active_workout")
+                db.execSQL("DELETE FROM exercises")
+
+                // Rebuild exercises table without the `images` column.
+                db.execSQL("""
+                    CREATE TABLE exercises_new (
+                        id TEXT NOT NULL PRIMARY KEY,
+                        name TEXT NOT NULL,
+                        force TEXT,
+                        level TEXT NOT NULL,
+                        mechanic TEXT,
+                        equipment TEXT,
+                        category TEXT NOT NULL,
+                        primaryMuscles TEXT NOT NULL,
+                        secondaryMuscles TEXT NOT NULL,
+                        instructions TEXT NOT NULL,
+                        volumeMultiplier INTEGER NOT NULL DEFAULT 1
+                    )
+                """.trimIndent())
+                db.execSQL("DROP TABLE exercises")
+                db.execSQL("ALTER TABLE exercises_new RENAME TO exercises")
             }
         }
     }

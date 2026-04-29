@@ -222,8 +222,7 @@ class ManageExercisesViewModelTest {
             category = "strength",
             primaryMuscles = listOf("chest"),
             secondaryMuscles = emptyList(),
-            instructions = emptyList(),
-            images = emptyList()
+            instructions = emptyList()
         )
 }
 

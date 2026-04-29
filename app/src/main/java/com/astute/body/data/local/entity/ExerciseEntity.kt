@@ -15,6 +15,5 @@ data class ExerciseEntity(
     val primaryMuscles: List<String>,
     val secondaryMuscles: List<String>,
     val instructions: List<String>,
-    val images: List<String>,
     val volumeMultiplier: Int = 1
 )
