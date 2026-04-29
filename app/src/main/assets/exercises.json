@@ -1,7 +1,7 @@
 [
   {
     "id": "Dumbbell_Bench_Press",
-    "name": "Dumbbell Bench Press",
+    "name": "Bench Press",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -21,7 +21,7 @@
   },
   {
     "id": "Dumbbell_Bicep_Curl",
-    "name": "Dumbbell Bicep Curl",
+    "name": "Bicep Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -38,7 +38,7 @@
   },
   {
     "id": "Dumbbell_Hammer_Curl",
-    "name": "Dumbbell Hammer Curl",
+    "name": "Hammer Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -57,7 +57,7 @@
   },
   {
     "id": "Dumbbell_Reverse_Curl",
-    "name": "Dumbbell Reverse Curl",
+    "name": "Reverse Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -76,7 +76,7 @@
   },
   {
     "id": "Dumbbell_Skull_Crusher",
-    "name": "Dumbbell Skull Crusher",
+    "name": "Skull Crusher",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -93,7 +93,7 @@
   },
   {
     "id": "Dumbbell_Standing_Overhead_Tricep_Extension",
-    "name": "Dumbbell Standing Overhead Tricep Extension",
+    "name": "Standing Overhead Tricep Extension",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -110,7 +110,7 @@
   },
   {
     "id": "Dumbbell_Single_Arm_Tricep_Extension",
-    "name": "Dumbbell Single-Arm Tricep Extension",
+    "name": "Single-Arm Tricep Extension",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -127,7 +127,7 @@
   },
   {
     "id": "Dumbbell_Standing_Single_Arm_Tricep_Kickback",
-    "name": "Dumbbell Standing Single-Arm Tricep Kickback",
+    "name": "Standing Single-Arm Tricep Kickback",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -144,7 +144,7 @@
   },
   {
     "id": "Dumbbell_Preacher_Curl",
-    "name": "Dumbbell Preacher Curl",
+    "name": "Preacher Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -161,7 +161,7 @@
   },
   {
     "id": "Dumbbell_One_Arm_Zottman_Preacher_Curl",
-    "name": "Dumbbell One-Arm Zottman Preacher Curl",
+    "name": "One-Arm Zottman Preacher Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -180,7 +180,7 @@
   },
   {
     "id": "Dumbbell_Zottman_Curl",
-    "name": "Dumbbell Zottman Curl",
+    "name": "Zottman Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -199,7 +199,7 @@
   },
   {
     "id": "Dumbbell_Zottman_Preacher_Curl",
-    "name": "Dumbbell Zottman Preacher Curl",
+    "name": "Zottman Preacher Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -218,7 +218,7 @@
   },
   {
     "id": "Dumbbell_Cross_Body_Hammer_Curl",
-    "name": "Dumbbell Cross-Body Hammer Curl",
+    "name": "Cross-Body Hammer Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -237,7 +237,7 @@
   },
   {
     "id": "Dumbbell_Concentration_Curl",
-    "name": "Dumbbell Concentration Curl",
+    "name": "Concentration Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -254,7 +254,7 @@
   },
   {
     "id": "Dumbbell_Back_Wrist_Curl",
-    "name": "Dumbbell Back Wrist Curl",
+    "name": "Back Wrist Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -271,7 +271,7 @@
   },
   {
     "id": "Dumbbell_Finger_Curl",
-    "name": "Dumbbell Finger Curl",
+    "name": "Finger Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -288,7 +288,7 @@
   },
   {
     "id": "Dumbbell_Wrist_Twist",
-    "name": "Dumbbell Wrist Twist",
+    "name": "Wrist Twist",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -305,7 +305,7 @@
   },
   {
     "id": "Dumbbell_Hammer_Wrist_Curl",
-    "name": "Dumbbell Hammer Wrist Curl",
+    "name": "Hammer Wrist Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -322,7 +322,7 @@
   },
   {
     "id": "Dumbbell_Incline_Bicep_Curl",
-    "name": "Dumbbell Incline Bicep Curl",
+    "name": "Incline Bicep Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -339,7 +339,7 @@
   },
   {
     "id": "Dumbbell_Alternating_Bicep_Curl",
-    "name": "Dumbbell Alternating Bicep Curl",
+    "name": "Alternating Bicep Curl",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -356,7 +356,7 @@
   },
   {
     "id": "Dumbbell_Tate_Press",
-    "name": "Dumbbell Tate Press",
+    "name": "Tate Press",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -375,7 +375,7 @@
   },
   {
     "id": "Dumbbell_Close_Grip_Press",
-    "name": "Dumbbell Close-Grip Press",
+    "name": "Close-Grip Press",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -395,7 +395,7 @@
   },
   {
     "id": "Decline_Dumbbell_Tricep_Extension",
-    "name": "Decline Dumbbell Tricep Extension",
+    "name": "Decline Tricep Extension",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -412,7 +412,7 @@
   },
   {
     "id": "Dumbbell_Standing_Shoulder_Press",
-    "name": "Dumbbell Standing Shoulder Press",
+    "name": "Standing Shoulder Press",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -431,7 +431,7 @@
   },
   {
     "id": "Dumbbell_Arnold_Press",
-    "name": "Dumbbell Arnold Press",
+    "name": "Arnold Press",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -450,7 +450,7 @@
   },
   {
     "id": "Dumbbell_Front_Raise",
-    "name": "Dumbbell Front Raise",
+    "name": "Front Raise",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -467,7 +467,7 @@
   },
   {
     "id": "Dumbbell_Lateral_Raise",
-    "name": "Dumbbell Lateral Raise",
+    "name": "Lateral Raise",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -484,7 +484,7 @@
   },
   {
     "id": "Dumbbell_Seated_Lateral_Raise",
-    "name": "Dumbbell Seated Lateral Raise",
+    "name": "Seated Lateral Raise",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -501,7 +501,7 @@
   },
   {
     "id": "Dumbbell_Bent_Over_Rear_Delt_Fly",
-    "name": "Dumbbell Bent-Over Rear Delt Fly",
+    "name": "Bent-Over Rear Delt Fly",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -520,7 +520,7 @@
   },
   {
     "id": "Dumbbell_Upright_Row",
-    "name": "Dumbbell Upright Row",
+    "name": "Upright Row",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -540,7 +540,7 @@
   },
   {
     "id": "Dumbbell_Shrug",
-    "name": "Dumbbell Shrug",
+    "name": "Shrug",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -557,7 +557,7 @@
   },
   {
     "id": "Dumbbell_Bent_Over_Face_Pull",
-    "name": "Dumbbell Bent-Over Face Pull",
+    "name": "Bent-Over Face Pull",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -576,7 +576,7 @@
   },
   {
     "id": "Dumbbell_Scapular_External_Rotation",
-    "name": "Dumbbell Scapular External Rotation",
+    "name": "Scapular External Rotation",
     "force": "pull",
     "level": "beginner",
     "mechanic": "isolation",
@@ -593,7 +593,7 @@
   },
   {
     "id": "Incline_Dumbbell_Bench_Press",
-    "name": "Incline Dumbbell Bench Press",
+    "name": "Incline Bench Press",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -613,7 +613,7 @@
   },
   {
     "id": "Decline_Dumbbell_Bench_Press",
-    "name": "Decline Dumbbell Bench Press",
+    "name": "Decline Bench Press",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -633,7 +633,7 @@
   },
   {
     "id": "Dumbbell_Chest_Fly",
-    "name": "Dumbbell Chest Fly",
+    "name": "Chest Fly",
     "force": "push",
     "level": "intermediate",
     "mechanic": "isolation",
@@ -650,7 +650,7 @@
   },
   {
     "id": "Dumbbell_Svend_Press",
-    "name": "Dumbbell Svend Press",
+    "name": "Svend Press",
     "force": "push",
     "level": "beginner",
     "mechanic": "isolation",
@@ -667,7 +667,7 @@
   },
   {
     "id": "Dumbbell_Bent_Over_Row",
-    "name": "Dumbbell Bent-Over Row",
+    "name": "Bent-Over Row",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -687,7 +687,7 @@
   },
   {
     "id": "Dumbbell_Single_Arm_Bent_Over_Row",
-    "name": "Dumbbell Single-Arm Bent-Over Row",
+    "name": "Single-Arm Bent-Over Row",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -707,7 +707,7 @@
   },
   {
     "id": "Dumbbell_Pullover",
-    "name": "Dumbbell Pullover",
+    "name": "Pullover",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -727,7 +727,7 @@
   },
   {
     "id": "Incline_Dumbbell_Row",
-    "name": "Incline Dumbbell Row",
+    "name": "Incline Row",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -767,7 +767,7 @@
   },
   {
     "id": "Dumbbell_Sumo_Squat",
-    "name": "Dumbbell Sumo Squat",
+    "name": "Sumo Squat",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -787,7 +787,7 @@
   },
   {
     "id": "Dumbbell_Lunge",
-    "name": "Dumbbell Lunge",
+    "name": "Lunge",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -807,7 +807,7 @@
   },
   {
     "id": "Dumbbell_Walking_Lunge",
-    "name": "Dumbbell Walking Lunge",
+    "name": "Walking Lunge",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -827,7 +827,7 @@
   },
   {
     "id": "Dumbbell_Reverse_Lunge",
-    "name": "Dumbbell Reverse Lunge",
+    "name": "Reverse Lunge",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -847,7 +847,7 @@
   },
   {
     "id": "Dumbbell_Side_Lunge",
-    "name": "Dumbbell Side Lunge",
+    "name": "Side Lunge",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -867,7 +867,7 @@
   },
   {
     "id": "Dumbbell_Split_Squat",
-    "name": "Dumbbell Split Squat",
+    "name": "Split Squat",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -886,7 +886,7 @@
   },
   {
     "id": "Dumbbell_Bulgarian_Split_Squat",
-    "name": "Dumbbell Bulgarian Split Squat",
+    "name": "Bulgarian Split Squat",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -905,7 +905,7 @@
   },
   {
     "id": "Dumbbell_Goblet_Squat",
-    "name": "Dumbbell Goblet Squat",
+    "name": "Goblet Squat",
     "force": "push",
     "level": "beginner",
     "mechanic": "compound",
@@ -924,7 +924,7 @@
   },
   {
     "id": "Dumbbell_Jumping_Squat",
-    "name": "Dumbbell Jumping Squat",
+    "name": "Jumping Squat",
     "force": "push",
     "level": "advanced",
     "mechanic": "compound",
@@ -944,7 +944,7 @@
   },
   {
     "id": "Dumbbell_Deadlift",
-    "name": "Dumbbell Deadlift",
+    "name": "Deadlift",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -964,7 +964,7 @@
   },
   {
     "id": "Dumbbell_Romanian_Deadlift",
-    "name": "Dumbbell Romanian Deadlift",
+    "name": "Romanian Deadlift",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -983,7 +983,7 @@
   },
   {
     "id": "Dumbbell_Single_Leg_Romanian_Deadlift",
-    "name": "Dumbbell Single Leg Romanian Deadlift",
+    "name": "Single Leg Romanian Deadlift",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -1002,7 +1002,7 @@
   },
   {
     "id": "Dumbbell_Stiff_Leg_Deadlift",
-    "name": "Dumbbell Stiff Leg Deadlift",
+    "name": "Stiff Leg Deadlift",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -1022,7 +1022,7 @@
   },
   {
     "id": "Dumbbell_Step_Up",
-    "name": "Dumbbell Step-Up",
+    "name": "Step-Up",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
@@ -1041,7 +1041,7 @@
   },
   {
     "id": "Dumbbell_Standing_Calf_Raise",
-    "name": "Dumbbell Standing Calf Raise",
+    "name": "Standing Calf Raise",
     "force": "push",
     "level": "beginner",
     "mechanic": "isolation",
@@ -1058,7 +1058,7 @@
   },
   {
     "id": "Dumbbell_V_Up",
-    "name": "Dumbbell V-Up",
+    "name": "V-Up",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -1075,7 +1075,7 @@
   },
   {
     "id": "Dumbbell_Frog_Hip_Thrust",
-    "name": "Dumbbell Frog Hip Thrust",
+    "name": "Frog Hip Thrust",
     "force": "pull",
     "level": "intermediate",
     "mechanic": "compound",
@@ -1115,7 +1115,7 @@
   },
   {
     "id": "Dumbbell_Lunge_With_Bicep_Curl",
-    "name": "Dumbbell Lunge With Bicep Curl",
+    "name": "Lunge With Bicep Curl",
     "force": "push",
     "level": "intermediate",
     "mechanic": "compound",
