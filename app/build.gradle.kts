@@ -92,10 +92,6 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
-    // Coil
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
-
     // Kotlinx
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
