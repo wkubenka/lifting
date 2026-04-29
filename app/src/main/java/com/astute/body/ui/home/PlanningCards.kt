@@ -97,12 +97,6 @@ internal fun PlanningExerciseCard(
                         onClick = {},
                         label = { Text(exercise.muscleGroup.displayName, style = MaterialTheme.typography.labelSmall) }
                     )
-                    exercise.exercise.equipment?.let { equip ->
-                        SuggestionChip(
-                            onClick = {},
-                            label = { Text(equip, style = MaterialTheme.typography.labelSmall) }
-                        )
-                    }
                     exercise.exercise.mechanic?.let { mech ->
                         SuggestionChip(
                             onClick = {},
