@@ -7,9 +7,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["chest"],
-    "secondaryMuscles": ["shoulders", "triceps"],
-    "instructions": ["Lie on a flat bench holding a pair of dumbbells on your thighs with neutral grip, kick them up to shoulder level, then press to lockout and lower under control to build chest, shoulders, and triceps."],
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "shoulders",
+      "triceps"
+    ],
+    "instructions": [
+      "Lie on a flat bench holding a pair of dumbbells on your thighs with neutral grip, kick them up to shoulder level, then press to lockout and lower under control to build chest, shoulders, and triceps."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -20,9 +27,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
+    "primaryMuscles": [
+      "biceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand with feet hip-width apart and dumbbells at your sides with palms forward, then curl both dumbbells up by flexing the elbows while keeping the upper arms still."],
+    "instructions": [
+      "Stand with feet hip-width apart and dumbbells at your sides with palms forward, then curl both dumbbells up by flexing the elbows while keeping the upper arms still."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -33,9 +44,15 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
-    "secondaryMuscles": ["forearms"],
-    "instructions": ["Stand with arms at your sides holding dumbbells in a neutral grip (palms facing your body), then curl them up to your shoulders while keeping the wrists fixed."],
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "instructions": [
+      "Stand with arms at your sides holding dumbbells in a neutral grip (palms facing your body), then curl them up to your shoulders while keeping the wrists fixed."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -46,9 +63,15 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["forearms"],
-    "secondaryMuscles": ["biceps"],
-    "instructions": ["Stand with dumbbells at your thighs in a pronated grip (knuckles forward), then curl up by flexing the elbows while keeping the wrists straight to load the forearms."],
+    "primaryMuscles": [
+      "forearms"
+    ],
+    "secondaryMuscles": [
+      "biceps"
+    ],
+    "instructions": [
+      "Stand with dumbbells at your thighs in a pronated grip (knuckles forward), then curl up by flexing the elbows while keeping the wrists straight to load the forearms."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -59,23 +82,14 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["triceps"],
+    "primaryMuscles": [
+      "triceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Lie on a bench holding dumbbells extended over your chest with palms facing each other, then bend the elbows to lower the weights toward your forehead and extend back to lockout."],
+    "instructions": [
+      "Lie on a bench holding dumbbells extended over your chest with palms facing each other, then bend the elbows to lower the weights toward your forehead and extend back to lockout."
+    ],
     "volumeMultiplier": 2
-  },
-  {
-    "id": "Dumbbell_Overhead_Tricep_Extension",
-    "name": "Dumbbell Overhead Tricep Extension",
-    "force": "push",
-    "level": "intermediate",
-    "mechanic": "isolation",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["triceps"],
-    "secondaryMuscles": [],
-    "instructions": ["Hold a single dumbbell vertically overhead with both hands, then lower it behind your head by bending the elbows and press back to full extension."],
-    "volumeMultiplier": 1
   },
   {
     "id": "Dumbbell_Standing_Overhead_Tricep_Extension",
@@ -85,9 +99,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["triceps"],
+    "primaryMuscles": [
+      "triceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand tall holding a dumbbell overhead with both hands, lower it behind your head by bending only the elbows, and extend back to lockout."],
+    "instructions": [
+      "Stand tall holding a dumbbell overhead with both hands, lower it behind your head by bending only the elbows, and extend back to lockout."
+    ],
     "volumeMultiplier": 1
   },
   {
@@ -98,9 +116,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["triceps"],
+    "primaryMuscles": [
+      "triceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Sit or stand holding one dumbbell overhead in a single hand, lower it behind your head with controlled elbow flexion, then extend back up. Repeat on the other side."],
+    "instructions": [
+      "Sit or stand holding one dumbbell overhead in a single hand, lower it behind your head with controlled elbow flexion, then extend back up. Repeat on the other side."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -111,22 +133,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["triceps"],
+    "primaryMuscles": [
+      "triceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Adopt a split stance and hinge forward, holding one dumbbell with the upper arm parallel to the floor, then extend the elbow to kick the dumbbell straight back. Switch sides."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Tricep_Dumbbell_Kickback",
-    "name": "Tricep Dumbbell Kickback",
-    "force": "push",
-    "level": "intermediate",
-    "mechanic": "isolation",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["triceps"],
-    "secondaryMuscles": [],
-    "instructions": ["Hinge over a bench with one knee and hand on the bench for support, holding a dumbbell with the upper arm parallel to the floor, then extend the elbow to kick the weight back."],
+    "instructions": [
+      "Adopt a split stance and hinge forward, holding one dumbbell with the upper arm parallel to the floor, then extend the elbow to kick the dumbbell straight back. Switch sides."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -137,9 +150,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
+    "primaryMuscles": [
+      "biceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Sit at a preacher bench with the back of your upper arm on the pad and a dumbbell in each hand with palms up, then curl the dumbbells up and lower under control."],
+    "instructions": [
+      "Sit at a preacher bench with the back of your upper arm on the pad and a dumbbell in each hand with palms up, then curl the dumbbells up and lower under control."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -150,9 +167,15 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
-    "secondaryMuscles": ["forearms"],
-    "instructions": ["At a preacher bench, curl one dumbbell up with palm facing you, then rotate the wrist to a pronated grip and lower under control. Repeat on the other arm."],
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "instructions": [
+      "At a preacher bench, curl one dumbbell up with palm facing you, then rotate the wrist to a pronated grip and lower under control. Repeat on the other arm."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -163,9 +186,15 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
-    "secondaryMuscles": ["forearms"],
-    "instructions": ["Stand with dumbbells at your sides palms forward, curl up to the top, rotate the wrists to a pronated grip, then lower slowly to load both biceps and forearms."],
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "instructions": [
+      "Stand with dumbbells at your sides palms forward, curl up to the top, rotate the wrists to a pronated grip, then lower slowly to load both biceps and forearms."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -176,9 +205,15 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
-    "secondaryMuscles": ["forearms"],
-    "instructions": ["At a preacher bench, curl dumbbells up with palms facing you, rotate wrists to pronated at the top, then lower slowly to combine the preacher curl with the Zottman finish."],
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "instructions": [
+      "At a preacher bench, curl dumbbells up with palms facing you, rotate wrists to pronated at the top, then lower slowly to combine the preacher curl with the Zottman finish."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -189,9 +224,15 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
-    "secondaryMuscles": ["forearms"],
-    "instructions": ["Stand holding dumbbells in a neutral grip, then curl one dumbbell across your body toward the opposite shoulder. Lower and alternate sides."],
+    "primaryMuscles": [
+      "biceps"
+    ],
+    "secondaryMuscles": [
+      "forearms"
+    ],
+    "instructions": [
+      "Stand holding dumbbells in a neutral grip, then curl one dumbbell across your body toward the opposite shoulder. Lower and alternate sides."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -202,9 +243,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
+    "primaryMuscles": [
+      "biceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Sit on a bench with feet wide, brace one elbow against the inside of the same-side thigh, and curl the dumbbell up with full focus on the biceps. Switch arms."],
+    "instructions": [
+      "Sit on a bench with feet wide, brace one elbow against the inside of the same-side thigh, and curl the dumbbell up with full focus on the biceps. Switch arms."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -215,9 +260,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["forearms"],
+    "primaryMuscles": [
+      "forearms"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand with dumbbells held behind your back with palms facing away, then curl the wrists upward through their full range to load the forearm extensors."],
+    "instructions": [
+      "Stand with dumbbells held behind your back with palms facing away, then curl the wrists upward through their full range to load the forearm extensors."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -228,9 +277,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["forearms"],
+    "primaryMuscles": [
+      "forearms"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Sit with forearms supported on your thighs and palms up, let dumbbells roll down to your fingertips, then curl your fingers to roll them back up into your palms."],
+    "instructions": [
+      "Sit with forearms supported on your thighs and palms up, let dumbbells roll down to your fingertips, then curl your fingers to roll them back up into your palms."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -241,9 +294,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["forearms"],
+    "primaryMuscles": [
+      "forearms"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Hold dumbbells at elbow height with elbows tucked, then rotate the wrists from palms-up to palms-down through a controlled range to work forearm rotation."],
+    "instructions": [
+      "Hold dumbbells at elbow height with elbows tucked, then rotate the wrists from palms-up to palms-down through a controlled range to work forearm rotation."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -254,9 +311,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["forearms"],
+    "primaryMuscles": [
+      "forearms"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Sit with forearms on a bench in a neutral grip (palms facing each other), then flex the wrists upward and lower under control to work the forearm flexors and extensors."],
+    "instructions": [
+      "Sit with forearms on a bench in a neutral grip (palms facing each other), then flex the wrists upward and lower under control to work the forearm flexors and extensors."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -267,9 +328,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
+    "primaryMuscles": [
+      "biceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Lie back on an incline bench with dumbbells hanging at your sides palms forward, then curl them up while keeping the upper arms pinned to the bench."],
+    "instructions": [
+      "Lie back on an incline bench with dumbbells hanging at your sides palms forward, then curl them up while keeping the upper arms pinned to the bench."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -280,9 +345,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["biceps"],
+    "primaryMuscles": [
+      "biceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand with dumbbells at your sides palms forward, then curl one arm at a time up to your shoulder, lower under control, and alternate."],
+    "instructions": [
+      "Stand with dumbbells at your sides palms forward, then curl one arm at a time up to your shoulder, lower under control, and alternate."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -293,9 +362,15 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["triceps"],
-    "secondaryMuscles": ["chest"],
-    "instructions": ["Lie on a bench with dumbbells held vertically over your chest with palms forward, then bend the elbows out to lower the dumbbells in toward your chest, and press straight up."],
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [
+      "chest"
+    ],
+    "instructions": [
+      "Lie on a bench with dumbbells held vertically over your chest with palms forward, then bend the elbows out to lower the dumbbells in toward your chest, and press straight up."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -306,9 +381,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["triceps"],
-    "secondaryMuscles": ["chest", "shoulders"],
-    "instructions": ["Lie on a bench holding dumbbells touching each other over your chest with palms facing in, then press up and lower with the dumbbells kept close together to emphasize triceps."],
+    "primaryMuscles": [
+      "triceps"
+    ],
+    "secondaryMuscles": [
+      "chest",
+      "shoulders"
+    ],
+    "instructions": [
+      "Lie on a bench holding dumbbells touching each other over your chest with palms facing in, then press up and lower with the dumbbells kept close together to emphasize triceps."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -319,35 +401,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["triceps"],
+    "primaryMuscles": [
+      "triceps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Lie on a decline bench holding dumbbells extended above your chest with palms facing in, then bend the elbows to lower the dumbbells toward your forehead and press back to lockout."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Dumbbell_Shoulder_Press",
-    "name": "Dumbbell Shoulder Press",
-    "force": "push",
-    "level": "intermediate",
-    "mechanic": "compound",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["triceps"],
-    "instructions": ["Sit on a bench holding dumbbells at shoulder height with palms forward, then press them overhead to lockout and lower with control."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Dumbbell_Seated_Shoulder_Press",
-    "name": "Dumbbell Seated Shoulder Press",
-    "force": "push",
-    "level": "intermediate",
-    "mechanic": "compound",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["triceps"],
-    "instructions": ["Sit on a bench with back support, hold dumbbells at shoulder height with palms forward, and press them overhead to full lockout. Lower under control."],
+    "instructions": [
+      "Lie on a decline bench holding dumbbells extended above your chest with palms facing in, then bend the elbows to lower the dumbbells toward your forehead and press back to lockout."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -358,9 +418,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["triceps"],
-    "instructions": ["Stand with feet shoulder-width apart, hold dumbbells at shoulder height with palms forward, brace your core, and press the dumbbells overhead to lockout."],
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "triceps"
+    ],
+    "instructions": [
+      "Stand with feet shoulder-width apart, hold dumbbells at shoulder height with palms forward, brace your core, and press the dumbbells overhead to lockout."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -371,35 +437,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["triceps"],
-    "instructions": ["Hold dumbbells in front of your shoulders with palms facing you, then rotate the wrists outward as you press overhead. Reverse the motion on the way down."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Alternating_Dumbbell_Press",
-    "name": "Alternating Dumbbell Press",
-    "force": "push",
-    "level": "intermediate",
-    "mechanic": "compound",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["triceps"],
-    "instructions": ["Sit holding dumbbells at shoulder height, then press one arm overhead to lockout while the other stays at the shoulder. Lower and alternate sides each rep."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Dumbbell_Single_Arm_Overhead_Press",
-    "name": "Dumbbell Single-Arm Overhead Press",
-    "force": "push",
-    "level": "intermediate",
-    "mechanic": "compound",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["triceps"],
-    "instructions": ["Stand or sit holding one dumbbell at shoulder height with palm forward, brace the core, and press it overhead to lockout. Repeat on the other side."],
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "triceps"
+    ],
+    "instructions": [
+      "Hold dumbbells in front of your shoulders with palms facing you, then rotate the wrists outward as you press overhead. Reverse the motion on the way down."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -410,9 +456,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
+    "primaryMuscles": [
+      "shoulders"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand holding dumbbells in front of your thighs palms down, then raise them straight forward to shoulder height with arms nearly straight, and lower under control."],
+    "instructions": [
+      "Stand holding dumbbells in front of your thighs palms down, then raise them straight forward to shoulder height with arms nearly straight, and lower under control."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -423,9 +473,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
+    "primaryMuscles": [
+      "shoulders"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand with dumbbells at your sides and a slight bend in the elbows, then raise the dumbbells out to the sides until your arms are parallel to the floor."],
+    "instructions": [
+      "Stand with dumbbells at your sides and a slight bend in the elbows, then raise the dumbbells out to the sides until your arms are parallel to the floor."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -436,22 +490,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
+    "primaryMuscles": [
+      "shoulders"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Sit on a flat bench with feet planted firmly and dumbbells hanging at your sides, then raise both dumbbells out to shoulder height with a slight elbow bend."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Dumbbell_Reverse_Fly",
-    "name": "Dumbbell Reverse Fly",
-    "force": "pull",
-    "level": "intermediate",
-    "mechanic": "isolation",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["middle back"],
-    "instructions": ["Lie face-down on an incline bench holding dumbbells beneath you with palms facing each other, then raise the arms out to the sides to shoulder height to target the rear delts."],
+    "instructions": [
+      "Sit on a flat bench with feet planted firmly and dumbbells hanging at your sides, then raise both dumbbells out to shoulder height with a slight elbow bend."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -462,9 +507,15 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["middle back"],
-    "instructions": ["Hinge forward at the hips with a flat back holding dumbbells beneath your shoulders, then raise the arms out to the sides until they reach shoulder level."],
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "middle back"
+    ],
+    "instructions": [
+      "Hinge forward at the hips with a flat back holding dumbbells beneath your shoulders, then raise the arms out to the sides until they reach shoulder level."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -475,9 +526,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["traps", "biceps"],
-    "instructions": ["Stand holding dumbbells in front of your thighs palms toward you, then pull them up along your torso to chest height by leading with the elbows."],
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "traps",
+      "biceps"
+    ],
+    "instructions": [
+      "Stand holding dumbbells in front of your thighs palms toward you, then pull them up along your torso to chest height by leading with the elbows."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -488,9 +546,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["traps"],
+    "primaryMuscles": [
+      "traps"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand with dumbbells hanging at your sides, then elevate your shoulders straight up toward your ears and lower under control. Avoid rotating the shoulders."],
+    "instructions": [
+      "Stand with dumbbells hanging at your sides, then elevate your shoulders straight up toward your ears and lower under control. Avoid rotating the shoulders."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -501,9 +563,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["middle back"],
-    "instructions": ["Hinge forward with dumbbells hanging beneath your shoulders, then pull them up toward your face by flaring the elbows wide and squeezing the rear delts."],
+    "primaryMuscles": [
+      "shoulders"
+    ],
+    "secondaryMuscles": [
+      "middle back"
+    ],
+    "instructions": [
+      "Hinge forward with dumbbells hanging beneath your shoulders, then pull them up toward your face by flaring the elbows wide and squeezing the rear delts."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -514,61 +582,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["shoulders"],
+    "primaryMuscles": [
+      "shoulders"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Lie on your side with the working arm on top, elbow bent 90 degrees and tucked to your side holding a light dumbbell, then rotate the forearm upward away from your body."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Dumbbell_Rear_Lateral_Raise_With_Head_Support",
-    "name": "Dumbbell Rear Lateral Raise With Head Support",
-    "force": "pull",
-    "level": "intermediate",
-    "mechanic": "isolation",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": [],
-    "instructions": ["Lie face-down on an incline bench with your forehead supported, dumbbells hanging beneath you, then raise the arms out to the sides until parallel to the floor."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Lying_Dumbbell_One_Arm_Rear_Lateral_Raise",
-    "name": "Lying Dumbbell One-Arm Rear Lateral Raise",
-    "force": "pull",
-    "level": "intermediate",
-    "mechanic": "isolation",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": [],
-    "instructions": ["Lie face-down on a flat bench with one dumbbell hanging directly beneath your shoulder, then raise that arm out to the side to shoulder height. Switch arms."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Side_Lying_Dumbbell_Rear_Delt_Raise",
-    "name": "Side Lying Dumbbell Rear Delt Raise",
-    "force": "pull",
-    "level": "intermediate",
-    "mechanic": "isolation",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": [],
-    "instructions": ["Lie on your side on a bench, top arm holding a dumbbell across your body, then raise it up and back behind your head in an arc to target the rear delt."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Seated_Dumbbell_Rear_Delt_Fly",
-    "name": "Seated Dumbbell Rear Delt Fly",
-    "force": "pull",
-    "level": "intermediate",
-    "mechanic": "isolation",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["shoulders"],
-    "secondaryMuscles": ["middle back"],
-    "instructions": ["Sit on the end of a bench, hinge forward chest-to-thigh, hold dumbbells beneath you, then raise the arms out to the sides to shoulder height."],
+    "instructions": [
+      "Lie on your side with the working arm on top, elbow bent 90 degrees and tucked to your side holding a light dumbbell, then rotate the forearm upward away from your body."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -579,9 +599,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["chest"],
-    "secondaryMuscles": ["shoulders", "triceps"],
-    "instructions": ["Set a bench to roughly a 30-degree incline, hold dumbbells at chest level with palms forward, and press them up to lockout. Lower under control."],
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "shoulders",
+      "triceps"
+    ],
+    "instructions": [
+      "Set a bench to roughly a 30-degree incline, hold dumbbells at chest level with palms forward, and press them up to lockout. Lower under control."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -592,9 +619,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["chest"],
-    "secondaryMuscles": ["shoulders", "triceps"],
-    "instructions": ["Lie on a decline bench secured by your feet, hold dumbbells at chest level with palms forward, and press to lockout to emphasize the lower chest."],
+    "primaryMuscles": [
+      "chest"
+    ],
+    "secondaryMuscles": [
+      "shoulders",
+      "triceps"
+    ],
+    "instructions": [
+      "Lie on a decline bench secured by your feet, hold dumbbells at chest level with palms forward, and press to lockout to emphasize the lower chest."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -605,22 +639,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["chest"],
+    "primaryMuscles": [
+      "chest"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Lie on a flat bench with dumbbells extended above your chest palms facing each other and a slight bend in the elbows, then open the arms wide and squeeze them back together."],
-    "volumeMultiplier": 2
-  },
-  {
-    "id": "Dumbbell_Floor_Press",
-    "name": "Dumbbell Floor Press",
-    "force": "push",
-    "level": "intermediate",
-    "mechanic": "compound",
-    "equipment": "dumbbell",
-    "category": "strength",
-    "primaryMuscles": ["chest"],
-    "secondaryMuscles": ["triceps"],
-    "instructions": ["Lie on the floor with knees bent holding dumbbells at chest height with palms forward, then press up to lockout. The floor caps the range of motion at the upper arms."],
+    "instructions": [
+      "Lie on a flat bench with dumbbells extended above your chest palms facing each other and a slight bend in the elbows, then open the arms wide and squeeze them back together."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -631,9 +656,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["chest"],
+    "primaryMuscles": [
+      "chest"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand holding a single dumbbell pressed between your palms at chest level, then extend your arms forward while squeezing the chest, and return."],
+    "instructions": [
+      "Stand holding a single dumbbell pressed between your palms at chest level, then extend your arms forward while squeezing the chest, and return."
+    ],
     "volumeMultiplier": 1
   },
   {
@@ -644,9 +673,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["middle back"],
-    "secondaryMuscles": ["lats", "biceps"],
-    "instructions": ["Hinge forward at the hips with a flat back holding dumbbells with arms straight, then row the dumbbells to your hips by driving the elbows back and squeezing the shoulder blades."],
+    "primaryMuscles": [
+      "middle back"
+    ],
+    "secondaryMuscles": [
+      "lats",
+      "biceps"
+    ],
+    "instructions": [
+      "Hinge forward at the hips with a flat back holding dumbbells with arms straight, then row the dumbbells to your hips by driving the elbows back and squeezing the shoulder blades."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -657,9 +693,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["middle back"],
-    "secondaryMuscles": ["lats", "biceps"],
-    "instructions": ["Place one knee and hand on a bench for support, hold a dumbbell in the free hand with arm hanging, then row it to your hip while keeping the torso level. Switch sides."],
+    "primaryMuscles": [
+      "middle back"
+    ],
+    "secondaryMuscles": [
+      "lats",
+      "biceps"
+    ],
+    "instructions": [
+      "Place one knee and hand on a bench for support, hold a dumbbell in the free hand with arm hanging, then row it to your hip while keeping the torso level. Switch sides."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -670,9 +713,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["lats"],
-    "secondaryMuscles": ["chest", "triceps"],
-    "instructions": ["Lie across a bench with shoulders supported and feet on the floor, hold a single dumbbell over your chest with both hands, then lower it back behind your head and pull it back up overhead."],
+    "primaryMuscles": [
+      "lats"
+    ],
+    "secondaryMuscles": [
+      "chest",
+      "triceps"
+    ],
+    "instructions": [
+      "Lie across a bench with shoulders supported and feet on the floor, hold a single dumbbell over your chest with both hands, then lower it back behind your head and pull it back up overhead."
+    ],
     "volumeMultiplier": 1
   },
   {
@@ -683,9 +733,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["middle back"],
-    "secondaryMuscles": ["lats", "biceps"],
-    "instructions": ["Lie chest-down on a 45-degree incline bench holding dumbbells with arms hanging, then row both dumbbells to your hips by driving the elbows back."],
+    "primaryMuscles": [
+      "middle back"
+    ],
+    "secondaryMuscles": [
+      "lats",
+      "biceps"
+    ],
+    "instructions": [
+      "Lie chest-down on a 45-degree incline bench holding dumbbells with arms hanging, then row both dumbbells to your hips by driving the elbows back."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -696,9 +753,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["middle back"],
-    "secondaryMuscles": ["abdominals", "biceps"],
-    "instructions": ["Set up in a high plank with hands on dumbbells beneath your shoulders, then row one dumbbell to your hip while bracing the core. Alternate sides each rep."],
+    "primaryMuscles": [
+      "middle back"
+    ],
+    "secondaryMuscles": [
+      "abdominals",
+      "biceps"
+    ],
+    "instructions": [
+      "Set up in a high plank with hands on dumbbells beneath your shoulders, then row one dumbbell to your hip while bracing the core. Alternate sides each rep."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -709,9 +773,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes", "adductors"],
-    "instructions": ["Stand with feet wide and toes turned out, hold a dumbbell vertically between your legs with both hands, then squat down keeping the chest up and drive back to standing."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "adductors"
+    ],
+    "instructions": [
+      "Stand with feet wide and toes turned out, hold a dumbbell vertically between your legs with both hands, then squat down keeping the chest up and drive back to standing."
+    ],
     "volumeMultiplier": 1
   },
   {
@@ -722,9 +793,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes", "hamstrings"],
-    "instructions": ["Stand with dumbbells at your sides, take a large step forward, and lower until both knees are bent about 90 degrees. Push back to standing and alternate legs."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "instructions": [
+      "Stand with dumbbells at your sides, take a large step forward, and lower until both knees are bent about 90 degrees. Push back to standing and alternate legs."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -735,9 +813,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes", "hamstrings"],
-    "instructions": ["Hold dumbbells at your sides and lunge forward, then drive off the front foot and step into the next lunge with the opposite leg, walking forward continuously."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "instructions": [
+      "Hold dumbbells at your sides and lunge forward, then drive off the front foot and step into the next lunge with the opposite leg, walking forward continuously."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -748,9 +833,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes", "hamstrings"],
-    "instructions": ["Stand with dumbbells at your sides, step one foot back into a lunge, and drive off the back foot to return to standing. Alternate legs."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "instructions": [
+      "Stand with dumbbells at your sides, step one foot back into a lunge, and drive off the back foot to return to standing. Alternate legs."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -761,9 +853,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes", "adductors"],
-    "instructions": ["Hold a dumbbell at your chest, step laterally into a wide stance, and squat down on the stepping leg while the other leg stays straight. Push back to center and alternate."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "adductors"
+    ],
+    "instructions": [
+      "Hold a dumbbell at your chest, step laterally into a wide stance, and squat down on the stepping leg while the other leg stays straight. Push back to center and alternate."
+    ],
     "volumeMultiplier": 1
   },
   {
@@ -774,9 +873,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes"],
-    "instructions": ["Stand in a staggered stance with one foot well in front of the other holding dumbbells, then lower straight down until both knees bend about 90 degrees. Drive up. Switch legs after a set."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "instructions": [
+      "Stand in a staggered stance with one foot well in front of the other holding dumbbells, then lower straight down until both knees bend about 90 degrees. Drive up. Switch legs after a set."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -787,9 +892,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes"],
-    "instructions": ["Place the top of one foot on a bench behind you, hold dumbbells at your sides, and lower into a single-leg squat on the front leg. Drive up. Switch legs after a set."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "instructions": [
+      "Place the top of one foot on a bench behind you, hold dumbbells at your sides, and lower into a single-leg squat on the front leg. Drive up. Switch legs after a set."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -800,9 +911,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes"],
-    "instructions": ["Hold a single dumbbell vertically against your chest with both hands cupping the top, then squat down keeping the chest up and rise back to standing."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "instructions": [
+      "Hold a single dumbbell vertically against your chest with both hands cupping the top, then squat down keeping the chest up and rise back to standing."
+    ],
     "volumeMultiplier": 1
   },
   {
@@ -813,9 +930,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes", "calves"],
-    "instructions": ["Hold light dumbbells at your sides, drop into a quarter squat, then explode upward into a jump. Land softly and immediately drop into the next rep."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "calves"
+    ],
+    "instructions": [
+      "Hold light dumbbells at your sides, drop into a quarter squat, then explode upward into a jump. Land softly and immediately drop into the next rep."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -826,9 +950,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["hamstrings"],
-    "secondaryMuscles": ["glutes", "lower back"],
-    "instructions": ["Stand with feet shoulder-width apart and dumbbells in front of your shins, hinge at the hips with a flat back to grip them, then drive through the floor to stand tall."],
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "lower back"
+    ],
+    "instructions": [
+      "Stand with feet shoulder-width apart and dumbbells in front of your shins, hinge at the hips with a flat back to grip them, then drive through the floor to stand tall."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -839,9 +970,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["hamstrings"],
-    "secondaryMuscles": ["glutes"],
-    "instructions": ["Stand holding dumbbells in front of your thighs with knees soft, then hinge at the hips and slide the dumbbells down your legs until you feel a hamstring stretch. Reverse to standing."],
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "instructions": [
+      "Stand holding dumbbells in front of your thighs with knees soft, then hinge at the hips and slide the dumbbells down your legs until you feel a hamstring stretch. Reverse to standing."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -852,9 +989,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["hamstrings"],
-    "secondaryMuscles": ["glutes"],
-    "instructions": ["Stand on one leg holding a dumbbell in the opposite hand, hinge forward at the hip while the free leg extends behind you, then return to standing. Switch sides."],
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "instructions": [
+      "Stand on one leg holding a dumbbell in the opposite hand, hinge forward at the hip while the free leg extends behind you, then return to standing. Switch sides."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -865,9 +1008,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["hamstrings"],
-    "secondaryMuscles": ["glutes", "lower back"],
-    "instructions": ["Stand with dumbbells in front of your thighs with legs nearly straight, then hinge at the hips and lower the dumbbells toward the floor while keeping the back flat. Reverse to standing."],
+    "primaryMuscles": [
+      "hamstrings"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "lower back"
+    ],
+    "instructions": [
+      "Stand with dumbbells in front of your thighs with legs nearly straight, then hinge at the hips and lower the dumbbells toward the floor while keeping the back flat. Reverse to standing."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -878,9 +1028,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["glutes"],
-    "instructions": ["Stand in front of a sturdy box or bench with dumbbells at your sides, step one foot up and drive through the heel to stand on top, then step back down. Alternate legs."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "glutes"
+    ],
+    "instructions": [
+      "Stand in front of a sturdy box or bench with dumbbells at your sides, step one foot up and drive through the heel to stand on top, then step back down. Alternate legs."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -891,9 +1047,13 @@
     "mechanic": "isolation",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["calves"],
+    "primaryMuscles": [
+      "calves"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Stand on the edge of a step or weight plate with the balls of your feet, holding dumbbells at your sides, then rise up onto your toes as high as possible and lower below the step level."],
+    "instructions": [
+      "Stand on the edge of a step or weight plate with the balls of your feet, holding dumbbells at your sides, then rise up onto your toes as high as possible and lower below the step level."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -904,9 +1064,13 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["abdominals"],
+    "primaryMuscles": [
+      "abdominals"
+    ],
     "secondaryMuscles": [],
-    "instructions": ["Lie flat on your back holding a single dumbbell overhead, then simultaneously raise your arms and legs to meet over your midsection in a V shape. Lower with control."],
+    "instructions": [
+      "Lie flat on your back holding a single dumbbell overhead, then simultaneously raise your arms and legs to meet over your midsection in a V shape. Lower with control."
+    ],
     "volumeMultiplier": 1
   },
   {
@@ -917,9 +1081,15 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["glutes"],
-    "secondaryMuscles": ["hamstrings"],
-    "instructions": ["Sit with your upper back against a bench and the soles of your feet pressed together with knees out wide, place a dumbbell across your hips, then drive the hips up to lockout."],
+    "primaryMuscles": [
+      "glutes"
+    ],
+    "secondaryMuscles": [
+      "hamstrings"
+    ],
+    "instructions": [
+      "Sit with your upper back against a bench and the soles of your feet pressed together with knees out wide, place a dumbbell across your hips, then drive the hips up to lockout."
+    ],
     "volumeMultiplier": 1
   },
   {
@@ -930,9 +1100,17 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["shoulders", "glutes", "triceps"],
-    "instructions": ["Hold dumbbells at shoulder height and squat down to parallel, then drive up explosively and press the dumbbells overhead in one motion. Lower the weights as you descend into the next rep."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "shoulders",
+      "glutes",
+      "triceps"
+    ],
+    "instructions": [
+      "Hold dumbbells at shoulder height and squat down to parallel, then drive up explosively and press the dumbbells overhead in one motion. Lower the weights as you descend into the next rep."
+    ],
     "volumeMultiplier": 2
   },
   {
@@ -943,9 +1121,16 @@
     "mechanic": "compound",
     "equipment": "dumbbell",
     "category": "strength",
-    "primaryMuscles": ["quadriceps"],
-    "secondaryMuscles": ["biceps", "glutes"],
-    "instructions": ["Hold dumbbells at your sides, step forward into a lunge while curling both dumbbells to your shoulders, lower the weights as you push back to standing, then alternate legs."],
+    "primaryMuscles": [
+      "quadriceps"
+    ],
+    "secondaryMuscles": [
+      "biceps",
+      "glutes"
+    ],
+    "instructions": [
+      "Hold dumbbells at your sides, step forward into a lunge while curling both dumbbells to your shoulders, lower the weights as you push back to standing, then alternate legs."
+    ],
     "volumeMultiplier": 2
   }
 ]
