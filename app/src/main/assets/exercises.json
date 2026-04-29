@@ -1132,5 +1132,209 @@
       "Hold dumbbells at your sides, step forward into a lunge while curling both dumbbells to your shoulders, lower the weights as you push back to standing, then alternate legs."
     ],
     "volumeMultiplier": 2
+  },
+  {
+    "id": "Dead_Bug",
+    "name": "Dead Bug",
+    "force": "pull",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [],
+    "instructions": [
+      "Lie on your back with arms extended straight up and hips and knees bent 90 degrees so your feet float off the floor, then slowly lower one arm overhead while extending the opposite leg toward the floor. Return and alternate sides."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Hollow_Body_Hold",
+    "name": "Hollow Body Hold",
+    "force": "pull",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [],
+    "instructions": [
+      "Lie on your back, press your lower back into the floor, then raise your legs a few inches off the ground and your shoulders and arms a few inches off the ground so your body forms a shallow banana shape. Hold."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Farmers_Carry",
+    "name": "Farmer's Carry",
+    "force": "pull",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "dumbbell",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [
+      "forearms",
+      "traps"
+    ],
+    "instructions": [
+      "Pick up a dumbbell in each hand (or one in a single hand for an oblique-emphasis carry), brace your core and pull the shoulder blades down and back, then walk for the desired distance keeping your posture tall."
+    ],
+    "volumeMultiplier": 2
+  },
+  {
+    "id": "Plank",
+    "name": "Plank",
+    "force": "pull",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [
+      "shoulders"
+    ],
+    "instructions": [
+      "Lie face-down with forearms on the floor and elbows directly under your shoulders, then push up onto your toes so your body forms a straight line from head to heels. Brace the core and hold without sagging."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Bicycle_Crunch",
+    "name": "Bicycle Crunch",
+    "force": "pull",
+    "level": "beginner",
+    "mechanic": "isolation",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [],
+    "instructions": [
+      "Lie on your back with hands gently behind your head and knees raised to 90 degrees, then pedal one knee toward your chest while extending the other leg, twisting your torso to bring the opposite elbow toward the bent knee. Alternate sides."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Bird_Dog",
+    "name": "Bird Dog",
+    "force": "pull",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "lower back"
+    ],
+    "instructions": [
+      "Start on hands and knees with a flat back, then extend one arm straight forward and the opposite leg straight back to form a long line. Hold a few seconds, return, and switch sides."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Glute_Bridge",
+    "name": "Glute Bridge",
+    "force": "push",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [
+      "glutes",
+      "hamstrings"
+    ],
+    "instructions": [
+      "Lie on your back with knees bent and feet flat on the floor, brace your abs by pressing the lower back into the ground, then drive through your heels to lift your hips into a straight line from knees to shoulders."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Mountain_Climber",
+    "name": "Mountain Climber",
+    "force": "pull",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [
+      "shoulders",
+      "quadriceps"
+    ],
+    "instructions": [
+      "Set up in a high plank with hands shoulder-width apart and abs engaged, then alternately drive each knee toward your chest in a quick running motion while keeping your hips low and back flat."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Reverse_Crunch",
+    "name": "Reverse Crunch",
+    "force": "pull",
+    "level": "intermediate",
+    "mechanic": "isolation",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [],
+    "instructions": [
+      "Lie on your back with knees bent over your hips and lower legs parallel to the floor, then exhale and curl the hips and knees toward your chest by lifting only your hips off the mat. Lower with control."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Superman",
+    "name": "Superman",
+    "force": "push",
+    "level": "beginner",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [
+      "lower back",
+      "glutes"
+    ],
+    "instructions": [
+      "Lie face-down with arms extended overhead and legs straight behind you, then simultaneously raise your arms and legs a few inches off the floor by squeezing the lower back and glutes. Hold briefly and lower."
+    ],
+    "volumeMultiplier": 1
+  },
+  {
+    "id": "Hip_Dip",
+    "name": "Hip Dip",
+    "force": "pull",
+    "level": "intermediate",
+    "mechanic": "compound",
+    "equipment": "body only",
+    "category": "strength",
+    "primaryMuscles": [
+      "abdominals"
+    ],
+    "secondaryMuscles": [],
+    "instructions": [
+      "Begin in a forearm plank, then rotate your hips to lower one side toward the floor, return to center, and rotate to the other side. Keep the motion controlled to load the obliques."
+    ],
+    "volumeMultiplier": 1
   }
 ]
