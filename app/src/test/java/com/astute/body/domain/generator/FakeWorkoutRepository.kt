@@ -16,10 +16,7 @@ class FakeWorkoutRepository : IWorkoutRepository {
     var recentExerciseIds: Map<MuscleGroup, List<String>> = emptyMap()
     var exercises: Map<Set<String>, List<ExerciseEntity>> = emptyMap()
     var recoveryConfigs: List<RecoveryConfigEntity> = defaultRecoveryConfigs()
-    var preferences: UserPreferencesEntity = UserPreferencesEntity(
-        availableEquipment = listOf("barbell", "dumbbell", "body only"),
-        experienceLevel = "intermediate"
-    )
+    var preferences: UserPreferencesEntity = UserPreferencesEntity()
 
     // Active workout state
     var activeWorkout: ActiveWorkoutEntity? = null
@@ -41,18 +38,7 @@ class FakeWorkoutRepository : IWorkoutRepository {
         return recentExerciseIds[muscleGroup]?.take(limit) ?: emptyList()
     }
 
-    override suspend fun getExercisesForMuscles(
-        muscles: Set<String>,
-        equipment: List<String>,
-        level: String
-    ): List<ExerciseEntity> {
-        return exercises[muscles] ?: emptyList()
-    }
-
-    override suspend fun getExercisesForMusclesRelaxed(
-        muscles: Set<String>,
-        equipment: List<String>
-    ): List<ExerciseEntity> {
+    override suspend fun getExercisesForMuscles(muscles: Set<String>): List<ExerciseEntity> {
         return exercises[muscles] ?: emptyList()
     }
 
@@ -124,16 +110,12 @@ class FakeWorkoutRepository : IWorkoutRepository {
             id: String,
             primaryMuscles: List<String> = listOf("chest"),
             mechanic: String? = "compound",
-            equipment: String? = "barbell",
-            level: String = "intermediate"
+            equipment: String? = "dumbbell"
         ) = ExerciseEntity(
             id = id,
             name = id.replace("_", " "),
-            force = "push",
-            level = level,
             mechanic = mechanic,
             equipment = equipment,
-            category = "strength",
             primaryMuscles = primaryMuscles,
             secondaryMuscles = emptyList(),
             instructions = emptyList()

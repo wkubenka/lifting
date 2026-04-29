@@ -37,24 +37,19 @@ class UserPreferencesDaoTest {
 
     @Test
     fun upsert_insertsAndRetrievesSingleton() = runTest {
-        dao.upsert(UserPreferencesEntity(
-            availableEquipment = listOf("barbell", "dumbbell"),
-            experienceLevel = "intermediate"
-        ))
+        dao.upsert(UserPreferencesEntity(targetWorkoutSize = 10))
 
         val prefs = dao.getOnce()
-        assertEquals("intermediate", prefs!!.experienceLevel)
-        assertEquals(listOf("barbell", "dumbbell"), prefs.availableEquipment)
-        assertEquals(8, prefs.targetWorkoutSize)
+        assertEquals(10, prefs!!.targetWorkoutSize)
+        assertEquals("lbs", prefs.weightUnit)
     }
 
     @Test
     fun upsert_updatesExistingRow() = runTest {
-        dao.upsert(UserPreferencesEntity(experienceLevel = "beginner"))
-        dao.upsert(UserPreferencesEntity(experienceLevel = "expert", weightUnit = "kg"))
+        dao.upsert(UserPreferencesEntity(weightUnit = "lbs"))
+        dao.upsert(UserPreferencesEntity(weightUnit = "kg"))
 
         val prefs = dao.getOnce()
-        assertEquals("expert", prefs!!.experienceLevel)
-        assertEquals("kg", prefs.weightUnit)
+        assertEquals("kg", prefs!!.weightUnit)
     }
 }

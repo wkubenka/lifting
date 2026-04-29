@@ -61,8 +61,6 @@ class WorkoutGenerator @Inject constructor(
             val exercises = selectExercisesForGroup(
                 scored.muscleGroup,
                 count,
-                prefs.availableEquipment,
-                prefs.experienceLevel,
                 userExcludedIds = userExcludedIds,
                 favoritedIds = favoritedIds
             )
@@ -85,11 +83,8 @@ class WorkoutGenerator @Inject constructor(
         } ?: return plan
 
         val currentIds = allocation.exercises.map { it.exercise.id }.toSet()
-        val candidates = getFilteredExercises(
-            exerciseToReplace.muscleGroup,
-            prefs.availableEquipment,
-            prefs.experienceLevel
-        ).filter { it.id !in currentIds && it.id !in userExcludedIds }
+        val candidates = getFilteredExercises(exerciseToReplace.muscleGroup)
+            .filter { it.id !in currentIds && it.id !in userExcludedIds }
 
         val replacement = weightedShuffle(candidates).firstOrNull() ?: return plan
         val newExercises = allocation.exercises.map {
@@ -121,8 +116,6 @@ class WorkoutGenerator @Inject constructor(
         val newExercises = selectExercisesForGroup(
             muscleGroup,
             neededCount,
-            prefs.availableEquipment,
-            prefs.experienceLevel,
             excludeIds,
             userExcludedIds = userExcludedIds,
             favoritedIds = favoritedIds
@@ -262,22 +255,14 @@ class WorkoutGenerator @Inject constructor(
     private suspend fun selectExercisesForGroup(
         muscleGroup: MuscleGroup,
         count: Int,
-        equipment: List<String>,
-        level: String,
         excludeIds: Set<String> = emptySet(),
         userExcludedIds: Set<String> = emptySet(),
         favoritedIds: Set<String> = emptySet()
     ): List<PlannedExercise> {
         val allExcluded = excludeIds + userExcludedIds
 
-        var candidates = getFilteredExercises(muscleGroup, equipment, level)
+        val candidates = getFilteredExercises(muscleGroup)
             .filter { it.id !in allExcluded }
-
-        if (candidates.size < count) {
-            candidates = repository.getExercisesForMusclesRelaxed(
-                muscleGroup.datasetMuscles, equipment
-            ).filter { it.id !in allExcluded }
-        }
 
         if (candidates.isEmpty()) return emptyList()
 
@@ -324,13 +309,7 @@ class WorkoutGenerator @Inject constructor(
         }.sortedByDescending { it.second }.map { it.first }
     }
 
-    private suspend fun getFilteredExercises(
-        muscleGroup: MuscleGroup,
-        equipment: List<String>,
-        level: String
-    ): List<ExerciseEntity> {
-        return repository.getExercisesForMuscles(
-            muscleGroup.datasetMuscles, equipment, level
-        )
+    private suspend fun getFilteredExercises(muscleGroup: MuscleGroup): List<ExerciseEntity> {
+        return repository.getExercisesForMuscles(muscleGroup.datasetMuscles)
     }
 }

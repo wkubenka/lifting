@@ -47,26 +47,17 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.astute.body.domain.model.MuscleGroup
 import com.astute.body.domain.model.PlannedExercise
 
 @Composable
 fun HomeScreen(
-    onNavigateToSettings: () -> Unit,
     onNavigateToExerciseDetail: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
-
-    LifecycleResumeEffect(Unit) {
-        if (uiState.needsSetup) {
-            viewModel.onSetupComplete()
-        }
-        onPauseOrDispose {}
-    }
 
     // Timer finished alert
     LaunchedEffect(uiState.timerFinished) {
@@ -104,9 +95,6 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
         }
-        uiState.needsSetup -> {
-            SetupPrompt(onNavigateToSettings = onNavigateToSettings)
-        }
         else -> {
             HomeContent(
                 uiState = uiState,
@@ -133,28 +121,6 @@ fun HomeScreen(
                 onDiscardWorkout = { viewModel.discardWorkout() },
                 onResumeWorkout = { viewModel.resumeWorkout() }
             )
-        }
-    }
-}
-
-@Composable
-private fun SetupPrompt(onNavigateToSettings: () -> Unit) {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Welcome to Astute Body",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Configure your equipment to get started",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(Modifier.height(24.dp))
-            Button(onClick = onNavigateToSettings) {
-                Text("Go to Settings")
-            }
         }
     }
 }

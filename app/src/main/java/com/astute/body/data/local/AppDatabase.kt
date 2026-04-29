@@ -30,7 +30,7 @@ import com.astute.body.data.local.entity.WorkoutSessionEntity
         RecoveryConfigEntity::class,
         ActiveWorkoutEntity::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -170,6 +170,59 @@ abstract class AppDatabase : RoomDatabase() {
                         instructions TEXT NOT NULL,
                         volumeMultiplier INTEGER NOT NULL DEFAULT 1
                     )
+                """.trimIndent())
+                db.execSQL("DROP TABLE exercises")
+                db.execSQL("ALTER TABLE exercises_new RENAME TO exercises")
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Drop user-side filters that are obsolete now that the library
+                // is curated dumbbell+bodyweight: experienceLevel, availableEquipment.
+                db.execSQL("""
+                    CREATE TABLE user_preferences_new (
+                        id INTEGER NOT NULL PRIMARY KEY,
+                        excludedExercises TEXT NOT NULL,
+                        favoritedExercises TEXT NOT NULL,
+                        weightUnit TEXT NOT NULL,
+                        targetWorkoutSize INTEGER NOT NULL,
+                        restCompound INTEGER NOT NULL,
+                        restIsolation INTEGER NOT NULL,
+                        restBodyweightAb INTEGER NOT NULL
+                    )
+                """.trimIndent())
+                db.execSQL("""
+                    INSERT INTO user_preferences_new
+                        (id, excludedExercises, favoritedExercises, weightUnit,
+                         targetWorkoutSize, restCompound, restIsolation, restBodyweightAb)
+                    SELECT id, excludedExercises, favoritedExercises, weightUnit,
+                           targetWorkoutSize, restCompound, restIsolation, restBodyweightAb
+                    FROM user_preferences
+                """.trimIndent())
+                db.execSQL("DROP TABLE user_preferences")
+                db.execSQL("ALTER TABLE user_preferences_new RENAME TO user_preferences")
+
+                // Drop now-unused exercise columns: force, level, category.
+                db.execSQL("""
+                    CREATE TABLE exercises_new (
+                        id TEXT NOT NULL PRIMARY KEY,
+                        name TEXT NOT NULL,
+                        mechanic TEXT,
+                        equipment TEXT,
+                        primaryMuscles TEXT NOT NULL,
+                        secondaryMuscles TEXT NOT NULL,
+                        instructions TEXT NOT NULL,
+                        volumeMultiplier INTEGER NOT NULL DEFAULT 1
+                    )
+                """.trimIndent())
+                db.execSQL("""
+                    INSERT INTO exercises_new
+                        (id, name, mechanic, equipment, primaryMuscles,
+                         secondaryMuscles, instructions, volumeMultiplier)
+                    SELECT id, name, mechanic, equipment, primaryMuscles,
+                           secondaryMuscles, instructions, volumeMultiplier
+                    FROM exercises
                 """.trimIndent())
                 db.execSQL("DROP TABLE exercises")
                 db.execSQL("ALTER TABLE exercises_new RENAME TO exercises")

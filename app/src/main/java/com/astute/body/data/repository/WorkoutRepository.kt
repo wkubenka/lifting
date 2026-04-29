@@ -42,35 +42,8 @@ class WorkoutRepository @Inject constructor(
         return exerciseLogDao.getRecentExerciseIds(muscleGroup.displayName, limit)
     }
 
-    override suspend fun getExercisesForMuscles(
-        muscles: Set<String>,
-        equipment: List<String>,
-        level: String
-    ): List<ExerciseEntity> {
-        return queryExercises(muscles, equipment, level)
-    }
-
-    override suspend fun getExercisesForMusclesRelaxed(
-        muscles: Set<String>,
-        equipment: List<String>
-    ): List<ExerciseEntity> {
-        return queryExercises(muscles, equipment, level = null)
-    }
-
-    private suspend fun queryExercises(
-        muscles: Set<String>,
-        equipment: List<String>,
-        level: String?
-    ): List<ExerciseEntity> {
-        return muscles.flatMap { exerciseDao.getByMuscle(it) }
-            .distinctBy { it.id }
-            .filter { exercise ->
-                (exercise.equipment == null ||
-                    exercise.equipment == "body only" ||
-                    equipment.contains(exercise.equipment)) &&
-                    exercise.category == "strength" &&
-                    (level == null || isLevelCompatible(exercise.level, level))
-            }
+    override suspend fun getExercisesForMuscles(muscles: Set<String>): List<ExerciseEntity> {
+        return muscles.flatMap { exerciseDao.getByMuscle(it) }.distinctBy { it.id }
     }
 
     override suspend fun getRecoveryConfig(muscleGroup: MuscleGroup): RecoveryConfigEntity? {
@@ -122,12 +95,5 @@ class WorkoutRepository @Inject constructor(
 
     override suspend fun upsertPersonalRecord(record: PersonalRecordEntity) {
         personalRecordDao.upsert(record)
-    }
-
-    private fun isLevelCompatible(exerciseLevel: String, userLevel: String): Boolean {
-        val levels = listOf("beginner", "intermediate", "expert")
-        val exerciseIdx = levels.indexOf(exerciseLevel)
-        val userIdx = levels.indexOf(userLevel)
-        return exerciseIdx <= userIdx
     }
 }

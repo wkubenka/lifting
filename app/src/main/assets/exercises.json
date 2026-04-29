@@ -2,11 +2,8 @@
   {
     "id": "Dumbbell_Bench_Press",
     "name": "Bench Press",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "chest"
     ],
@@ -22,11 +19,8 @@
   {
     "id": "Dumbbell_Bicep_Curl",
     "name": "Bicep Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -39,11 +33,8 @@
   {
     "id": "Dumbbell_Hammer_Curl",
     "name": "Hammer Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -58,11 +49,8 @@
   {
     "id": "Dumbbell_Reverse_Curl",
     "name": "Reverse Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "forearms"
     ],
@@ -77,11 +65,8 @@
   {
     "id": "Dumbbell_Skull_Crusher",
     "name": "Skull Crusher",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "triceps"
     ],
@@ -94,11 +79,8 @@
   {
     "id": "Dumbbell_Standing_Overhead_Tricep_Extension",
     "name": "Standing Overhead Tricep Extension",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "triceps"
     ],
@@ -111,11 +93,8 @@
   {
     "id": "Dumbbell_Single_Arm_Tricep_Extension",
     "name": "Single-Arm Tricep Extension",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "triceps"
     ],
@@ -128,11 +107,8 @@
   {
     "id": "Dumbbell_Standing_Single_Arm_Tricep_Kickback",
     "name": "Standing Single-Arm Tricep Kickback",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "triceps"
     ],
@@ -145,11 +121,8 @@
   {
     "id": "Dumbbell_Preacher_Curl",
     "name": "Preacher Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -162,11 +135,8 @@
   {
     "id": "Dumbbell_One_Arm_Zottman_Preacher_Curl",
     "name": "One-Arm Zottman Preacher Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -181,11 +151,8 @@
   {
     "id": "Dumbbell_Zottman_Curl",
     "name": "Zottman Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -200,11 +167,8 @@
   {
     "id": "Dumbbell_Zottman_Preacher_Curl",
     "name": "Zottman Preacher Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -219,11 +183,8 @@
   {
     "id": "Dumbbell_Cross_Body_Hammer_Curl",
     "name": "Cross-Body Hammer Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -238,11 +199,8 @@
   {
     "id": "Dumbbell_Concentration_Curl",
     "name": "Concentration Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -255,11 +213,8 @@
   {
     "id": "Dumbbell_Back_Wrist_Curl",
     "name": "Back Wrist Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "forearms"
     ],
@@ -272,11 +227,8 @@
   {
     "id": "Dumbbell_Finger_Curl",
     "name": "Finger Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "forearms"
     ],
@@ -289,11 +241,8 @@
   {
     "id": "Dumbbell_Wrist_Twist",
     "name": "Wrist Twist",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "forearms"
     ],
@@ -306,11 +255,8 @@
   {
     "id": "Dumbbell_Hammer_Wrist_Curl",
     "name": "Hammer Wrist Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "forearms"
     ],
@@ -323,11 +269,8 @@
   {
     "id": "Dumbbell_Incline_Bicep_Curl",
     "name": "Incline Bicep Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -340,11 +283,8 @@
   {
     "id": "Dumbbell_Alternating_Bicep_Curl",
     "name": "Alternating Bicep Curl",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "biceps"
     ],
@@ -357,11 +297,8 @@
   {
     "id": "Dumbbell_Tate_Press",
     "name": "Tate Press",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "triceps"
     ],
@@ -376,11 +313,8 @@
   {
     "id": "Dumbbell_Close_Grip_Press",
     "name": "Close-Grip Press",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "triceps"
     ],
@@ -396,11 +330,8 @@
   {
     "id": "Decline_Dumbbell_Tricep_Extension",
     "name": "Decline Tricep Extension",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "triceps"
     ],
@@ -413,11 +344,8 @@
   {
     "id": "Dumbbell_Standing_Shoulder_Press",
     "name": "Standing Shoulder Press",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -432,11 +360,8 @@
   {
     "id": "Dumbbell_Arnold_Press",
     "name": "Arnold Press",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -451,11 +376,8 @@
   {
     "id": "Dumbbell_Front_Raise",
     "name": "Front Raise",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -468,11 +390,8 @@
   {
     "id": "Dumbbell_Lateral_Raise",
     "name": "Lateral Raise",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -485,11 +404,8 @@
   {
     "id": "Dumbbell_Seated_Lateral_Raise",
     "name": "Seated Lateral Raise",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -502,11 +418,8 @@
   {
     "id": "Dumbbell_Bent_Over_Rear_Delt_Fly",
     "name": "Bent-Over Rear Delt Fly",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -521,11 +434,8 @@
   {
     "id": "Dumbbell_Upright_Row",
     "name": "Upright Row",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -541,11 +451,8 @@
   {
     "id": "Dumbbell_Shrug",
     "name": "Shrug",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "traps"
     ],
@@ -558,11 +465,8 @@
   {
     "id": "Dumbbell_Bent_Over_Face_Pull",
     "name": "Bent-Over Face Pull",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -577,11 +481,8 @@
   {
     "id": "Dumbbell_Scapular_External_Rotation",
     "name": "Scapular External Rotation",
-    "force": "pull",
-    "level": "beginner",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "shoulders"
     ],
@@ -594,11 +495,8 @@
   {
     "id": "Incline_Dumbbell_Bench_Press",
     "name": "Incline Bench Press",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "chest"
     ],
@@ -614,11 +512,8 @@
   {
     "id": "Decline_Dumbbell_Bench_Press",
     "name": "Decline Bench Press",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "chest"
     ],
@@ -634,11 +529,8 @@
   {
     "id": "Dumbbell_Chest_Fly",
     "name": "Chest Fly",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "chest"
     ],
@@ -651,11 +543,8 @@
   {
     "id": "Dumbbell_Svend_Press",
     "name": "Svend Press",
-    "force": "push",
-    "level": "beginner",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "chest"
     ],
@@ -668,11 +557,8 @@
   {
     "id": "Dumbbell_Bent_Over_Row",
     "name": "Bent-Over Row",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "middle back"
     ],
@@ -688,11 +574,8 @@
   {
     "id": "Dumbbell_Single_Arm_Bent_Over_Row",
     "name": "Single-Arm Bent-Over Row",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "middle back"
     ],
@@ -708,11 +591,8 @@
   {
     "id": "Dumbbell_Pullover",
     "name": "Pullover",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "lats"
     ],
@@ -728,11 +608,8 @@
   {
     "id": "Incline_Dumbbell_Row",
     "name": "Incline Row",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "middle back"
     ],
@@ -748,11 +625,8 @@
   {
     "id": "Renegade_Rows",
     "name": "Renegade Rows",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "middle back"
     ],
@@ -768,11 +642,8 @@
   {
     "id": "Dumbbell_Sumo_Squat",
     "name": "Sumo Squat",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -788,11 +659,8 @@
   {
     "id": "Dumbbell_Lunge",
     "name": "Lunge",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -808,11 +676,8 @@
   {
     "id": "Dumbbell_Walking_Lunge",
     "name": "Walking Lunge",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -828,11 +693,8 @@
   {
     "id": "Dumbbell_Reverse_Lunge",
     "name": "Reverse Lunge",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -848,11 +710,8 @@
   {
     "id": "Dumbbell_Side_Lunge",
     "name": "Side Lunge",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -868,11 +727,8 @@
   {
     "id": "Dumbbell_Split_Squat",
     "name": "Split Squat",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -887,11 +743,8 @@
   {
     "id": "Dumbbell_Bulgarian_Split_Squat",
     "name": "Bulgarian Split Squat",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -906,11 +759,8 @@
   {
     "id": "Dumbbell_Goblet_Squat",
     "name": "Goblet Squat",
-    "force": "push",
-    "level": "beginner",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -925,11 +775,8 @@
   {
     "id": "Dumbbell_Jumping_Squat",
     "name": "Jumping Squat",
-    "force": "push",
-    "level": "advanced",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -945,11 +792,8 @@
   {
     "id": "Dumbbell_Deadlift",
     "name": "Deadlift",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "hamstrings"
     ],
@@ -965,11 +809,8 @@
   {
     "id": "Dumbbell_Romanian_Deadlift",
     "name": "Romanian Deadlift",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "hamstrings"
     ],
@@ -984,11 +825,8 @@
   {
     "id": "Dumbbell_Single_Leg_Romanian_Deadlift",
     "name": "Single Leg Romanian Deadlift",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "hamstrings"
     ],
@@ -1003,11 +841,8 @@
   {
     "id": "Dumbbell_Stiff_Leg_Deadlift",
     "name": "Stiff Leg Deadlift",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "hamstrings"
     ],
@@ -1023,11 +858,8 @@
   {
     "id": "Dumbbell_Step_Up",
     "name": "Step-Up",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -1042,11 +874,8 @@
   {
     "id": "Dumbbell_Standing_Calf_Raise",
     "name": "Standing Calf Raise",
-    "force": "push",
-    "level": "beginner",
     "mechanic": "isolation",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "calves"
     ],
@@ -1059,11 +888,8 @@
   {
     "id": "Dumbbell_V_Up",
     "name": "V-Up",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1076,11 +902,8 @@
   {
     "id": "Dumbbell_Frog_Hip_Thrust",
     "name": "Frog Hip Thrust",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "glutes"
     ],
@@ -1095,11 +918,8 @@
   {
     "id": "Squat_To_Overhead_Press",
     "name": "Squat To Overhead Press",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -1116,11 +936,8 @@
   {
     "id": "Dumbbell_Lunge_With_Bicep_Curl",
     "name": "Lunge With Bicep Curl",
-    "force": "push",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "quadriceps"
     ],
@@ -1136,11 +953,8 @@
   {
     "id": "Dead_Bug",
     "name": "Dead Bug",
-    "force": "pull",
-    "level": "beginner",
     "mechanic": "compound",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1153,11 +967,8 @@
   {
     "id": "Hollow_Body_Hold",
     "name": "Hollow Body Hold",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1170,11 +981,8 @@
   {
     "id": "Farmers_Carry",
     "name": "Farmer's Carry",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "dumbbell",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1190,11 +998,8 @@
   {
     "id": "Plank",
     "name": "Plank",
-    "force": "pull",
-    "level": "beginner",
     "mechanic": "compound",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1209,11 +1014,8 @@
   {
     "id": "Bicycle_Crunch",
     "name": "Bicycle Crunch",
-    "force": "pull",
-    "level": "beginner",
     "mechanic": "isolation",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1226,11 +1028,8 @@
   {
     "id": "Bird_Dog",
     "name": "Bird Dog",
-    "force": "pull",
-    "level": "beginner",
     "mechanic": "compound",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1246,11 +1045,8 @@
   {
     "id": "Glute_Bridge",
     "name": "Glute Bridge",
-    "force": "push",
-    "level": "beginner",
     "mechanic": "compound",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1266,11 +1062,8 @@
   {
     "id": "Mountain_Climber",
     "name": "Mountain Climber",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1286,11 +1079,8 @@
   {
     "id": "Reverse_Crunch",
     "name": "Reverse Crunch",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "isolation",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1303,11 +1093,8 @@
   {
     "id": "Superman",
     "name": "Superman",
-    "force": "push",
-    "level": "beginner",
     "mechanic": "compound",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],
@@ -1323,11 +1110,8 @@
   {
     "id": "Hip_Dip",
     "name": "Hip Dip",
-    "force": "pull",
-    "level": "intermediate",
     "mechanic": "compound",
     "equipment": "body only",
-    "category": "strength",
     "primaryMuscles": [
       "abdominals"
     ],

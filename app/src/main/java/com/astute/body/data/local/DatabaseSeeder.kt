@@ -41,11 +41,8 @@ object DatabaseSeeder {
     private fun ExerciseJson.toEntity() = ExerciseEntity(
         id = id,
         name = name,
-        force = force,
-        level = level,
         mechanic = mechanic,
         equipment = equipment,
-        category = category,
         primaryMuscles = primaryMuscles,
         secondaryMuscles = secondaryMuscles,
         instructions = instructions,

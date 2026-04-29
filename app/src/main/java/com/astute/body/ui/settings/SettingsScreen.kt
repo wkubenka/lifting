@@ -16,7 +16,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -63,29 +62,6 @@ fun SettingsScreen(
         )
 
         Spacer(Modifier.height(24.dp))
-
-        // Experience Level
-        SectionHeader("Experience Level")
-        listOf("beginner", "intermediate", "expert").forEach { level ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.setExperienceLevel(level) }
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = prefs.experienceLevel == level,
-                    onClick = { viewModel.setExperienceLevel(level) }
-                )
-                Text(
-                    text = level.replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
-
-        SectionDivider()
 
         // Weight Unit
         SectionHeader("Weight Unit")
@@ -142,37 +118,6 @@ fun SettingsScreen(
             value = prefs.restBodyweightAb,
             onValueChange = { viewModel.setRestBodyweightAb(it) }
         )
-
-        SectionDivider()
-
-        // Equipment Selection
-        SectionHeader("Available Equipment")
-        Text(
-            text = "${prefs.availableEquipment.size} of ${uiState.allEquipment.size} selected",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(Modifier.height(8.dp))
-
-        uiState.allEquipment.forEach { equipment ->
-            val isChecked = prefs.availableEquipment.contains(equipment)
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { viewModel.toggleEquipment(equipment) }
-                    .padding(vertical = 2.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = isChecked,
-                    onCheckedChange = { viewModel.toggleEquipment(equipment) }
-                )
-                Text(
-                    text = equipment,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        }
 
         SectionDivider()
 

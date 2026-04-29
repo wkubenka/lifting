@@ -88,17 +88,6 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `needsSetup when no equipment configured`() = runTest {
-        repository.preferences = UserPreferencesEntity(availableEquipment = emptyList())
-        createViewModel()
-        advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertTrue(state.needsSetup)
-        assertFalse(state.isLoading)
-    }
-
-    @Test
     fun `swapExercise updates plan with different exercise`() = runTest {
         createViewModel()
         advanceUntilIdle()
@@ -126,25 +115,6 @@ class HomeViewModelTest {
         val newPlan = viewModel.uiState.value.workoutPlan!!
         assertNotNull(newPlan)
         assertFalse(viewModel.uiState.value.isLoading)
-    }
-
-    @Test
-    fun `onSetupComplete clears needsSetup and generates workout`() = runTest {
-        repository.preferences = UserPreferencesEntity(availableEquipment = emptyList())
-        createViewModel()
-        advanceUntilIdle()
-
-        assertTrue(viewModel.uiState.value.needsSetup)
-
-        repository.preferences = UserPreferencesEntity(
-            availableEquipment = listOf("barbell", "dumbbell", "body only"),
-            experienceLevel = "intermediate"
-        )
-        viewModel.onSetupComplete()
-        advanceUntilIdle()
-
-        assertFalse(viewModel.uiState.value.needsSetup)
-        assertNotNull(viewModel.uiState.value.workoutPlan)
     }
 
     // --- Workout lifecycle tests ---

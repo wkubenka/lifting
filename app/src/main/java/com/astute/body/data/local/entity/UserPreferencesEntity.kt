@@ -6,8 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "user_preferences")
 data class UserPreferencesEntity(
     @PrimaryKey val id: Int = 0,
-    val experienceLevel: String = "beginner",
-    val availableEquipment: List<String> = emptyList(),
     val excludedExercises: List<String> = emptyList(),
     val favoritedExercises: List<String> = emptyList(),
     val weightUnit: String = "lbs",

@@ -374,9 +374,6 @@ private class FakeExerciseDao : ExerciseDao {
     override suspend fun getByMuscle(muscle: String): List<ExerciseEntity> =
         exerciseMap.values.filter { muscle in it.primaryMuscles }
 
-    override suspend fun getDistinctEquipment(): List<String> =
-        exerciseMap.values.mapNotNull { it.equipment }.distinct()
-
     override suspend fun count(): Int = exerciseMap.size
 
     override suspend fun insertAll(exercises: List<ExerciseEntity>) {

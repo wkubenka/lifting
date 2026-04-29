@@ -64,18 +64,6 @@ class ExerciseDaoTest {
         assertEquals(1, quadExercises.size)
     }
 
-    @Test
-    fun getDistinctEquipment_returnsUniqueValues() = runTest {
-        dao.insertAll(listOf(
-            testExercise("ex1", equipment = "barbell"),
-            testExercise("ex2", equipment = "dumbbell"),
-            testExercise("ex3", equipment = "barbell"),
-            testExercise("ex4", equipment = null)
-        ))
-        val equipment = dao.getDistinctEquipment()
-        assertEquals(listOf("barbell", "dumbbell"), equipment)
-    }
-
     private fun testExercise(
         id: String,
         primaryMuscles: List<String> = listOf("chest"),
@@ -83,14 +71,10 @@ class ExerciseDaoTest {
     ) = ExerciseEntity(
         id = id,
         name = id.replace("_", " "),
-        force = "push",
-        level = "beginner",
         mechanic = "compound",
         equipment = equipment,
-        category = "strength",
         primaryMuscles = primaryMuscles,
         secondaryMuscles = emptyList(),
-        instructions = listOf("Do it"),
-        images = emptyList()
+        instructions = listOf("Do it")
     )
 }

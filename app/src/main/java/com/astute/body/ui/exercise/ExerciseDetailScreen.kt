@@ -173,16 +173,6 @@ private fun ExerciseDetailContent(
                     label = { Text(mechanic.replaceFirstChar { it.uppercase() }) }
                 )
             }
-            exercise.force?.let { force ->
-                SuggestionChip(
-                    onClick = {},
-                    label = { Text(force.replaceFirstChar { it.uppercase() }) }
-                )
-            }
-            SuggestionChip(
-                onClick = {},
-                label = { Text(exercise.level.replaceFirstChar { it.uppercase() }) }
-            )
         }
 
         Text(

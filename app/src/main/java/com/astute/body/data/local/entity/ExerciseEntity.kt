@@ -7,11 +7,8 @@ import androidx.room.PrimaryKey
 data class ExerciseEntity(
     @PrimaryKey val id: String,
     val name: String,
-    val force: String?,
-    val level: String,
     val mechanic: String?,
     val equipment: String?,
-    val category: String,
     val primaryMuscles: List<String>,
     val secondaryMuscles: List<String>,
     val instructions: List<String>,

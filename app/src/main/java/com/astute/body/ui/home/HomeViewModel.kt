@@ -30,7 +30,6 @@ data class HomeUiState(
     val workoutPlan: WorkoutPlan? = null,
     val flatExercises: List<PlannedExercise> = emptyList(),
     val isLoading: Boolean = true,
-    val needsSetup: Boolean = false,
     val favoritedIds: Set<String> = emptySet(),
     val hasExcludedInPlan: Boolean = false,
     val selectedMuscleGroups: Set<MuscleGroup> = emptySet(),
@@ -111,12 +110,6 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun generateWorkoutInternal() {
         _uiState.value = _uiState.value.copy(isLoading = true)
-
-        val prefs = repository.getUserPreferences()
-        if (prefs.availableEquipment.isEmpty()) {
-            _uiState.value = HomeUiState(isLoading = false, needsSetup = true)
-            return
-        }
 
         val targetGroups = _uiState.value.selectedMuscleGroups.ifEmpty { null }
         val plan = generator.generate(targetGroups)
@@ -230,11 +223,6 @@ class HomeViewModel @Inject constructor(
         if (state.workoutMode == WorkoutMode.ACTIVE) {
             persistState()
         }
-    }
-
-    fun onSetupComplete() {
-        _uiState.value = _uiState.value.copy(needsSetup = false)
-        generateWorkout()
     }
 
     // --- Workout lifecycle ---

@@ -2,7 +2,6 @@ package com.astute.body.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.astute.body.data.local.dao.ExerciseDao
 import com.astute.body.data.local.dao.UserPreferencesDao
 import com.astute.body.data.local.entity.UserPreferencesEntity
 import com.astute.body.data.repository.UserPreferencesRepository
@@ -15,7 +14,6 @@ import javax.inject.Inject
 
 data class SettingsUiState(
     val preferences: UserPreferencesEntity = UserPreferencesEntity(),
-    val allEquipment: List<String> = emptyList(),
     val isLoading: Boolean = true,
     val favoriteCount: Int = 0,
     val excludedCount: Int = 0
@@ -24,7 +22,6 @@ data class SettingsUiState(
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userPreferencesDao: UserPreferencesDao,
-    private val exerciseDao: ExerciseDao,
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
@@ -45,18 +42,12 @@ class SettingsViewModel @Inject constructor(
 
     private fun loadSettings() {
         viewModelScope.launch {
-            val equipment = exerciseDao.getDistinctEquipment()
             val prefs = userPreferencesDao.getOnce() ?: UserPreferencesEntity()
             _uiState.value = SettingsUiState(
                 preferences = prefs,
-                allEquipment = equipment,
                 isLoading = false
             )
         }
-    }
-
-    fun setExperienceLevel(level: String) {
-        updateAndSave { it.copy(experienceLevel = level) }
     }
 
     fun setWeightUnit(unit: String) {
@@ -77,18 +68,6 @@ class SettingsViewModel @Inject constructor(
 
     fun setRestBodyweightAb(seconds: Int) {
         updateAndSave { it.copy(restBodyweightAb = seconds.coerceAtLeast(10)) }
-    }
-
-    fun toggleEquipment(equipment: String) {
-        updateAndSave { prefs ->
-            val current = prefs.availableEquipment.toMutableList()
-            if (current.contains(equipment)) {
-                current.remove(equipment)
-            } else {
-                current.add(equipment)
-            }
-            prefs.copy(availableEquipment = current)
-        }
     }
 
     private fun updateAndSave(transform: (UserPreferencesEntity) -> UserPreferencesEntity) {

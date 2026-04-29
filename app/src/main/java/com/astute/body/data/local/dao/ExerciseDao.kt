@@ -22,9 +22,6 @@ interface ExerciseDao {
     @Query("SELECT * FROM exercises WHERE primaryMuscles LIKE '%' || :muscle || '%'")
     suspend fun getByMuscle(muscle: String): List<ExerciseEntity>
 
-    @Query("SELECT DISTINCT equipment FROM exercises WHERE equipment IS NOT NULL ORDER BY equipment")
-    suspend fun getDistinctEquipment(): List<String>
-
     @Query("SELECT COUNT(*) FROM exercises")
     suspend fun count(): Int
 

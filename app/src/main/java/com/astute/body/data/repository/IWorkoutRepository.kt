@@ -13,15 +13,7 @@ interface IWorkoutRepository {
     suspend fun getLastTrainedMillis(muscleGroup: MuscleGroup): Long?
     suspend fun getSessionCountLast14Days(muscleGroup: MuscleGroup, nowMillis: Long): Int
     suspend fun getRecentExerciseIds(muscleGroup: MuscleGroup, limit: Int): List<String>
-    suspend fun getExercisesForMuscles(
-        muscles: Set<String>,
-        equipment: List<String>,
-        level: String
-    ): List<ExerciseEntity>
-    suspend fun getExercisesForMusclesRelaxed(
-        muscles: Set<String>,
-        equipment: List<String>
-    ): List<ExerciseEntity>
+    suspend fun getExercisesForMuscles(muscles: Set<String>): List<ExerciseEntity>
     suspend fun getRecoveryConfig(muscleGroup: MuscleGroup): RecoveryConfigEntity?
     suspend fun getAllRecoveryConfigs(): List<RecoveryConfigEntity>
     suspend fun getUserPreferences(): UserPreferencesEntity

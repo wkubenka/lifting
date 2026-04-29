@@ -14,7 +14,7 @@ The app scores 7 muscle groups (Shoulders, Arms, Chest, Back, Core, Legs Push, L
 
 A separate **overlap penalty** (−30% × shared-muscle ratio) is applied to candidates that share dataset muscles with already-selected groups, plus a **+5% favorited bonus** for groups that contain favorited exercises.
 
-Top-scoring groups are selected, exercises are allocated proportionally (compound lifts get 2× selection probability vs isolation), and filtered by your available equipment and experience level. Hard constraint: never both `LEGS_PUSH` and `LEGS_PULL` in the same workout.
+Top-scoring groups are selected and exercises are allocated proportionally (compound lifts get 2× selection probability vs isolation). Hard constraint: never both `LEGS_PUSH` and `LEGS_PULL` in the same workout.
 
 ## Features
 
@@ -22,13 +22,13 @@ Top-scoring groups are selected, exercises are allocated proportionally (compoun
 - **Exercise logging** — sets, reps, and weight per exercise with last-performed values shown
 - **Rest timer** — automatic countdown between sets (compound 60s / isolation 45s / bodyweight 30s)
 - **History** — browse past sessions with full exercise detail
-- **Settings** — configure equipment, experience level, target workout size, rest durations
+- **Settings** — configure target workout size, rest durations, weight unit; manage favorites/exclusions
 - **Offline-first** — curated library of ~70 dumbbell and bodyweight exercises bundled in the APK
 
 ## Tech Stack
 
 - Kotlin, Jetpack Compose, Material 3
-- Room (SQLite, currently v7), Hilt, kotlinx.coroutines, kotlinx.serialization
+- Room (SQLite, currently v8), Hilt, kotlinx.coroutines, kotlinx.serialization
 - MVVM + Repository pattern (`IWorkoutRepository` is the single data abstraction)
 - `AppClock` interface for testable time (inject instead of `System.currentTimeMillis()`)
 - Min SDK 26, Target SDK 36
@@ -82,7 +82,5 @@ Tag pushes (`v*`) trigger `.github/workflows/release.yml`, which builds a signed
 
 ## Documentation
 
-- [Project Overview](docs/Astute_Body_Project_Overview.md) — original specification (some sections are pre-dumbbell-overhaul and may be out of date)
-- [Phase 1 Implementation Plan](docs/Phase_1_Implementation_Plan.md) — historical step-by-step build plan
 - [docs/superpowers/specs/](docs/superpowers/specs/) — design specs for major changes
 - [docs/superpowers/plans/](docs/superpowers/plans/) — implementation plans for major changes

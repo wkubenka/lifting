@@ -95,9 +95,6 @@ fun AppNavigation() {
         ) {
             composable<HomeRoute> {
                 HomeScreen(
-                    onNavigateToSettings = {
-                        navController.navigate(SettingsRoute)
-                    },
                     onNavigateToExerciseDetail = { exerciseId ->
                         navController.navigate(ExerciseDetailRoute(exerciseId))
                     }
