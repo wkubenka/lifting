@@ -15,4 +15,3 @@
 .claude/settings.local.json
 *.jks
 *.keystore
-app/src/main/assets/exercises/
